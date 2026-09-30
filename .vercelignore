@@ -1,0 +1,6 @@
+.build
+.claude
+supabase
+scripts/make-seed.mjs
+무제 폴더
+*.md

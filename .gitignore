@@ -1,0 +1,7 @@
+.DS_Store
+.build/
+node_modules/
+.vercel
+.env*
+무제 폴더/
+.claude/

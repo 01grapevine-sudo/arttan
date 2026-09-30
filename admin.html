@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>arttan 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--t-bg:#F2F4F6;--t-card:#FFFFFF;--t-text:#191F28;--t-sub:#4E5968;--t-muted:#8B95A1;--t-line:#E5E8EB;--t-hover:#F9FAFB;--t-blue:#3182F6;--t-blue-press:#1B64DA;--t-blue-soft:#E8F3FF;--t-red:#F04452;--t-green:#03B26C;--t-green-soft:#E5F8EF;--t-gray-btn:#F2F4F6;--t-knob:#FFFFFF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--t-bg:#17171C;--t-card:#202027;--t-text:#E4E4E7;--t-sub:#A8A8B3;--t-muted:#7E7E8A;--t-line:#34343E;--t-hover:#27272F;--t-blue-soft:#1C2B45;--t-green-soft:#15302A;--t-gray-btn:#2C2C35;--t-knob:#F2F2F4}}
+:root[data-theme="dark"]{color-scheme:dark;--t-bg:#17171C;--t-card:#202027;--t-text:#E4E4E7;--t-sub:#A8A8B3;--t-muted:#7E7E8A;--t-line:#34343E;--t-hover:#27272F;--t-blue-soft:#1C2B45;--t-green-soft:#15302A;--t-gray-btn:#2C2C35;--t-knob:#F2F2F4}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--t-bg);color:var(--t-text)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--t-blue);outline-offset:2px}
+canvas{display:block}
+[hidden]{display:none!important}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(25,31,40,.92);color:#fff;border-radius:14px;padding:14px 20px;font-size:15px;font-weight:500;z-index:50;max-width:calc(100vw - 32px);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Noto Sans KR",sans-serif;letter-spacing:-.02em}
+.t-row>.t-pill:first-child{flex-shrink:0;min-width:64px;text-align:center}
+
+/* ===== admin (toss style) ===== */
+#admin,.t-sheet{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:-.02em;color:var(--t-text)}
+#admin{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh;background:var(--t-bg)}
+.ad-side{position:sticky;top:0;height:100vh;background:var(--t-card);padding:24px 12px;display:flex;flex-direction:column;gap:2px}
+.ad-logo{font-weight:800;font-size:21px;padding:6px 12px 22px;text-decoration:none;color:var(--t-text);letter-spacing:-.04em}
+.ad-logo span{color:var(--t-blue);font-size:13px;font-weight:700;margin-left:6px;letter-spacing:-.02em}
+#adNav{display:flex;flex-direction:column;gap:2px}
+.ad-nav{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border:0;background:none;border-radius:12px;font:inherit;font-size:15px;font-weight:500;color:var(--t-sub);width:100%;text-align:left;letter-spacing:inherit}
+.ad-nav:hover{background:var(--t-hover)}
+.ad-nav.on{background:var(--t-bg);color:var(--t-text);font-weight:700}
+.ad-nav em{margin-left:auto;font-style:normal;background:var(--t-red);color:#fff;font-size:12px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 6px}
+.ad-back{margin-top:auto;font-size:13px;color:var(--t-muted);padding:12px;text-decoration:none}
+.ad-back:hover{color:var(--t-text)}
+.ad-main{padding:40px clamp(16px,4vw,56px) 96px;max-width:900px;width:100%}
+.ad-note{font-size:13px;color:var(--t-sub);background:var(--t-card);border-radius:14px;padding:12px 16px;margin:0 0 28px}
+.ad-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.ad-head h1{font-size:26px;font-weight:700;margin:0;line-height:1.35;letter-spacing:-.03em}
+.ad-head p{margin:4px 0 0;color:var(--t-sub);font-size:15px}
+.t-card{background:var(--t-card);border-radius:20px;padding:8px 0;margin-bottom:16px;overflow:hidden}
+.t-card-h{padding:16px 24px 6px}
+.t-card-h h2{font-size:17px;font-weight:700;margin:0}
+.t-row{display:flex;align-items:center;gap:14px;padding:12px 24px;min-height:68px}
+.t-row[role="button"]{cursor:pointer}
+.t-row[role="button"]:hover{background:var(--t-hover)}
+.t-row-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.t-row-m b{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-row-m span{font-size:13px;color:var(--t-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-row-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.chev{color:var(--t-muted);display:flex;opacity:.7}
+canvas.t-thumb{width:48px;height:48px;border-radius:12px;flex-shrink:0;background:var(--t-bg)}
+canvas.t-cover{width:42px;height:56px;border-radius:6px;flex-shrink:0}
+.t-date{width:48px;height:48px;border-radius:12px;background:var(--t-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1.1}
+.t-date small{font-size:11px;color:var(--t-muted)}
+.t-date b{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.t-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.t-stat{border:0;background:var(--t-card);border-radius:20px;padding:20px;text-align:left;display:flex;flex-direction:column;gap:8px;font:inherit;color:inherit;letter-spacing:inherit}
+.t-stat:hover{background:var(--t-hover)}
+.t-stat span{font-size:14px;color:var(--t-sub);font-weight:500}
+.t-stat b{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.t-stat.hi b{color:var(--t-blue)}
+.t-btn{border:0;border-radius:14px;height:52px;padding:0 20px;font:inherit;font-size:16px;font-weight:600;letter-spacing:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s,background .15s;white-space:nowrap}
+.t-btn:active{transform:scale(.97)}
+.t-btn.primary{background:var(--t-blue);color:#fff}
+.t-btn.primary:hover{background:var(--t-blue-press)}
+.t-btn.gray,.t-btn.ghost{background:var(--t-gray-btn);color:var(--t-sub)}
+.t-btn.ghost{color:var(--t-text)}
+.t-btn.danger{background:var(--t-red);color:#fff}
+.t-btn.sm{height:40px;padding:0 14px;font-size:15px;border-radius:12px}
+.t-toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.t-search{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--t-card);border-radius:14px;padding:0 14px;height:48px;color:var(--t-muted)}
+.t-search input{border:0;background:none;outline:none;font:inherit;font-size:16px;color:var(--t-text);flex:1;min-width:0;letter-spacing:inherit}
+.t-search:focus-within{box-shadow:inset 0 0 0 2px var(--t-blue)}
+.t-seg{display:inline-flex;background:var(--t-card);border-radius:14px;padding:4px;gap:2px;max-width:100%;overflow-x:auto}
+.t-seg button{border:0;background:none;height:40px;padding:0 14px;border-radius:10px;font:inherit;font-size:15px;font-weight:500;color:var(--t-muted);letter-spacing:inherit;white-space:nowrap}
+.t-seg button[aria-pressed="true"]{background:var(--t-bg);color:var(--t-text);font-weight:700}
+.t-sheet .t-seg{background:var(--t-bg);display:flex}
+.t-sheet .t-seg button{flex:1}
+.t-sheet .t-seg button[aria-pressed="true"]{background:var(--t-card);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.t-switch{width:50px;height:30px;border-radius:15px;border:0;background:var(--t-line);position:relative;padding:0;flex-shrink:0;transition:background .2s}
+.t-switch i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--t-knob);box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.t-switch[aria-checked="true"]{background:var(--t-blue)}
+.t-switch[aria-checked="true"] i{transform:translateX(20px)}
+.t-pill{font-size:13px;font-weight:600;padding:4px 10px;border-radius:8px;white-space:nowrap}
+.t-pill.blue{background:var(--t-blue-soft);color:var(--t-blue)}
+.t-pill.green{background:var(--t-green-soft);color:var(--t-green)}
+.t-pill.gray{background:var(--t-bg);color:var(--t-muted)}
+.t-empty{padding:32px 24px;text-align:center;color:var(--t-muted);margin:0}
+.t-info{font-size:14px;color:var(--t-sub);padding:4px 24px 16px;margin:0;line-height:1.6}
+dialog.t-sheet{border:0;padding:0;background:var(--t-card);width:min(520px,calc(100vw - 32px));max-height:88dvh;border-radius:24px;overflow:hidden}
+dialog.t-sheet::backdrop{background:rgba(0,0,0,.45)}
+.t-sheet-in{display:flex;flex-direction:column;max-height:88dvh}
+.t-grab{width:40px;height:4px;border-radius:2px;background:var(--t-line);margin:10px auto 0;flex-shrink:0}
+.t-sheet h2{font-size:22px;font-weight:700;padding:18px 24px 4px;margin:0;letter-spacing:-.03em}
+#sheetBody{overflow:auto;padding:14px 24px 8px;flex:1}
+.t-sheet-f{display:flex;gap:8px;padding:12px 24px calc(20px + env(safe-area-inset-bottom,0px))}
+.t-sheet-f .t-btn{flex:1}
+.t-sheet-f .t-btn.ghost{flex:0 0 auto;min-width:88px}
+.t-form{display:flex;flex-direction:column;gap:22px}
+.t-field{display:flex;flex-direction:column;gap:8px}
+.t-field>span{font-size:14px;font-weight:600;color:var(--t-sub)}
+.t-field small{font-size:13px;color:var(--t-muted)}
+.t-field input,.t-field textarea,.t-field select{border:0;background:var(--t-bg);border-radius:14px;padding:14px 16px;font:inherit;font-size:16px;color:var(--t-text);outline:none;width:100%;letter-spacing:inherit}
+.t-field input:focus,.t-field textarea:focus,.t-field select:focus{box-shadow:inset 0 0 0 2px var(--t-blue)}
+.t-field textarea{resize:vertical;min-height:96px}
+.t-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.t-chips{display:flex;flex-wrap:wrap;gap:8px}
+.t-chip{border:0;background:var(--t-bg);border-radius:10px;height:36px;padding:0 12px;font:inherit;font-size:14px;color:var(--t-sub);letter-spacing:inherit}
+.t-chip[aria-pressed="true"]{background:var(--t-blue-soft);color:var(--t-blue);font-weight:700}
+.t-prev{display:flex;gap:8px;flex-wrap:wrap}
+.t-prev img{width:72px;height:72px;object-fit:cover;border-radius:12px}
+.t-desc{color:var(--t-sub);margin:0 0 4px;font-size:15px;line-height:1.6}
+@media (max-width:860px){
+  #admin{grid-template-columns:minmax(0,1fr)}
+  .ad-side{height:auto;flex-direction:row;align-items:center;overflow-x:auto;padding:8px 12px;z-index:5;gap:4px;top:env(safe-area-inset-top,0px)}
+  .ad-logo{padding:8px 8px;white-space:nowrap}
+  .ad-logo span{display:none}
+  #adNav{flex-direction:row;gap:2px}
+  .ad-nav{width:auto;white-space:nowrap;flex-shrink:0;height:40px}
+  .ad-nav svg{display:none}
+  .ad-back{display:none}
+  .t-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ad-main{padding-top:24px}
+}
+@media (max-width:560px){
+  dialog.t-sheet{margin:auto 0 0 0;width:100vw;max-width:100vw;border-radius:24px 24px 0 0}
+  .t-row{padding:12px 16px}
+  .t-card-h{padding:16px 16px 6px}
+}
+
+
+
+/* 흰 바탕 + 퍼플 포인트 */
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:light;--t-bg:#F5F4F8;--t-card:#FFFFFF;--t-text:#16131F;--t-sub:#4B4758;--t-muted:#8A8697;--t-line:#ECEAF1;--t-hover:#FAF9FC;--t-blue:#7C3AED;--t-blue-press:#6D28D9;--t-blue-soft:#F1EAFE;--t-gray-btn:#F2F0F6;--t-knob:#FFFFFF}
+html,body{background:var(--t-bg)}
+.ad-logo span{color:var(--t-blue)}
+</style>
+
+<div id="admin">
+  <aside class="ad-side">
+    <a class="ad-logo" href="index.html">arttan<span>관리자</span></a>
+    <nav id="adNav" aria-label="관리자 메뉴"></nav>
+    <a class="ad-back" href="index.html">사이트로 돌아가기</a>
+  </aside>
+  <div class="ad-main" id="adMain"></div>
+</div>
+
+<dialog id="sheet" class="t-sheet" aria-labelledby="sheetTitle">
+  <div class="t-sheet-in">
+    <div class="t-grab" aria-hidden="true"></div>
+    <h2 id="sheetTitle"></h2>
+    <div id="sheetBody"></div>
+    <div class="t-sheet-f" id="sheetFoot"></div>
+  </div>
+</dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script src="core.js?v=14"></script>
+<!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
+<script src="artists/jmh/artist.js?v=14"></script>
+<script src="artists/ysg/artist.js?v=14"></script>
+<script src="artists/sjw/artist.js?v=14"></script>
+<script src="artists/cjs/artist.js?v=14"></script>
+<script src="artists/mjh/artist.js?v=14"></script>
+<script src="artists/oeb/artist.js?v=14"></script>
+<script src="artists/pjo/artist.js?v=14"></script>
+<script src="artists/jmr/artist.js?v=14"></script>
+<script src="artists/hsy/artist.js?v=14"></script>
+<script src="artists/ldh/artist.js?v=14"></script>
+<script src="artists/knr/artist.js?v=14"></script>
+<script src="artists/rhj/artist.js?v=14"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js?v=14"></script>
+<script src="data.js?v=14"></script>
+<script>
+/* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
+function startApp(){
+
+/* 관리자 화면은 따로 있어서 사이트를 다시 그릴 필요가 없어요. 열린 사이트 탭은 storage 이벤트로 새로고침돼요. */
+function refreshPublic(){}
+const IC={home:"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",user:"M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0",cal:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",inbox:"M4 13l2-8h12l2 8v6H4zM4 13h5l1 2h4l1-2h5",mic:"M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3",book:"M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11",building:"M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18",gear:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",chev:"M9 6l6 6-6 6",plus:"M12 5v14M5 12h14",mega:"M4 10v4h3l6 4V6l-6 4zM17 9a4 4 0 0 1 0 6",mail:"M4 6h16v12H4zM4 7l8 6 8-6",search:"M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"};
+const ic=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const el=h=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild};
+const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["notice","공지사항","mega"],["iv","인터뷰","mic"],["books","도록","book"],["gal","갤러리","building"],["set","설정","gear"]];
+let adView="dash";
+const pendingApps=()=>AD.apps.filter(a=>!AD.done[a.id]);
+function go(v){adView=v;renderAdmin();window.scrollTo(0,0)}
+function renderAdmin(){
+  const nav=$("#adNav");nav.innerHTML="";
+  AD_MENU.forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:0;
+    const b=el(`<button type="button" class="ad-nav${adView===k?" on":""}"${adView===k?' aria-current="page"':""}>${ic(IC[i])}<span>${l}</span>${n?`<em aria-label="대기 ${n}건">${n}</em>`:""}</button>`);
+    b.onclick=()=>go(k);nav.append(b)});
+  const m=$("#adMain");m.innerHTML=SBM()?`<p class="ad-note">Supabase에 연결돼 있어요. 여기서 저장한 내용은 바로 실제 사이트에 반영돼요.</p>`:`<p class="ad-note">예시 데이터 모드예요. 바꾼 내용은 이 브라우저에만 저장돼요. Supabase를 연결하면 실제 DB에 저장돼요.</p>`;
+  ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,set:adSet})[adView](m);
+}
+function adHead(m,title,sub,action){const h=el(`<div class="ad-head"><div><h1>${esc(title)}</h1>${sub?`<p>${esc(sub)}</p>`:""}</div></div>`);
+  if(action){const b=el(`<button type="button" class="t-btn primary sm">${ic(IC.plus,18)}${esc(action[0])}</button>`);b.onclick=action[1];h.append(b)}m.append(h)}
+function card(m,title){const c=el(`<section class="t-card">${title?`<div class="t-card-h"><h2>${esc(title)}</h2></div>`:""}</section>`);m.append(c);return c}
+function row(o){
+  const r=el(`<div class="t-row"${o.onClick?' role="button" tabindex="0"':""}><div class="t-row-l"></div><div class="t-row-m"><b></b>${o.sub?"<span></span>":""}</div><div class="t-row-r"></div></div>`);
+  r.querySelector("b").textContent=o.title;if(o.sub)r.querySelector(".t-row-m span").textContent=o.sub;
+  const l=r.querySelector(".t-row-l");if(o.thumb)l.replaceWith(o.thumb);else l.remove();
+  const rr=r.querySelector(".t-row-r");if(o.right)[].concat(o.right).forEach(x=>rr.append(x));
+  if(o.onClick){r.onclick=e=>{if(e.target.closest("button"))return;o.onClick()};r.onkeydown=e=>{if(e.key==="Enter"&&e.target===r)o.onClick()};rr.insertAdjacentHTML("beforeend",`<span class="chev">${ic(IC.chev,18)}</span>`)}
+  return r}
+function tBtn(label,kind,fn){const b=el(`<button type="button" class="t-btn ${kind}"></button>`);b.textContent=label;b.onclick=fn;return b}
+function segmented(opts,cur,onPick,label=x=>x){const s=el(`<div class="t-seg" role="group"></div>`);
+  opts.forEach(o=>{const b=el(`<button type="button" aria-pressed="${o===cur}"></button>`);b.textContent=label(o);b.onclick=()=>onPick(o);s.append(b)});return s}
+function segField(opts,cur,label){const s=segmented(opts,cur,v=>set(v),label);s.dataset.value=cur;
+  const set=v=>{s.dataset.value=v;s.querySelectorAll("button").forEach((b,i)=>b.setAttribute("aria-pressed",opts[i]===v))};s.set=set;return s}
+function switchEl(on,cb,label){const b=el(`<button type="button" class="t-switch" role="switch" aria-checked="${on}"><i></i></button>`);b.setAttribute("aria-label",label);
+  b.onclick=e=>{e.stopPropagation();const v=b.getAttribute("aria-checked")!=="true";b.setAttribute("aria-checked",v);cb(v)};return b}
+function chipsField(opts,sel,max,label=x=>x){const w=el(`<div class="t-chips" role="group"></div>`);let cur=[...sel];
+  const draw=()=>{w.innerHTML="";opts.forEach(o=>{const b=el(`<button type="button" class="t-chip" aria-pressed="${cur.includes(o)}"></button>`);b.textContent=label(o);
+    b.onclick=()=>{if(cur.includes(o))cur=cur.filter(x=>x!==o);else if(max===1)cur=[o];else if(cur.length<max)cur.push(o);else{toast(`최대 ${max}개까지 고를 수 있어요`);return}draw()};w.append(b)})};
+  draw();w.value=()=>cur;return w}
+function inp(id,type,val,ph){const i=document.createElement(type==="textarea"?"textarea":"input");if(type!=="textarea")i.type=type;i.id=id;if(val!=null&&type!=="file")i.value=val;if(ph)i.placeholder=ph;return i}
+function fieldL(label,ctrl,hint){const f=el(`<label class="t-field"><span></span></label>`);f.firstChild.textContent=label;f.append(ctrl);if(hint)f.append(el(`<small>${esc(hint)}</small>`));return f}
+function fieldD(label,ctrl,hint){const f=el(`<div class="t-field"><span></span></div>`);f.firstChild.textContent=label;f.append(ctrl);if(hint)f.append(el(`<small>${esc(hint)}</small>`));return f}
+function openSheet(title,body,foot){$("#sheetTitle").textContent=title;const b=$("#sheetBody");b.innerHTML="";b.append(body);b.scrollTop=0;
+  const f=$("#sheetFoot");f.innerHTML="";foot.forEach(x=>f.append(x));const d=$("#sheet");if(!d.open)d.showModal()}
+function closeSheet(){$("#sheet").close()}
+$("#sheet").addEventListener("click",e=>{if(e.target===$("#sheet"))closeSheet()});
+function confirmSheet(title,desc,ok,fn){openSheet(title,el(`<p class="t-desc">${esc(desc)}</p>`),[tBtn("취소","ghost",closeSheet),tBtn(ok,"danger",()=>{closeSheet();fn()})])}
+function thumbOf(a){const c=artCanvas(a,"w0",96,96,"");c.className="t-thumb";return c}
+function dateBox(d){return el(`<div class="t-date"><small>${d.getMonth()+1}월</small><b>${d.getDate()}</b></div>`)}
+function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1200/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.8))};im.onerror=()=>res(null);im.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(file)})}
+const soon=()=>toast("초안에서는 목록만 볼 수 있어요");
+
+/* ---------- Supabase 저장 · 로그인 ---------- */
+const SBM=()=>window.ARTTAN_SB;
+async function loadApps(){
+  if(!SBM())return;
+  const {data}=await ARTTAN_DB.from("applications").select("*").eq("status","pending").order("created_at",{ascending:false});
+  AD.apps=(data||[]).map(x=>({id:x.id,name:x.name,born:x.born,genre:x.genre||"",city:x.city||"",email:x.email||"",note:x.note||"",date:(x.created_at||"").slice(0,10).replaceAll("-",".")}));AD.done={}}
+async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();renderAdmin()}
+async function dbDo(fn,msg,closeAfter){
+  try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg)}
+  catch(err){console.error(err);toast("저장하지 못했어요: "+(err.message||err))}}
+const newId=p=>p+Date.now().toString(36);
+function renderLogin(msg,signedIn){
+  $("#adNav").innerHTML="";const m=$("#adMain");m.innerHTML="";
+  const c=el(`<section class="t-card t-login"><div class="t-card-h"><h2>관리자 로그인</h2></div><div class="t-form" style="padding:8px 24px 24px"></div></section>`);
+  const f=c.querySelector(".t-form");
+  f.append(el(`<p class="t-desc">${esc(msg||"arttan 관리자 계정으로 로그인해 주세요.")}</p>`));
+  if(signedIn){f.append(tBtn("다른 계정으로 로그인","ghost",async()=>{await ARTTAN_DB.auth.signOut();location.reload()}))}
+  else{const em=inp("lgMail","email","","관리자 이메일");em.autocomplete="username";const pw=inp("lgPw","password","","비밀번호");pw.autocomplete="current-password";
+    const go=tBtn("로그인","primary",async()=>{go.disabled=true;const {error}=await ARTTAN_DB.auth.signInWithPassword({email:em.value.trim(),password:pw.value});go.disabled=false;
+      if(error){toast("이메일 또는 비밀번호를 확인해 주세요");return}adminGate()});
+    pw.onkeydown=e=>{if(e.key==="Enter")go.click()};f.append(fieldL("이메일",em),fieldL("비밀번호",pw),go)}
+  m.append(c)}
+async function adminGate(){
+  if(!SBM()){renderAdmin();return}
+  const {data:{session}}=await ARTTAN_DB.auth.getSession();
+  if(!session){renderLogin();return}
+  const {data}=await ARTTAN_DB.from("admins").select("user_id").eq("user_id",session.user.id).maybeSingle();
+  if(!data){renderLogin(`${session.user.email} 계정은 관리자로 등록되어 있지 않아요. Supabase의 admins 표에 이 계정을 추가해 주세요.`,true);return}
+  await reloadAll()}
+
+/* 홈 */
+function adDash(m){
+  adHead(m,"안녕하세요, 관리자님",`${today.getMonth()+1}월 ${today.getDate()}일 ${DOW[today.getDay()]}요일이에요.`);
+  const ws=weekStart(today),we=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+6);
+  const live=EXHIBITIONS.filter(e=>status(e).k==="live").length, open=EXHIBITIONS.filter(e=>{const s=parse(e.start);return s>=ws&&s<=we}).length, pa=pendingApps().length;
+  const g=el(`<div class="t-stats"></div>`);
+  [["공개 작가",`${pub().length}명`,"artists"],["진행중 전시",`${live}건`,"ex"],["이번 주 개막",`${open}건`,"ex"],["등록 신청",`${pa}건`,"apps",pa>0]].forEach(([l,v,k,hi])=>{
+    const b=el(`<button type="button" class="t-stat${hi?" hi":""}"><span>${l}</span><b>${v}</b></button>`);b.onclick=()=>go(k);g.append(b)});
+  m.append(g);
+  const todo=card(m,"확인이 필요해요");const items=[];
+  if(pa)items.push(["등록 신청이 기다리고 있어요",`${pa}건 · 승인하면 바로 작가 목록에 올라가요`,"apps"]);
+  const nov=pub().filter(a=>!videoOf(a));if(nov.length)items.push(["인터뷰 영상이 없는 작가",`${nov.length}명`,"artists"]);
+  const nob=pub().filter(a=>!BOOKS.some(b=>b.artist===a.id));if(nob.length)items.push(["도록이 없는 작가",`${nob.length}명`,"books"]);
+  if(!items.length)todo.append(el(`<p class="t-empty">지금은 확인할 일이 없어요.</p>`));
+  items.forEach(([t,s,k])=>todo.append(row({title:t,sub:s,onClick:()=>go(k)})));
+  const up=card(m,"다가오는 개막");
+  const nx=EXHIBITIONS.filter(e=>parse(e.start)>today).sort((x,y)=>parse(x.start)-parse(y.start)).slice(0,5);
+  if(!nx.length)up.append(el(`<p class="t-empty">예정된 개막이 없어요.</p>`));
+  nx.forEach(e=>{const s=parse(e.start);up.append(row({thumb:dateBox(s),title:`「${e.title}」`,sub:`${e.venue} · ${e.artists.map(id=>byId[id]?.name).join(", ")}`,right:el(`<span class="t-pill blue">D-${Math.round((s-today)/864e5)}</span>`)}))});
+}
+
+/* 작가 */
+let adTier="전체",adQ="";
+function adArtists(m){
+  adHead(m,"작가",`공개 ${pub().length}명 · 전체 ${ARTISTS.length}명`,["작가 추가",()=>artistSheet()]);
+  const bar=el(`<div class="t-toolbar"><label class="t-search">${ic(IC.search,18)}<input id="adQ" type="search" placeholder="이름, 장르, 지역으로 찾기" aria-label="작가 검색"></label></div>`);
+  bar.querySelector("input").value=adQ;
+  bar.append(segmented(["전체","원로작가","중견작가","청년작가"],adTier,v=>{adTier=v;renderAdmin()},x=>x.replace("작가","")));m.append(bar);
+  const c=card(m);
+  const list=()=>{c.innerHTML="";const q=adQ.trim();
+    const L=ARTISTS.filter(a=>(adTier==="전체"||a.tier===adTier)&&(!q||[a.name,...genresOf(a),a.city,...(a.tags||[])].join(" ").includes(q)));
+    if(!L.length){c.append(el(`<p class="t-empty">찾는 작가가 없어요.</p>`));return}
+    L.forEach(a=>{const sw=switchEl(!a.hidden,on=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").update({hidden:!on}).eq("id",a.id),on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);return}a.hidden=!on;if(on)delete AD.hidden[a.id];else AD.hidden[a.id]=true;adSave();refreshPublic();toast(on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);list()},`${a.name} 작가 공개`);
+      c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")} · ${a.born}년생${a.city?" · "+a.city:""}`,right:sw,onClick:()=>artistSheet(a)}))})};
+  list();const q=bar.querySelector("input");q.oninput=()=>{adQ=q.value;list()};
+}
+function artistSheet(a){
+  const isNew=!a, T=["원로작가","중견작가","청년작가"];
+  const f=el(`<div class="t-form"></div>`);
+  const name=inp("fName","text",a?.name||"","예: 홍길동");
+  const born=inp("fBorn","number",a?.born||"","예: 1985");born.inputMode="numeric";
+  const tier=segField(T,a?.tier||"중견작가",x=>x.replace("작가",""));
+  born.oninput=()=>{const y=+born.value;if(y>1900&&y<=today.getFullYear())tier.set(tierOf(y))};
+  const genre=chipsField(GENRES,a?[a.genre]:[],1), more=chipsField(GENRES,a?.more||[],2);
+  const city=inp("fCity","text",a?.city||"","예: 서울");
+  const bio=inp("fBio","textarea",a?.bio||"","작가 소개를 2~3문장으로 적어 주세요");
+  f.append(fieldL("이름",name),fieldL("출생연도",born),fieldD("분류",tier,"출생연도를 넣으면 나이 기준(70세 이상 원로, 40~69세 중견, 39세 이하 청년)으로 골라져요. 직접 바꿀 수 있어요."),
+    fieldD("대표 장르",genre),fieldD("부가 장르",more,"최대 2개까지 고를 수 있어요."),fieldL("활동 지역",city),fieldL("작가 소개",bio));
+  let photos=[];
+  if(isNew){const file=inp("fImg","file");file.accept="image/*";file.multiple=true;const prev=el(`<div class="t-prev"></div>`);
+    file.onchange=async()=>{photos=[];prev.innerHTML="";for(const fl of [...file.files].slice(0,6)){const u=await shrink(fl);if(u){photos.push(u);prev.append(el(`<img src="${u}" alt="">`))}}};
+    f.append(fieldL("작품 이미지",file,"최대 6장, 긴 변 1200px로 줄여서 저장해요."),prev)}
+  const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
+    const g=genre.value()[0];
+    const v={name:name.value.trim(),born:+born.value,tier:tier.dataset.value,genre:g,more:more.value().filter(x=>x!==g),city:city.value.trim(),bio:bio.value.trim()};
+    if(!v.name){toast("이름을 입력해 주세요");name.focus();return}
+    if(!(v.born>1900&&v.born<=today.getFullYear())){toast("출생연도를 네 자리 숫자로 입력해 주세요");born.focus();return}
+    if(!v.genre){toast("대표 장르를 골라 주세요");return}
+    if(SBM()){const row={name:v.name,born:v.born,tier:v.tier,genre:v.genre,more:v.more,city:v.city,bio:v.bio};
+      dbDo(async()=>{
+        if(!isNew)return ARTTAN_DB.from("artists").update(row).eq("id",a.id);
+        const id=newId("a"),k=hash(id);
+        const r=await ARTTAN_DB.from("artists").insert({id,...row,style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],is_real:true,sort:1000});if(r.error)return r;
+        for(let i=0;i<photos.length;i++){const blob=await (await fetch(photos[i])).blob();const path=`${id}/${Date.now()}-${i}.jpg`;
+          const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up;
+          const w=await ARTTAN_DB.from("works").insert({artist_id:id,sort:i,title:`작품 ${i+1}`,year:String(today.getFullYear()),image_path:path});if(w.error)return w}
+      },isNew?`${v.name} 작가를 추가했어요`:"저장했어요",true);return}
+    if(isNew){const o={...v,id:"u"+Date.now().toString(36),photos,works:photos.map((_,i)=>[`작품 ${i+1}`,today.getFullYear(),"재료 미입력","크기 미입력"])};
+      AD.artists.push(o);if(!adSave()){AD.artists.pop();return}
+      const na=makeArtist(o);ARTISTS.push(na);byId[na.id]=na;toast(`${v.name} 작가를 추가했어요`)}
+    else{Object.assign(a,v);if(a.added)Object.assign(AD.artists.find(x=>x.id===a.id),v);else AD.edits[a.id]={...(AD.edits[a.id]||{}),...v};adSave();toast("저장했어요")}
+    closeSheet();refreshPublic();renderAdmin()});
+  const foot=[];
+  if(a&&(SBM()||a.added))foot.push(tBtn("삭제","ghost",()=>{
+    if(EXHIBITIONS.some(e=>e.artists.includes(a.id))){toast("이 작가가 참여한 전시를 먼저 삭제해 주세요");return}
+    confirmSheet(`${a.name} 작가를 삭제할까요?`,"작품·인터뷰·도록 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").delete().eq("id",a.id),"삭제했어요");return}AD.artists=AD.artists.filter(x=>x.id!==a.id);delete AD.hidden[a.id];adSave();ARTISTS.splice(ARTISTS.indexOf(a),1);delete byId[a.id];refreshPublic();renderAdmin();toast("삭제했어요")})}));
+  foot.push(save);openSheet(isNew?"작가 추가":"작가 정보 수정",f,foot);
+}
+
+/* 전시 */
+let adExSt="live";
+function adEx(m){
+  adHead(m,"전시",`전체 ${EXHIBITIONS.length}건`,["전시 추가",()=>exSheet()]);
+  const bar=el(`<div class="t-toolbar"></div>`);
+  bar.append(segmented(["live","soon","end","all"],adExSt,v=>{adExSt=v;renderAdmin()},x=>({live:"진행중",soon:"예정",end:"종료",all:"전체"})[x]));m.append(bar);
+  const c=card(m);const ord={live:0,soon:1,end:2};
+  const L=EXHIBITIONS.map(e=>({e,st:status(e)})).filter(x=>adExSt==="all"||x.st.k===adExSt).sort((x,y)=>ord[x.st.k]-ord[y.st.k]||(x.st.k==="end"?parse(y.e.start)-parse(x.e.start):parse(x.e.start)-parse(y.e.start)));
+  if(!L.length)c.append(el(`<p class="t-empty">해당하는 전시가 없어요.</p>`));
+  L.forEach(({e,st})=>c.append(row({thumb:dateBox(parse(e.start)),title:`「${e.title}」${SBM()||e.added?"":" · 예시"}`,
+    sub:`${e.venue} · ${e.artists.map(id=>byId[id]?.name).join(", ")} · ${e.start.slice(5).replace("-",".")}–${e.end.slice(5).replace("-",".")}`,
+    right:el(`<span class="t-pill ${({live:"green",soon:"blue",end:"gray"})[st.k]}">${esc(st.label)}</span>`),onClick:SBM()||e.added?()=>exSheet(e):null})));
+  if(!SBM()&&L.some(x=>!x.e.added))c.append(el(`<p class="t-info">'예시'로 표시된 전시는 시안용 데이터라 수정할 수 없어요. 직접 추가한 전시만 누르면 수정할 수 있어요.</p>`));
+}
+function exSheet(e){
+  const isNew=!e;const f=el(`<div class="t-form"></div>`);
+  const title=inp("xTitle","text",e?.title||"","예: 금강, 다시 흐르다");
+  const kind=segField(["개인전","그룹전","기획전","초대전"],e?.kind||"개인전");
+  const ids=pub().map(a=>a.id);const who=chipsField(ids,e?.artists||[],8,id=>byId[id].name);
+  const gal=document.createElement("select");gal.id="xGal";gal.innerHTML=`<option value="">갤러리를 골라 주세요</option>`+GALLERIES.map(g=>`<option value="${g.id}">${esc(g.name)} · ${esc(g.area)}</option>`).join("");gal.value=e?.g||"";
+  const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const st=inp("xStart","date",e?.start||iso(today)), en=inp("xEnd","date",e?.end||iso(new Date(today.getFullYear(),today.getMonth(),today.getDate()+30)));
+  const two=el(`<div class="t-two"></div>`);two.append(fieldL("시작일",st),fieldL("종료일",en));
+  const desc=inp("xDesc","textarea",e?.desc||"","전시를 한두 문장으로 소개해 주세요");
+  f.append(fieldL("전시명",title),fieldD("전시 형태",kind),fieldD("참여 작가",who,"최대 8명까지 고를 수 있어요."),fieldL("갤러리",gal),two,fieldL("전시 소개",desc));
+  const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
+    const v={title:title.value.trim(),kind:kind.dataset.value,artists:who.value(),g:gal.value,start:st.value,end:en.value,desc:desc.value.trim()};
+    if(!v.title){toast("전시명을 입력해 주세요");title.focus();return}
+    if(!v.artists.length){toast("참여 작가를 한 명 이상 골라 주세요");return}
+    if(!v.g){toast("갤러리를 골라 주세요");gal.focus();return}
+    if(!v.start||!v.end||v.end<v.start){toast("종료일이 시작일보다 빠를 수 없어요");en.focus();return}
+    if(SBM()){const row={title:v.title,kind:v.kind,artists:v.artists,gallery_id:v.g,start_date:v.start,end_date:v.end,description:v.desc};
+      if(isNew)adExSt=status({start:v.start,end:v.end}).k;
+      dbDo(()=>isNew?ARTTAN_DB.from("exhibitions").insert({id:newId("e"),...row}):ARTTAN_DB.from("exhibitions").update(row).eq("id",e.id),isNew?"전시를 추가했어요":"저장했어요",true);return}
+    const ext={venue:galById[v.g].name,region:galById[v.g].area};
+    if(isNew){const o={...v,id:"e"+Date.now().toString(36)};AD.exhibitions.push(o);if(!adSave()){AD.exhibitions.pop();return}EXHIBITIONS.push({...o,...ext,added:true});toast("전시를 추가했어요")}
+    else{Object.assign(AD.exhibitions.find(x=>x.id===e.id),v);Object.assign(e,v,ext);adSave();toast("저장했어요")}
+    if(isNew)adExSt=status({start:v.start,end:v.end}).k;
+    closeSheet();refreshPublic();renderAdmin()});
+  const foot=[];
+  if(!isNew)foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${e.title}」 전시를 삭제할까요?`,"삭제하면 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("exhibitions").delete().eq("id",e.id),"삭제했어요");return}AD.exhibitions=AD.exhibitions.filter(x=>x.id!==e.id);adSave();EXHIBITIONS.splice(EXHIBITIONS.indexOf(e),1);refreshPublic();renderAdmin();toast("삭제했어요")})));
+  foot.push(save);openSheet(isNew?"전시 추가":"전시 수정",f,foot);
+}
+
+/* 등록 신청 */
+function adApps(m){
+  const P=pendingApps();adHead(m,"등록 신청",`대기 ${P.length}건`);
+  const c=card(m);
+  if(!P.length)c.append(el(`<p class="t-empty">대기 중인 신청이 없어요.</p>`));
+  P.forEach(ap=>{
+    const ok=tBtn("승인","primary sm",()=>{if(SBM()){dbDo(async()=>{const id=newId("a"),k=hash(id);
+        const r=await ARTTAN_DB.from("artists").insert({id,name:ap.name,born:ap.born,tier:tierOf(ap.born),genre:GENRES.includes(ap.genre)?ap.genre:"서양화",city:ap.city,bio:ap.note,style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],is_real:true,sort:1000});if(r.error)return r;
+        return ARTTAN_DB.from("applications").update({status:"approved"}).eq("id",ap.id)},`${ap.name} 작가를 승인했어요`);return}const o={id:"u"+ap.id,name:ap.name,born:ap.born,genre:ap.genre,city:ap.city,tier:tierOf(ap.born),bio:"",photos:[],works:[]};
+      AD.artists.push(o);AD.done[ap.id]="ok";if(!adSave())return;const na=makeArtist(o);ARTISTS.push(na);byId[na.id]=na;refreshPublic();renderAdmin();toast(`${ap.name} 작가를 승인했어요`)});
+    const no=tBtn("반려","gray sm",()=>confirmSheet(`${ap.name} 님의 신청을 반려할까요?`,"반려하면 신청 목록에서 사라져요.","반려하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("applications").update({status:"rejected"}).eq("id",ap.id),"반려했어요");return}AD.done[ap.id]="no";adSave();renderAdmin();toast("반려했어요")}));
+    c.append(row({title:ap.name,sub:`${tierOf(ap.born).replace("작가","")} · ${ap.genre} · ${ap.born}년생${ap.city?" · "+ap.city:""}${ap.email?" · "+ap.email:""}${ap.note?" · "+ap.note:""} · ${ap.date} 신청`,right:[no,ok]}))});
+  c.append(el(`<p class="t-info">${SBM()?"사이트의 '작가 등록' 버튼으로 들어온 무료 등록 신청이에요. 승인하면 작가 공간이 바로 만들어져요.":"신청 내용은 예시예요. Supabase를 연결하면 사이트의 '작가 등록' 신청이 여기에 쌓여요."}</p>`));
+}
+
+
+/* 공지사항 */
+const NTAGS=["공지","안내","업데이트","이벤트"];
+function adNotice(m){
+  const L=noticeList();adHead(m,"공지사항",`${L.length}건 · 사이트 홈 맨 아래에 보여요`,["공지 쓰기",()=>noticeSheet()]);
+  const c=card(m);if(!L.length)c.append(el(`<p class="t-empty">등록된 공지가 없어요.</p>`));
+  L.forEach((n,i)=>c.append(row({thumb:el(`<span class="t-pill ${n.tag==="공지"?"blue":"gray"}">${esc(n.tag)}</span>`),title:n.title,sub:`${n.date} · ${n.body}`,onClick:()=>noticeSheet(i)})));
+}
+function noticeSheet(i){
+  const L=noticeList().map(x=>({...x})),n=i==null?null:L[i],f=el(`<div class="t-form"></div>`);
+  const tag=segField(NTAGS,n?.tag||"공지");const title=inp("nTitle","text",n?.title||"","예: 10월 전시 일정이 업데이트됐어요");
+  const body=inp("nBody","textarea",n?.body||"","내용을 적어 주세요");
+  f.append(fieldD("구분",tag),fieldL("제목",title),fieldL("내용",body));
+  const d=today,stamp=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;
+  const save=tBtn(n?"저장하기":"올리기","primary",()=>{
+    const v={tag:tag.dataset.value,title:title.value.trim(),body:body.value.trim()};
+    if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
+    if(!v.body){toast("내용을 입력해 주세요");body.focus();return}
+    if(SBM()){dbDo(()=>n&&n.id?ARTTAN_DB.from("notices").update(v).eq("id",n.id):ARTTAN_DB.from("notices").insert({...v,date:stamp}),n?"저장했어요":"공지를 올렸어요",true);return}
+    if(n)Object.assign(L[i],v);else L.unshift({...v,date:stamp});
+    AD.notices=L;if(!adSave())return;closeSheet();renderAdmin();toast(n?"저장했어요":"공지를 올렸어요")});
+  const foot=[];
+  if(n)foot.push(tBtn("삭제","ghost",()=>confirmSheet("이 공지를 삭제할까요?","삭제하면 사이트에서도 사라져요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("notices").delete().eq("id",n.id),"삭제했어요");return}L.splice(i,1);AD.notices=L;adSave();renderAdmin();toast("삭제했어요")})));
+  foot.push(save);openSheet(n?"공지 수정":"공지 쓰기",f,foot);
+}
+
+/* 작가 문의 */
+function adInq(m){
+  adHead(m,"작가 문의","작가 공간의 문의 양식으로 들어온 메시지");const c=card(m);
+  if(!SBM()){c.append(el(`<p class="t-info">Supabase를 연결하면 작가 공간의 문의(작품 구매, 전시 제안, 취재)가 여기에 쌓여요.</p>`));return}
+  c.append(el(`<p class="t-empty">불러오는 중…</p>`));
+  ARTTAN_DB.from("inquiries").select("*").order("created_at",{ascending:false}).limit(100).then(({data,error})=>{c.innerHTML="";
+    if(error){c.append(el(`<p class="t-empty">문의를 불러오지 못했어요.</p>`));return}
+    if(!data.length){c.append(el(`<p class="t-empty">아직 들어온 문의가 없어요.</p>`));return}
+    data.forEach(x=>{const a=byId[x.artist_id];c.append(row({thumb:a?thumbOf(a):null,title:`[${x.type||"문의"}] ${x.name} · ${x.email}`,sub:`${a?a.name+" 작가 · ":""}${(x.created_at||"").slice(0,10)} · ${x.message}`,
+      onClick:()=>openSheet("작가 문의",el(`<div class="t-form"><p class="t-desc"><b>${esc(x.name)}</b> (${esc(x.email)})<br>${esc(a?a.name+" 작가":"")} · ${esc(x.type||"")}</p><p class="t-desc" style="white-space:pre-wrap">${esc(x.message)}</p></div>`),[tBtn("닫기","ghost",closeSheet)])}))})})}
+
+/* 인터뷰 · 도록 · 갤러리 */
+function adIv(m){adHead(m,"인터뷰",`${INTERVIEWS.length}편`,["인터뷰 추가",soon]);const c=card(m);
+  INTERVIEWS.forEach(v=>{const a=byId[v.artist];c.append(row({thumb:thumbOf(a),title:v.title,sub:`${a.name} · ${v.date} · 영상 ${VIDEOS[a.id]?.len||"없음"}`}))})}
+function adBooks(m){adHead(m,"도록",`${BOOKS.length}권`,["도록 추가",soon]);const c=card(m);
+  BOOKS.forEach(bk=>{const a=byId[bk.artist];const cv=coverCanvas(bk,84,112);cv.className="t-cover";c.append(row({thumb:cv,title:bk.title,sub:`${a.name} · ${bk.year} · ${bk.pages}쪽 · ${bk.price}`}))})}
+function adGal(m){adHead(m,"갤러리",`${GALLERIES.length}곳`,["갤러리 추가",soon]);const c=card(m);
+  GALLERIES.forEach(g=>{const ex=exOfGal(g.id),l=ex.filter(e=>e.st.k==="live").length,s2=ex.filter(e=>e.st.k==="soon").length;
+    c.append(row({title:g.name,sub:`${g.area} · 전시 ${ex.length}건`,right:[l?el(`<span class="t-pill green">진행중 ${l}</span>`):"",s2?el(`<span class="t-pill blue">예정 ${s2}</span>`):""].filter(Boolean),onClick:()=>{location.href="index.html#galleries"}}))});
+  c.append(el(`<p class="t-info">주소, 관람시간, 연락처는 갤러리 확인 후 입력할 수 있게 만들 예정이에요.</p>`))}
+
+/* 설정 */
+function adSet(m){adHead(m,"설정");
+  if(SBM()){const c=card(m,"계정");c.append(el(`<p class="t-info">Supabase에 연결돼 있어요. 저장한 내용은 모두 실제 DB에 기록돼요.</p>`));
+    c.append(row({title:"로그아웃",sub:"이 브라우저에서 관리자 로그인을 끝내요",onClick:async()=>{await ARTTAN_DB.auth.signOut();location.reload()}}));return}
+  const c=card(m,"초안 데이터");
+  c.append(el(`<p class="t-info">관리자 화면에서 추가하거나 바꾼 내용은 이 브라우저에만 저장돼요. 실제 서비스에서는 로그인과 서버 저장이 필요해요.</p>`));
+  c.append(row({title:"초안 데이터 초기화",sub:"추가한 작가·전시, 공개 설정, 신청 처리 내역을 모두 지워요",onClick:()=>confirmSheet("초안 데이터를 초기화할까요?","추가하거나 바꾼 내용이 모두 사라지고 처음 상태로 돌아가요.","초기화하기",()=>{try{localStorage.removeItem(AD_KEY)}catch(e){}location.reload()})}))}
+
+
+adminGate();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(!document.querySelector(".t-login"))renderAdmin()});
+
+}
+arttanBoot(startApp);
+</script>

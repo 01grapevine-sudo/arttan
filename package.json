@@ -1,0 +1,11 @@
+{
+  "name": "arttan",
+  "private": true,
+  "version": "1.0.0",
+  "description": "arttan 아트탄 — 원로·중견·청년 작가 아카이브",
+  "scripts": {
+    "build": "node scripts/build-config.mjs",
+    "seed": "node scripts/make-seed.mjs",
+    "dev": "python3 -m http.server 8799"
+  }
+}
