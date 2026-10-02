@@ -23,7 +23,7 @@ artists/
 ## 새 작가 추가
 1. `artists/<새id>/artist.js` 를 만들고 `registerArtist({ id:"<새id>", ... })` 로 작성
 2. 이미지는 `artists/<새id>/works/` 에 넣기
-3. `index.html`, `admin.html` 의 작가 목록 `<script src="artists/<새id>/artist.js">` 한 줄 추가
+3. `app.html`, `admin.html` 의 작가 목록 `<script src="artists/<새id>/artist.js">` 한 줄 추가
 
 전시(여러 작가가 함께하는 전시 포함)와 갤러리는 작가 폴더가 아니라 `core.js` 에서 작가 id로 연결해요.
 

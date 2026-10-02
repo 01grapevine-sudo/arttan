@@ -83,7 +83,7 @@ const EXHIBITIONS = [
   {g:"hakgojae", title:"남산 사십 년", artists:["cjs"], kind:"초대전", start:"2024-04-10", end:"2024-05-26", desc:"사십 년 동안 오른 경주 남산을 그린 실경산수 40점."},
   {g:"hyundai", title:"흘러내린 자리", artists:["oeb"], kind:"개인전", start:"2026-10-15", end:"2026-11-09", desc:"장작가마에서 유약이 흘러내린 자국을 그대로 남긴 달항아리 16점."},
   {g:"hyundai", title:"달, 기울다", artists:["oeb"], kind:"개인전", start:"2025-04-01", end:"2025-04-27", desc:"비대칭 달항아리 연작 첫 공개."},
-].map(e=>({...e,venue:galById[e.g].name,region:galById[e.g].area}));
+].map((e,i)=>({id:"ex"+String(i+1).padStart(2,"0"),...e,venue:galById[e.g].name,region:galById[e.g].area}));
 
 /* ---------- generative artwork ---------- */
 function rng(seed){let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
@@ -91,7 +91,7 @@ function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0)
 const IMG={};function photo(src){if(!IMG[src]){const im=new Image();im.src=src;IMG[src]=im}return IMG[src]}
 function paintPhoto(cv,artist,key){
   const ctx=cv.getContext("2d"),W=cv.width,H=cv.height,m=/^w(\d+)$/.exec(key),cm=/^c(\d+)$/.exec(key);
-  const idx=m?+m[1]:cm?+cm[1]:hash(key)%artist.photos.length, im=photo(artist.photos[idx%artist.photos.length]);
+  const idx=m?+m[1]:cm?+cm[1]:hash(key)%artist.photos.length, im=photo(optImg(artist.photos[idx%artist.photos.length]));
   const draw=()=>{ctx.fillStyle=artist.pal[0];ctx.fillRect(0,0,W,H);if(!im.naturalWidth)return;
     const contain=!!m, s=contain?Math.min(W/im.naturalWidth,H/im.naturalHeight)*.88:Math.max(W/im.naturalWidth,H/im.naturalHeight);
     const w=im.naturalWidth*s,h=im.naturalHeight*s;ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h)};
@@ -204,6 +204,30 @@ function coverCanvas(bk,w,h){
   ctx.font=`400 ${w*.045}px "IBM Plex Sans KR", sans-serif`;ctx.fillText(a.name,w*.12,h*.83);
   ctx.font=`400 ${w*.036}px "IBM Plex Mono", monospace`;ctx.fillText(String(bk.year),w*.12,h*.92);
   return c}
+/* ---------- 검색 노출: 페이지 주소 · 노출 기준 · 제목 (사이트·관리자·서버 공용) ---------- */
+const SITE_URL="https://www.arttan.co.kr";
+const artistPath=id=>`/artist/${encodeURIComponent(id)}`;
+const workPath=(id,i)=>`${artistPath(id)}/work/${i+1}`;
+const galPath=id=>`/gallery/${encodeURIComponent(id)}`;
+const exPath=e=>`/exhibition/${encodeURIComponent(e.id)}`;
+/* 실제 작가와 그 작가의 전시만 검색에 노출해요. 예시 작가·예시 전시는 노출하지 않아요. */
+const artistIndexable=a=>!!(a&&a.real&&!a.hidden);
+const exIndexable=e=>!!(e&&e.id&&e.artists.some(id=>artistIndexable(byId[id])));
+const galIndexable=g=>!!g&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&&exIndexable(e)));
+function exNames(e){const n=e.artists.map(id=>byId[id]?.name).filter(Boolean);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
+/* 전시 제목은 사람들이 검색하는 순서로: 작가 개인전 : 「전시명」 - 장소 */
+const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.venue}`;
+const artistHeadline=a=>`${a.name} (${a.born}~) ${a.genre} ${a.tier}`;
+/* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
+const optImg=(src,small)=>/^\/?artists\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
+/* 검색에 알릴 주소와 내용 요약. 관리자에서 저장한 뒤 바뀐 주소만 골라 네이버에 바로 알려요. */
+function seoPages(){const m={"/":"home"};
+  ARTISTS.filter(artistIndexable).forEach(a=>{
+    m[artistPath(a.id)]=JSON.stringify([a.name,a.en,a.born,a.tier,a.genre,a.more,a.tags,a.line,a.quote,a.bio,a.cv,a.history,a.collections,a.books,a.works.length]);
+    a.works.forEach((w,i)=>m[workPath(a.id,i)]=JSON.stringify([a.name,w,a.photos?a.photos[i%a.photos.length]:null]))});
+  EXHIBITIONS.filter(exIndexable).forEach(e=>m[exPath(e)]=JSON.stringify([e.title,e.kind,e.start,e.end,e.g,e.artists,e.desc]));
+  GALLERIES.filter(galIndexable).forEach(g=>m[galPath(g.id)]=JSON.stringify([g,EXHIBITIONS.filter(e=>e.g===g.id&&exIndexable(e)).map(e=>e.id)]));
+  return m}
 const exOfGal=gid=>EXHIBITIONS.filter(e=>e.g===gid).map(e=>({...e,st:status(e)}));
 const sameDay=(a,b)=>a.getTime()===b.getTime();
 const runningOn=d=>EXHIBITIONS.filter(e=>parse(e.start)<=d&&d<=parse(e.end));

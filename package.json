@@ -1,11 +1,19 @@
 {
   "name": "arttan",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "type": "module",
   "description": "arttan 아트탄 — 원로·중견·청년 작가 아카이브",
   "scripts": {
-    "build": "node scripts/build-config.mjs",
+    "build": "node scripts/optimize-images.mjs && node scripts/build-config.mjs",
+    "images": "node scripts/optimize-images.mjs",
     "seed": "node scripts/make-seed.mjs",
-    "dev": "python3 -m http.server 8799"
+    "dev": "node scripts/optimize-images.mjs && node scripts/dev-server.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

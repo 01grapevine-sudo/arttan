@@ -5,7 +5,7 @@ import path from "node:path";
 import vm from "node:vm";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const html = fs.readFileSync(path.join(root, "app.html"), "utf8");
 const artistFiles = [...html.matchAll(/<script src="(artists\/[^"?]+\.js)(?:\?[^"]*)?"><\/script>/g)].map(m => m[1]);
 
 const code =

@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>arttan 관리자</title>
+<meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -138,9 +139,9 @@ html,body{background:var(--t-bg)}
 
 <div id="admin">
   <aside class="ad-side">
-    <a class="ad-logo" href="index.html">arttan<span>관리자</span></a>
+    <a class="ad-logo" href="/">arttan<span>관리자</span></a>
     <nav id="adNav" aria-label="관리자 메뉴"></nav>
-    <a class="ad-back" href="index.html">사이트로 돌아가기</a>
+    <a class="ad-back" href="/">사이트로 돌아가기</a>
   </aside>
   <div class="ad-main" id="adMain"></div>
 </div>
@@ -155,23 +156,23 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=14"></script>
+<script src="core.js?v=15"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=14"></script>
-<script src="artists/ysg/artist.js?v=14"></script>
-<script src="artists/sjw/artist.js?v=14"></script>
-<script src="artists/cjs/artist.js?v=14"></script>
-<script src="artists/mjh/artist.js?v=14"></script>
-<script src="artists/oeb/artist.js?v=14"></script>
-<script src="artists/pjo/artist.js?v=14"></script>
-<script src="artists/jmr/artist.js?v=14"></script>
-<script src="artists/hsy/artist.js?v=14"></script>
-<script src="artists/ldh/artist.js?v=14"></script>
-<script src="artists/knr/artist.js?v=14"></script>
-<script src="artists/rhj/artist.js?v=14"></script>
+<script src="artists/jmh/artist.js?v=15"></script>
+<script src="artists/ysg/artist.js?v=15"></script>
+<script src="artists/sjw/artist.js?v=15"></script>
+<script src="artists/cjs/artist.js?v=15"></script>
+<script src="artists/mjh/artist.js?v=15"></script>
+<script src="artists/oeb/artist.js?v=15"></script>
+<script src="artists/pjo/artist.js?v=15"></script>
+<script src="artists/jmr/artist.js?v=15"></script>
+<script src="artists/hsy/artist.js?v=15"></script>
+<script src="artists/ldh/artist.js?v=15"></script>
+<script src="artists/knr/artist.js?v=15"></script>
+<script src="artists/rhj/artist.js?v=15"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=14"></script>
-<script src="data.js?v=14"></script>
+<script src="config.js?v=15"></script>
+<script src="data.js?v=15"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -235,8 +236,17 @@ async function loadApps(){
   AD.apps=(data||[]).map(x=>({id:x.id,name:x.name,born:x.born,genre:x.genre||"",city:x.city||"",email:x.email||"",note:x.note||"",date:(x.created_at||"").slice(0,10).replaceAll("-",".")}));AD.done={}}
 async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();renderAdmin()}
 async function dbDo(fn,msg,closeAfter){
-  try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg)}
+  const before=seoPages();
+  try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg);pingSearch(before,seoPages())}
   catch(err){console.error(err);toast("저장하지 못했어요: "+(err.message||err))}}
+/* 저장으로 새로 생기거나 바뀌거나 사라진 페이지 주소를 네이버·빙에 바로 알려요 (IndexNow) */
+async function pingSearch(before,after){
+  const urls=[...new Set([...Object.keys(before),...Object.keys(after)])].filter(u=>before[u]!==after[u]);
+  if(!urls.length)return;
+  try{const {data:{session}}=await ARTTAN_DB.auth.getSession();if(!session)return;
+    const r=await fetch("/api/indexnow",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token},body:JSON.stringify({urls:[...urls,"/"]})});
+    if(r.ok)console.info("검색엔진에 알린 주소",urls);else console.warn("검색엔진 알림 실패",r.status)}
+  catch(err){console.warn("검색엔진 알림 실패",err)}}
 const newId=p=>p+Date.now().toString(36);
 function renderLogin(msg,signedIn){
   $("#adNav").innerHTML="";const m=$("#adMain");m.innerHTML="";

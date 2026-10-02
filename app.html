@@ -1,6 +1,19 @@
+<!doctype html>
+<html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>arttan</title>
+<base href="/">
+<!--seo-->
+<title>arttan 아트탄 | 원로·중견·청년 작가 아카이브</title>
+<meta name="description" content="원로·중견·청년 작가의 작품, 인터뷰, 도록, 전시 이력을 작가별 공간에 모아 기록하는 미술 작가 아카이브예요. 작가 등록은 무료예요.">
+<link rel="canonical" href="https://www.arttan.co.kr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="arttan 아트탄">
+<meta property="og:title" content="arttan 아트탄 | 원로·중견·청년 작가 아카이브">
+<meta property="og:description" content="원로·중견·청년 작가의 작품, 인터뷰, 도록, 전시 이력을 작가별 공간에 모아 기록하는 미술 작가 아카이브예요.">
+<meta property="og:url" content="https://www.arttan.co.kr/">
+<link rel="alternate" type="application/rss+xml" title="arttan 새 소식" href="https://www.arttan.co.kr/rss.xml">
+<!--/seo-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
@@ -1205,6 +1218,46 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 @media (max-width:520px){.join-grid{grid-template-columns:1fr}}
 </style>
 
+<style>
+/* 검색 노출용: 서버가 미리 넣은 본문(#ssr)과 바로가기 */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ssr{max-width:880px;margin:24px auto 48px;line-height:1.7;color:var(--ink)}
+.ssr h1{font-size:clamp(26px,4vw,38px);line-height:1.3;margin:8px 0 6px}
+.ssr h1 small{font-size:.5em;color:var(--muted);font-weight:500;margin-left:6px}
+.ssr h2{font-size:20px;margin:32px 0 10px}
+.ssr a{color:var(--accent)}
+.ssr-bc{font-size:13px;color:var(--muted)}
+.ssr-meta{color:var(--muted);margin:0 0 8px}
+.ssr-lead{font-size:18px}
+.ssr-tags span{display:inline-block;margin:0 6px 6px 0;color:var(--muted)}
+.ssr-works{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+.ssr-works a{display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none}
+.ssr-works img{width:100%;aspect-ratio:1;object-fit:contain;background:var(--surface);border-radius:12px}
+.ssr-works span{font-size:13px;color:var(--muted)}
+.ssr-list{padding-left:18px}.ssr-list span{color:var(--muted);font-size:14px}
+.ssr dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px}.ssr dt{color:var(--muted)}.ssr dd{margin:0}
+.ssr-fig{margin:16px 0;display:grid;gap:20px}.ssr-fig img{max-width:100%;max-height:70vh;object-fit:contain}
+.ssr-src{font-size:13px;color:var(--muted);margin-top:32px}
+.foot-dir{display:grid;gap:10px;margin:40px 0 0;padding:20px 0 0;border-top:1px solid var(--line);font-size:13px}
+.foot-dir:empty{display:none}
+.foot-dir div{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.foot-dir b{min-width:84px;color:var(--ink)}
+.foot-dir a{color:var(--muted);text-decoration:none}.foot-dir a:hover{color:var(--accent)}
+.foot-dir small{font-size:11px;opacity:.75}
+/* 작가 공간: 관련 작가 */
+.as-rel{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+.as-rel-c{display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none}
+.as-rel-c .th{aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:var(--surface);margin-bottom:6px}
+.as-rel-c .th canvas,.as-rel-c .th img{width:100%;height:100%;object-fit:cover;display:block}
+.as-rel-c b{font-size:16px}.as-rel-c span{font-size:13px;color:var(--muted)}
+.as-rel-c em{font-style:normal;font-size:12px;color:var(--accent)}
+.as-rel-c:hover b{color:var(--accent)}
+/* 작가 등록: 검색 안내 */
+.join-seo{margin:4px 0 14px;background:var(--surface);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6}
+.join-seo summary{cursor:pointer;font-weight:700;font-size:14px}
+.join-seo ol{margin:10px 0 0;padding-left:18px;display:grid;gap:6px}
+</style>
+
 <header class="top">
   <div class="wrap hrow">
     <a class="logo" href="#home" aria-label="arttan 홈">arttan</a>
@@ -1235,6 +1288,8 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 </header>
 
 <main class="wrap" id="top">
+  <!--ssr-->
+  <h1 class="vh" data-view="home">arttan 아트탄 — 원로·중견·청년 작가 아카이브</h1>
   <div class="proto">홈페이지 초안 v1.1 · 정명희 작가 외 작가·전시·공지는 예시예요</div>
 
   <section class="herowrap" data-view="home" aria-label="추천 작가 배너">
@@ -1383,11 +1438,13 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
   <section class="asite" id="artistSite" data-view="site" hidden aria-live="polite"></section>
 
+  <nav class="foot-dir" id="footDir" aria-label="작가·갤러리·전시 바로가기"><!--footdir--></nav>
+
   <footer>
     <span>arttan · 아트탄 灘</span>
     <span>www.arttan.co.kr</span>
     <span>문의 contact@example.com</span>
-    <a href="admin.html">관리자</a>
+    <a href="/admin" rel="nofollow">관리자</a>
   </footer>
 </main>
 
@@ -1437,29 +1494,38 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
       <label class="wide">이메일<input id="jMail" type="email" required autocomplete="email"></label>
       <label class="wide">간단한 소개 · 경력<textarea id="jNote" rows="4" placeholder="개인전·단체전, 주요 작업 등을 적어 주세요"></textarea></label>
     </div>
+    <details class="join-seo">
+      <summary>등록한 뒤 네이버 검색에 잘 나오게 하는 방법</summary>
+      <ol>
+        <li><b>네이버 인물정보</b>에 작가 공간 주소(www.arttan.co.kr/artist/…)를 홈페이지로 등록해 주세요. 네이버 인물검색의 '본인 참여'에서 신청할 수 있어요.</li>
+        <li><b>인스타그램 프로필, 유튜브 설명, 개인 블로그</b>에 작가 공간 주소를 걸어 주세요. 다른 곳에서 걸린 링크가 많을수록 검색 순위가 올라가요.</li>
+        <li>전시를 열면 <b>갤러리 소개 글과 보도자료</b>에도 작가 공간 주소를 넣어 달라고 요청해 주세요.</li>
+        <li><b>작가노트와 작품 설명을 직접 써서</b> 보내 주세요. 다른 사이트의 글을 그대로 옮기면 검색에서 원래 글이 먼저 나오고 arttan은 뒤로 밀려요.</li>
+      </ol>
+    </details>
     <button class="btn join-go" type="submit">무료로 신청하기</button>
   </form>
 </dialog>
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=14"></script>
+<script src="core.js?v=15"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=14"></script>
-<script src="artists/ysg/artist.js?v=14"></script>
-<script src="artists/sjw/artist.js?v=14"></script>
-<script src="artists/cjs/artist.js?v=14"></script>
-<script src="artists/mjh/artist.js?v=14"></script>
-<script src="artists/oeb/artist.js?v=14"></script>
-<script src="artists/pjo/artist.js?v=14"></script>
-<script src="artists/jmr/artist.js?v=14"></script>
-<script src="artists/hsy/artist.js?v=14"></script>
-<script src="artists/ldh/artist.js?v=14"></script>
-<script src="artists/knr/artist.js?v=14"></script>
-<script src="artists/rhj/artist.js?v=14"></script>
+<script src="artists/jmh/artist.js?v=15"></script>
+<script src="artists/ysg/artist.js?v=15"></script>
+<script src="artists/sjw/artist.js?v=15"></script>
+<script src="artists/cjs/artist.js?v=15"></script>
+<script src="artists/mjh/artist.js?v=15"></script>
+<script src="artists/oeb/artist.js?v=15"></script>
+<script src="artists/pjo/artist.js?v=15"></script>
+<script src="artists/jmr/artist.js?v=15"></script>
+<script src="artists/hsy/artist.js?v=15"></script>
+<script src="artists/ldh/artist.js?v=15"></script>
+<script src="artists/knr/artist.js?v=15"></script>
+<script src="artists/rhj/artist.js?v=15"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=14"></script>
-<script src="data.js?v=14"></script>
+<script src="config.js?v=15"></script>
+<script src="data.js?v=15"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1519,7 +1585,7 @@ function exCard(e,opt){
 
 const AP_SECS=[["ap-artist","작가"],["ap-intro","작가소개"],["ap-video","인터뷰영상"],["ap-works","작품"],["ap-books","도록"],["ap-ex","전시일정"]];
 function secHead(title,en,cnt){return `<div class="ap-h"><h3>${title}</h3><span class="en">${en}</span>${cnt!=null?`<span class="cnt">${cnt}</span>`:""}</div>`}
-function openPortfolio(id){location.hash="a-"+id}
+function openPortfolio(id){location.href=artistPath(id)}
 function openPortfolioModal(id){
   const a=byId[id], body=$("#pfBody"); body.innerHTML="";
   const mk=(sid)=>{const s=document.createElement("section");s.className="ap-sec";s.id=sid;body.append(s);return s};
@@ -1643,7 +1709,7 @@ function renderGalleries(){
       ${show?`<div class="gshow">「${esc(show.title)}」 ${esc(show.artists.map(id=>byId[id].name).slice(0,2).join(", "))}${show.artists.length>2?" 외":""}</div>`:""}</div>`);
     b.onclick=()=>openGallery(g.id);box.append(b)});
 }
-function openGallery(gid){location.hash="g-"+gid}
+function openGallery(gid){location.href=galPath(gid)}
 function openGalleryModal(gid){
   const g=galById[gid], ex=exOfGal(gid), body=$("#glBody");
   body.innerHTML=`<div class="gl-top"><h2 id="glName">${esc(g.name)}</h2><div class="sub">${esc(g.area)} · 전시 ${ex.length}건</div>
@@ -1742,7 +1808,11 @@ function openExhibit(e){
   const more=EXHIBITIONS.filter(x=>x.g===e.g&&x!==e&&!(x.title===e.title&&x.start===e.start));
   if(more.length){const h=document.createElement("div");h.className="exd-more";h.innerHTML=`<h3>${esc(e.venue)}의 다른 전시</h3>`;const r=document.createElement("div");r.className="rail";
     more.forEach(x=>{const card=railCard({...x});card.onclick=()=>openExhibit(x);r.append(card)});h.append(r);body.append(h)}
+  /* 전시마다 주소가 있어요: /exhibition/<id> (작가·갤러리 공간 안에서는 주소를 그대로 둬요) */
+  if(e.id&&!/^\/(artist|gallery)\//.test(location.pathname)){if(exBack===null)exBack=location.pathname.startsWith("/exhibition/")?"/#shows":location.pathname+location.hash;history.replaceState(null,"",exPath(e));document.title=`${exHeadline(e)} | arttan`}
   const d=$("#exDlg");if(!d.open)d.showModal();d.scrollTop=0}
+let exBack=null;
+onDlgClose($("#exDlg"),()=>{if(exBack!==null){history.replaceState(null,"",exBack);exBack=null;document.title=HOME_TITLE}});
 function renderSchedule(){
   const order={live:0,soon:1,end:2};
   const list=EXHIBITIONS.map(e=>({...e,st:status(e)})).filter(e=>curStat==="all"||e.st.k===curStat)
@@ -2023,7 +2093,7 @@ function lum(h){const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&2
 let siteId=null,lbI=0,siteSpy=null;
 const SITE_SECS=[["as-about","소개"],["as-works","작품"],["as-iv","인터뷰"],["as-books","도록"],["as-ex","전시"],["as-contact","문의"]];
 function workImg(a,i,w,h,label){
-  if(a.photos){const im=document.createElement("img");im.src=a.photos[i%a.photos.length];im.alt=label||"";im.loading="lazy";im.decoding="async";return im}
+  if(a.photos){const im=document.createElement("img");im.src=optImg(a.photos[i%a.photos.length],w>0&&w<=480);im.alt=label||"";im.loading="lazy";im.decoding="async";return im}
   return artCanvas(a,"w"+i,w,h,label)}
 function renderArtistSite(id){
   const a=byId[id],root=$("#artistSite");siteId=id;root.innerHTML="";root.style.setProperty("--site","#7C3AED");
@@ -2092,6 +2162,14 @@ function renderArtistSite(id){
   if(past.length){const h=document.createElement("h3");h.className="as-sub";h.textContent="지난 전시";es.append(h);const ol=document.createElement("ol");ol.className="as-tl";
     past.forEach(([y,t,vn,e])=>{const li=document.createElement("li");li.innerHTML=`<span class="y">${esc(y)}</span><div><b>${esc(t)}</b><span>${esc(vn)}</span></div>`;if(e){li.classList.add("link");li.tabIndex=0;li.onclick=()=>openExhibit(e);li.onkeydown=k=>{if(k.key==="Enter")openExhibit(e)}}ol.append(li)});es.append(ol)}
   if(!now.length&&!past.length)es.insertAdjacentHTML("beforeend",`<div class="none">등록된 전시가 아직 없어요.</div>`);
+  /* 관련 작가: 함께 전시한 작가 · 같은 장르 작가 (작가 공간끼리 서로 이어져요) */
+  const coIds=[...new Set(EXHIBITIONS.filter(e=>e.artists.includes(id)).flatMap(e=>e.artists))].filter(x=>x!==id&&byId[x]&&!byId[x].hidden);
+  const rel=[...coIds.map(x=>[byId[x],"함께 전시"]),...pub().filter(b=>b.id!==id&&!coIds.includes(b.id)&&genresOf(b).includes(a.genre)).map(b=>[b,`같은 장르 · ${a.genre}`])].slice(0,8);
+  if(rel.length){const rs=sec("as-rel","Related","관련 작가");const g=document.createElement("div");g.className="as-rel";
+    rel.forEach(([b,why])=>{const l=document.createElement("a");l.className="as-rel-c";l.href=artistPath(b.id);
+      const th=document.createElement("div");th.className="th";th.append(workImg(b,0,320,400,`${b.name}, ${b.works[0]?.[0]||"대표작"}`));l.append(th);
+      l.insertAdjacentHTML("beforeend",`<b>${esc(b.name)}</b><span>${esc(b.tier.replace("작가",""))} · ${esc(b.genre)}</span><em>${esc(why)}</em>`);g.append(l)});
+    rs.append(g)}
   /* 문의 */
   const cs=sec("as-contact","Contact",`${esc(a.name)} 작가에게 문의`);
   cs.insertAdjacentHTML("beforeend",`<form class="as-form" novalidate>
@@ -2112,13 +2190,18 @@ function renderArtistSite(id){
   if(siteSpy)siteSpy.disconnect();
   siteSpy=new IntersectionObserver(es2=>es2.forEach(x=>{if(x.isIntersecting)nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.t===x.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
   SITE_SECS.forEach(([sid])=>siteSpy.observe(document.getElementById(sid)));
-  document.title=`${a.name} · arttan`;
+  document.title=`${artistHeadline(a)} | arttan 작가 아카이브`;
 }
+/* 대화상자가 닫히면 실행 (open 속성 변화를 봐요: 백그라운드 탭에서도 확실히 동작) */
+function onDlgClose(d,fn){new MutationObserver(()=>{if(!d.open)fn()}).observe(d,{attributes:true,attributeFilter:["open"]})}
 function openLightbox(i){
   const a=byId[siteId];if(!a||!a.works.length)return;lbI=(i+a.works.length)%a.works.length;const w=a.works[lbI];
   const box=$("#lbImg");box.innerHTML="";box.append(a.photos?workImg(a,lbI,0,0,w[0]):artCanvas(a,"w"+lbI,1200,1500,w[0]));
   $("#lbCap").innerHTML=`<b>${esc(w[0])}${w[1]?`, ${esc(w[1])}`:""}</b><span>${[w[2],w[3]].filter(Boolean).map(esc).join(" · ")}</span>${w[4]?`<em>${esc(w[4])}</em>`:""}<small>${lbI+1} / ${a.works.length}</small>`;
+  /* 작품마다 주소가 있어요: /artist/<id>/work/<번호> */
+  if(location.pathname.startsWith(artistPath(siteId)))history.replaceState(null,"",workPath(siteId,lbI));
   const d=$("#lbDlg");if(!d.open)d.showModal()}
+onDlgClose($("#lbDlg"),()=>{if(siteId&&location.pathname.startsWith(artistPath(siteId)+"/work/"))history.replaceState(null,"",artistPath(siteId))});
 $("#lbPrev").onclick=()=>openLightbox(lbI-1);$("#lbNext").onclick=()=>openLightbox(lbI+1);
 $("#lbDlg").addEventListener("keydown",e=>{if(e.key==="ArrowLeft")openLightbox(lbI-1);if(e.key==="ArrowRight")openLightbox(lbI+1)});
 
@@ -2194,7 +2277,7 @@ function renderGallerySite(gid){
   if(siteSpy)siteSpy.disconnect();
   siteSpy=new IntersectionObserver(es2=>es2.forEach(x=>{if(x.isIntersecting)nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.t===x.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
   GSECS.forEach(([sid])=>siteSpy.observe(document.getElementById(sid)));
-  document.title=`${g.name} · arttan`;
+  document.title=`${g.name} (${g.area}) 전시 일정 | arttan`;
 }
 
 /* ---------- nav + dialogs ---------- */
@@ -2211,20 +2294,40 @@ $("#joinForm").onsubmit=async e=>{e.preventDefault();
 $("#adJoin").onclick=()=>$("#joinBtn").click();
 const links=[...document.querySelectorAll("nav.main a")];
 const VIEWS=["home","shows","artists","interviews","catalogue","galleries","exhibitions"];
+const HOME_TITLE="arttan 아트탄 | 원로·중견·청년 작가 아카이브";
+/* 주소 → 페이지: /artist/<id>, /artist/<id>/work/<n>, /gallery/<id>, /exhibition/<id> (검색에 노출되는 독립 주소) */
+function pathPage(){const p=location.pathname.replace(/\/+$/,"");let m;
+  if((m=/^\/artist\/([^/]+)\/work\/(\d+)$/.exec(p)))return{t:"work",id:decodeURIComponent(m[1]),n:+m[2]};
+  if((m=/^\/artist\/([^/]+)$/.exec(p)))return{t:"artist",id:decodeURIComponent(m[1])};
+  if((m=/^\/gallery\/([^/]+)$/.exec(p)))return{t:"gallery",id:decodeURIComponent(m[1])};
+  if((m=/^\/exhibition\/([^/]+)$/.exec(p)))return{t:"exhibition",id:decodeURIComponent(m[1])};
+  return null}
+function showSite(draw,navHref){
+  document.body.classList.add("is-site");
+  document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.id!=="artistSite");
+  document.querySelectorAll("dialog[open]").forEach(d=>d.close());
+  draw();links.forEach(l=>l.classList.toggle("on",l.getAttribute("href")===navHref));closeMega();window.scrollTo(0,0)}
 function route(){
-  let v=(location.hash||"#home").slice(1);
-  /* #a-작가아이디 → 작가 개인 홈페이지 */
-  if(v.startsWith("a-")&&byId[v.slice(2)]&&!byId[v.slice(2)].hidden){
-    document.body.classList.add("is-site");
-    document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.id!=="artistSite");
-    document.querySelectorAll("dialog[open]").forEach(d=>d.close());
-    renderArtistSite(v.slice(2));links.forEach(l=>l.classList.toggle("on",l.getAttribute("href")==="#artists"));closeMega();window.scrollTo(0,0);return}
-  if(v.startsWith("g-")&&galById[v.slice(2)]){
-    document.body.classList.add("is-site");
-    document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.id!=="artistSite");
-    document.querySelectorAll("dialog[open]").forEach(d=>d.close());
-    renderGallerySite(v.slice(2));links.forEach(l=>l.classList.toggle("on",l.getAttribute("href")==="#galleries"));closeMega();window.scrollTo(0,0);return}
-  document.body.classList.remove("is-site");document.title="arttan";
+  let v=(location.hash||"").slice(1);
+  /* 예전 주소(#a-아이디, #g-아이디)는 새 주소로 옮겨요 */
+  if(v.startsWith("a-")&&byId[v.slice(2)]){location.replace(artistPath(v.slice(2)));return}
+  if(v.startsWith("g-")&&galById[v.slice(2)]){location.replace(galPath(v.slice(2)));return}
+  const P=pathPage();
+  if(P){
+    /* 작가·갤러리·전시 페이지에서 상단 메뉴(#artists 등)를 누르면 홈의 그 메뉴로 가요 */
+    if(VIEWS.includes(v)){location.href="/#"+v;return}
+    const a=byId[P.id];
+    if((P.t==="artist"||P.t==="work")&&a&&!a.hidden){
+      showSite(()=>renderArtistSite(P.id),"#artists");
+      if(P.t==="work"&&a.works[P.n-1]){document.getElementById("as-works").scrollIntoView();openLightbox(P.n-1)}
+      return}
+    if(P.t==="gallery"&&galById[P.id]){showSite(()=>renderGallerySite(P.id),"#galleries");return}
+    const x=P.t==="exhibition"&&EXHIBITIONS.find(e=>e.id===P.id);
+    if(!x){location.replace("/");return}
+    v="shows";setTimeout(()=>openExhibit(x),0);
+  }
+  if(!v)v="home";
+  document.body.classList.remove("is-site");if(!P||P.t!=="exhibition")document.title=HOME_TITLE;
   if(!VIEWS.includes(v))v="home";
   const sec=v==="shows"?"exhibitions":v;
   document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.dataset.view!==sec);
@@ -2238,6 +2341,15 @@ addEventListener("hashchange",route);
 /* 관리자 탭에서 저장하면 사이트도 새로 그려요 */
 addEventListener("storage",e=>{if(e.key===AD_KEY)location.reload()});
 
+/* 사이트 아래 바로가기 (서버가 넣은 것과 같은 내용) */
+function renderFootDir(){const box=$("#footDir");if(!box)return;
+  const row=(lab,items)=>items.length?`<div><b>${lab}</b>${items.join("")}</div>`:"";
+  box.innerHTML=row("작가 아카이브",ARTISTS.filter(artistIndexable).map(a=>`<a href="${artistPath(a.id)}">${esc(a.name)} <small>${esc(a.genre)}</small></a>`))+
+    row("갤러리",GALLERIES.filter(galIndexable).map(g=>`<a href="${galPath(g.id)}">${esc(g.name)}</a>`))+
+    row("전시",EXHIBITIONS.filter(exIndexable).sort((x,y)=>y.start.localeCompare(x.start)).slice(0,12).map(x=>`<a href="${exPath(x)}">「${esc(x.title)}」 <small>${esc(x.venue)}</small></a>`))}
+/* 서버가 검색엔진용으로 미리 넣은 본문은, 화면을 그리면 걷어내요 */
+document.getElementById("ssr")?.remove();document.getElementById("ssrCss")?.remove();
+renderFootDir();
 renderPortfolio();renderInterview(curIv);renderBooks();renderGalleries();renderCalendar();renderStatFilter();renderSchedule();renderHome();buildMega();hxBuild();route();
 /* redraw covers once web fonts arrive so titles use Hahmlet */
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderBooks();renderGalleries();renderCalendar();renderHome();hxBuild()});
