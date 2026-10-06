@@ -73,19 +73,19 @@ const EXHIBITIONS = [
 function rng(seed){let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
 function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
 const IMG={};function photo(src){if(!IMG[src]){const im=new Image();im.src=src;IMG[src]=im}return IMG[src]}
-function paintPhoto(cv,artist,key,pics){
-  pics=pics||artist.photos;
+function paintPhoto(cv,artist,key,pics,focus){
+  pics=pics||artist.photos;const [fx,fy]=focus||[.5,.5];
   const ctx=cv.getContext("2d"),W=cv.width,H=cv.height,m=/^w(\d+)$/.exec(key),cm=/^c(\d+)$/.exec(key);
   const idx=m?+m[1]:cm?+cm[1]:hash(key)%pics.length, im=photo(optImg(pics[idx%pics.length]));
   const draw=()=>{ctx.fillStyle=artist.pal[0];ctx.fillRect(0,0,W,H);if(!im.naturalWidth)return;
     const contain=!!m, s=contain?Math.min(W/im.naturalWidth,H/im.naturalHeight)*.88:Math.max(W/im.naturalWidth,H/im.naturalHeight);
-    const w=im.naturalWidth*s,h=im.naturalHeight*s;ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h)};
+    const w=im.naturalWidth*s,h=im.naturalHeight*s;ctx.drawImage(im,contain?(W-w)/2:(W-w)*fx,contain?(H-h)/2:(H-h)*fy,w,h)};
   draw();if(!im.complete||!im.naturalWidth)im.addEventListener("load",draw,{once:true});
 }
 function paint(cv, artist, key){
   if(artist.photos)return paintPhoto(cv,artist,key);
   /* 작품 사진이 없는 실제 작가는 인물 사진으로 (예시 그림을 만들지 않아요) */
-  if(artist.portraits)return paintPhoto(cv,artist,key.replace(/^w/,"p"),artist.portraits);
+  if(artist.portraits)return paintPhoto(cv,artist,key.replace(/^w/,"p"),artist.portraits,artist.portraitFocus);
   const ctx=cv.getContext("2d"), W=cv.width, H=cv.height, r=rng(hash(artist.id+key)), P=artist.pal;
   const pick=()=>P[Math.floor(r()*P.length)];
   ctx.save();
@@ -155,7 +155,10 @@ function paint(cv, artist, key){
   }
   ctx.restore();
 }
-function artCanvas(artist,key,w,h,label){const c=document.createElement("canvas");c.width=w;c.height=h;c.setAttribute("role","img");c.setAttribute("aria-label",label||artist.name+" 작품");paint(c,artist,key);return c}
+function artCanvas(artist,key,w,h,label){const c=document.createElement("canvas");c.width=w;c.height=h;c.setAttribute("role","img");c.setAttribute("aria-label",label||artist.name+" 작품");paint(c,artist,key);
+  /* 인물 사진은 얼굴 위치(portraitFocus)를 기준으로 잘라요 — 넓은 배너에서도 얼굴이 잘리지 않게 */
+  if(!artist.photos&&artist.portraits){const [fx,fy]=artist.portraitFocus||[.5,.5];c.style.objectPosition=`${fx*100}% ${fy*100}%`}
+  return c}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);

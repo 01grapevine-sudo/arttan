@@ -46,7 +46,7 @@ async function loadFromSupabase() {
       born: r.born, from: r.birthplace || undefined, city: r.city || "", quote: r.quote || "", line: r.line || "", bio: r.bio || "",
       cv: r.cv || [], history: (r.history && r.history.length) ? r.history : undefined, collections: r.collections || undefined,
       pubs: (r.pubs && r.pubs.length) ? r.pubs : undefined, source: r.source || undefined,
-      sources: (r.sources && r.sources.length) ? r.sources : undefined, portraits: (r.portraits && r.portraits.length) ? r.portraits : undefined, worksTotal: r.works_total || undefined,
+      sources: (r.sources && r.sources.length) ? r.sources : undefined, portraits: (r.portraits && r.portraits.length) ? r.portraits : undefined, portraitFocus: (r.portrait_focus && r.portrait_focus.length === 2) ? r.portrait_focus : undefined, worksTotal: r.works_total || undefined,
       style: r.style || "lines", pal: (r.pal && r.pal.length >= 5) ? r.pal : FALLBACK_PAL, real: r.is_real, hidden: r.hidden,
       works: w.map(x => { const row = [x.title, x.year || "", x.material || "", x.size || ""]; if (x.description) row.push(x.description); return row; }),
       photos: (imgs.length && imgs.every(Boolean)) ? imgs : undefined,
