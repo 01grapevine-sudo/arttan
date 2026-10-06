@@ -156,14 +156,14 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=18"></script>
+<script src="core.js?v=19"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=18"></script>
-<script src="artists/lmg/artist.js?v=18"></script>
-<script src="artists/lhw/artist.js?v=18"></script>
+<script src="artists/jmh/artist.js?v=19"></script>
+<script src="artists/lmg/artist.js?v=19"></script>
+<script src="artists/lhw/artist.js?v=19"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=18"></script>
-<script src="data.js?v=18"></script>
+<script src="config.js?v=19"></script>
+<script src="data.js?v=19"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -425,12 +425,12 @@ function noticeSheet(i){
 /* 작가 문의 */
 function adInq(m){
   adHead(m,"작가 문의","작가 공간의 문의 양식으로 들어온 메시지");const c=card(m);
-  if(!SBM()){c.append(el(`<p class="t-info">Supabase를 연결하면 작가 공간의 문의(작품 구매, 전시 제안, 취재)가 여기에 쌓여요.</p>`));return}
+  if(!SBM()){c.append(el(`<p class="t-info">Supabase를 연결하면 작가 공간의 문의(작품 구매, 전시 제안, 취재)와 홈의 촬영·제작 서비스 문의가 여기에 쌓여요.</p>`));return}
   c.append(el(`<p class="t-empty">불러오는 중…</p>`));
   ARTTAN_DB.from("inquiries").select("*").order("created_at",{ascending:false}).limit(100).then(({data,error})=>{c.innerHTML="";
     if(error){c.append(el(`<p class="t-empty">문의를 불러오지 못했어요.</p>`));return}
     if(!data.length){c.append(el(`<p class="t-empty">아직 들어온 문의가 없어요.</p>`));return}
-    data.forEach(x=>{const a=byId[x.artist_id];c.append(row({thumb:a?thumbOf(a):null,title:`[${x.type||"문의"}] ${x.name} · ${x.email}`,sub:`${a?a.name+" 작가 · ":""}${(x.created_at||"").slice(0,10)} · ${x.message}`,
+    data.forEach(x=>{const a=byId[x.artist_id];c.append(row({thumb:a?thumbOf(a):null,title:`[${x.type||"문의"}] ${x.name} · ${x.email}`,sub:`${a?a.name+" 작가 · ":(x.type||"").startsWith("서비스")?"arttan 서비스 문의 · ":""}${(x.created_at||"").slice(0,10)} · ${x.message}`,
       onClick:()=>openSheet("작가 문의",el(`<div class="t-form"><p class="t-desc"><b>${esc(x.name)}</b> (${esc(x.email)})<br>${esc(a?a.name+" 작가":"")} · ${esc(x.type||"")}</p><p class="t-desc" style="white-space:pre-wrap">${esc(x.message)}</p></div>`),[tBtn("닫기","ghost",closeSheet)])}))})})}
 
 /* 인터뷰 · 도록 · 갤러리 */
