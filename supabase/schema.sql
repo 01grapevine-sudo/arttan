@@ -244,3 +244,4 @@ alter table public.books add column if not exists work_refs int[] not null defau
 alter table public.books add column if not exists exhibition_id text;
 alter table public.books add column if not exists toc jsonb not null default '[]';
 alter table public.books add column if not exists links jsonb not null default '[]';
+alter table public.exhibitions add column if not exists poster_path text;   -- 전시 포스터 이미지 (작가·갤러리 제공)

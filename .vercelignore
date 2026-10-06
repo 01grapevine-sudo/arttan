@@ -6,3 +6,4 @@ scripts/make-seed.mjs
 *.md
 초기자료 /
 artists/*/works/_원본파일.txt
+scripts/make-sample-eloi.mjs

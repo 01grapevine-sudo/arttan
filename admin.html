@@ -135,6 +135,9 @@ dialog.t-sheet::backdrop{background:rgba(0,0,0,.45)}
 :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:light;--t-bg:#F5F4F8;--t-card:#FFFFFF;--t-text:#16131F;--t-sub:#4B4758;--t-muted:#8A8697;--t-line:#ECEAF1;--t-hover:#FAF9FC;--t-blue:#7C3AED;--t-blue-press:#6D28D9;--t-blue-soft:#F1EAFE;--t-gray-btn:#F2F0F6;--t-knob:#FFFFFF}
 html,body{background:var(--t-bg)}
 .ad-logo span{color:var(--t-blue)}
+.t-pi{position:relative;display:inline-block}
+.t-pi button{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:14px;line-height:22px;cursor:pointer;padding:0}
+.t-check{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--t-sub);cursor:pointer}
 </style>
 
 <div id="admin">
@@ -156,14 +159,15 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=22"></script>
+<script src="core.js?v=25"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=22"></script>
-<script src="artists/lmg/artist.js?v=22"></script>
-<script src="artists/lhw/artist.js?v=22"></script>
+<script src="artists/jmh/artist.js?v=25"></script>
+<script src="artists/lmg/artist.js?v=25"></script>
+<script src="artists/lhw/artist.js?v=25"></script>
+<script src="artists/eloi/artist.js?v=25"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=22"></script>
-<script src="data.js?v=22"></script>
+<script src="config.js?v=25"></script>
+<script src="data.js?v=25"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -216,7 +220,7 @@ $("#sheet").addEventListener("click",e=>{if(e.target===$("#sheet"))closeSheet()}
 function confirmSheet(title,desc,ok,fn){openSheet(title,el(`<p class="t-desc">${esc(desc)}</p>`),[tBtn("취소","ghost",closeSheet),tBtn(ok,"danger",()=>{closeSheet();fn()})])}
 function thumbOf(a){const c=artCanvas(a,"w0",96,96,"");c.className="t-thumb";return c}
 function dateBox(d){return el(`<div class="t-date"><small>${d.getMonth()+1}월</small><b>${d.getDate()}</b></div>`)}
-function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1200/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.8))};im.onerror=()=>res(null);im.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(file)})}
+function shrink(file,max=1200){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.8))};im.onerror=()=>res(null);im.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(file)})}
 const soon=()=>toast("초안에서는 목록만 볼 수 있어요");
 
 /* ---------- Supabase 저장 · 로그인 ---------- */
@@ -436,10 +440,85 @@ function adInq(m){
 /* 인터뷰 · 도록 · 갤러리 */
 function adIv(m){adHead(m,"인터뷰",`${INTERVIEWS.length}편`,["인터뷰 추가",soon]);const c=card(m);
   INTERVIEWS.forEach(v=>{const a=byId[v.artist];c.append(row({thumb:thumbOf(a),title:v.title,sub:`${a.name} · ${v.date} · 영상 ${VIDEOS[a.id]?.len||"없음"}`}))})}
-function adBooks(m){adHead(m,"도록",`${BOOKS.length}권`,["도록 추가",soon]);const c=card(m);
-  if(!BOOKS.length)c.append(el(`<p class="t-empty">등록된 책이 없어요.</p>`));
-  BOOKS.forEach(bk=>{const a=byId[bk.artist];const cv=bookCover(bk,true);cv.classList.add("t-cover");cv.style.width="42px";cv.style.height="56px";cv.style.fontSize="6px";cv.style.overflow="hidden";
-    c.append(row({thumb:cv,title:`『${bk.title}』`,sub:[a?.name,bk.kind,bk.year,bookAccess(bk)].filter(Boolean).join(" · "),onClick:()=>window.open(bookPath(bk),"_blank")}))})}
+function adBooks(m){adHead(m,"도록",`${BOOKS.length}권`,["도록 추가",()=>bookSheet()]);const c=card(m);
+  if(!BOOKS.length)c.append(el(`<p class="t-empty">등록된 책이 없어요. 오른쪽 위 '도록 추가'로 넣어 주세요.</p>`));
+  const L=BOOKS.slice().sort((x,y)=>(byId[x.artist]?.name||"").localeCompare(byId[y.artist]?.name||"","ko")||(y.year||0)-(x.year||0));
+  L.forEach(bk=>{const a=byId[bk.artist];const cv=bookCover(bk,true);cv.classList.add("t-cover");cv.style.cssText+=";width:42px;height:56px;font-size:6px;overflow:hidden;flex-shrink:0;border-radius:3px";
+    c.append(row({thumb:cv,title:`『${bk.title}』`,sub:[a?.name,bk.kind,bk.year,bookAccess(bk),bk.works?.length?`작품 ${bk.works.length}점`:""].filter(Boolean).join(" · "),onClick:()=>bookSheet(bk)}))})}
+
+/* 도록 추가·수정 — 표지·펼침면은 작가·출판사가 허락한 사진만 올려요 */
+function bookSheet(bk){
+  const isNew=!bk,f=el(`<div class="t-form"></div>`);
+  const A=pub();if(!A.length){toast("작가를 먼저 등록해 주세요");return}
+  const who=document.createElement("select");who.id="bArtist";who.innerHTML=A.map(a=>`<option value="${a.id}">${esc(a.name)} · ${esc(a.genre)}</option>`).join("");who.value=bk?.artist||A[0].id;
+  const kind=segField(BOOK_KINDS,bk?.kind||"전시 도록");
+  const title=inp("bTitle","text",bk?.title||"","예: 마동 30년");
+  const year=inp("bYear","number",bk?.year||"","예: 2025"),pages=inp("bPages","number",bk?.pages||"","예: 96");
+  const size=inp("bSize","text",bk?.size||"","예: 230×300mm"),pubr=inp("bPub","text",bk?.publisher||"","예: 출판사 이름");
+  const isbn=inp("bIsbn","text",bk?.isbn||"","예: 979-11-…"),writer=inp("bWriter","text",bk?.writer||"","예: 평론가 이름");
+  const two=(x,y)=>{const t=el(`<div class="t-two"></div>`);t.append(x,y);return t};
+  const desc=inp("bDesc","textarea",bk?.desc||"","책을 두세 문장으로 소개해 주세요. 40자 이상이면 검색에 노출돼요.");
+  /* 사진: {show:보여줄 주소, path:DB 저장 경로, data:새로 고른 사진} */
+  let cover=bk?.cover?{show:bk.cover,path:bk.coverPath??bk.cover}:null;
+  let spreads=(bk?.spreads||[]).map((src,i)=>({show:src,path:bk.spreadPaths?.[i]??src}));
+  const cvBox=el(`<div class="t-prev"></div>`),spBox=el(`<div class="t-prev"></div>`);
+  const drawImgs=()=>{
+    cvBox.innerHTML="";if(cover){const w=el(`<span class="t-pi"><img src="${cover.data||cover.show}" alt="표지"><button type="button" aria-label="표지 지우기">×</button></span>`);w.querySelector("button").onclick=()=>{cover=null;drawImgs()};cvBox.append(w)}
+    spBox.innerHTML="";spreads.forEach((x,i)=>{const w=el(`<span class="t-pi"><img src="${x.data||x.show}" alt="펼침면 ${i+1}"><button type="button" aria-label="펼침면 ${i+1} 지우기">×</button></span>`);w.querySelector("button").onclick=()=>{spreads.splice(i,1);drawImgs()};spBox.append(w)})};
+  const cvFile=inp("bCover","file");cvFile.accept="image/*";
+  cvFile.onchange=async()=>{const u=cvFile.files[0]&&await shrink(cvFile.files[0],1200);if(u){cover={data:u};drawImgs()}};
+  const spFile=inp("bSpreads","file");spFile.accept="image/*";spFile.multiple=true;
+  spFile.onchange=async()=>{for(const fl of [...spFile.files]){if(spreads.length>=30){toast("펼침면은 30장까지 올릴 수 있어요");break}const u=await shrink(fl,1800);if(u)spreads.push({data:u})}spFile.value="";drawImgs()};
+  const access=segField(["미리보기","전체 공개(e북)"],bk?.full?"전체 공개(e북)":"미리보기");
+  const ok=el(`<label class="t-check"><input type="checkbox" id="bOk"> 표지·펼침면 사진은 작가·출판사의 사용 허락을 받았어요</label>`);
+  /* 실린 작품 · 연결 전시 (작가를 바꾸면 다시 그려요) */
+  const wkWrap=el(`<div></div>`),exSel=document.createElement("select");exSel.id="bEx";let wk=null;
+  const drawArtist=keep=>{const a=byId[who.value];
+    wkWrap.innerHTML="";const idx=a.works.map((_,i)=>i);
+    wk=chipsField(idx,keep?(bk?.works||[]).filter(i=>a.works[i]):[],idx.length||1,i=>`${String(i+1).padStart(2,"0")} ${a.works[i][0]}`);wkWrap.append(a.works.length?wk:el(`<p class="t-desc">이 작가는 등록된 작품이 없어요.</p>`));
+    const xs=EXHIBITIONS.filter(e=>e.artists.includes(a.id));
+    exSel.innerHTML=`<option value="">연결하지 않음</option>`+xs.map(e=>`<option value="${e.id}">「${esc(e.title)}」 ${e.start.slice(0,4)} · ${esc(e.venue)}</option>`).join("");exSel.value=keep&&bk?.exhibition&&xs.some(e=>e.id===bk.exhibition)?bk.exhibition:""};
+  who.onchange=()=>drawArtist(false);drawArtist(true);drawImgs();
+  const toc=inp("bToc","textarea",(bk?.toc||[]).join("\n"),"한 줄에 하나씩: 인사말 / 평문 · 평론가 / 작품 / 약력");
+  const links=inp("bLinks","textarea",(bk?.links||[]).map(x=>`${x.name} | ${x.url}`).join("\n"),"한 줄에 하나씩: 이름 | 주소  (예: 구매하기 | https://…)");
+  f.append(fieldL("작가",who),fieldD("종류",kind),fieldL("제목",title),two(fieldL("발행연도",year),fieldL("쪽수",pages)),two(fieldL("판형",size),fieldL("발행처",pubr)),two(fieldL("ISBN",isbn),fieldL("글쓴이",writer)),
+    fieldL("소개",desc),fieldL("표지 사진",cvFile,"없으면 작가 색으로 만든 글자 표지가 나와요."),cvBox,
+    fieldL("펼침면 사진",spFile,"펼친 두 쪽을 한 장으로 찍은 사진이 좋아요. 긴 변 1800px로 줄여서 저장해요."),spBox,fieldD("공개 범위",access,"미리보기: 몇 장만 공개 · 전체 공개: 책 전체를 e북으로"),ok,
+    fieldD("이 책에 실린 작품",wkWrap,"고른 작품이 책 페이지에 나오고 작품 페이지로 이어져요."),fieldL("연결된 전시",exSel),fieldL("목차",toc),fieldL("구매·열람처",links,"국립중앙도서관 찾기 링크는 자동으로 붙어요."));
+  const save=tBtn(isNew?"추가하기":"저장하기","primary",async()=>{
+    const v={artist:who.value,kind:kind.dataset.value,title:title.value.trim(),year:year.value?+year.value:null,pages:pages.value?+pages.value:null,size:size.value.trim(),publisher:pubr.value.trim(),
+      isbn:isbn.value.trim(),writer:writer.value.trim(),desc:desc.value.trim(),full:access.dataset.value!=="미리보기",works:wk?wk.value().slice().sort((a,b)=>a-b):[],exhibition:exSel.value||undefined,
+      toc:toc.value.split("\n").map(x=>x.trim()).filter(Boolean),
+      links:links.value.split("\n").map(x=>x.split("|").map(y=>y.trim())).filter(([n,u])=>n&&/^https?:\/\//.test(u||"")).map(([name,url])=>({name,url}))};
+    if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
+    if(v.year&&!(v.year>1900&&v.year<=today.getFullYear()+1)){toast("발행연도를 네 자리로 입력해 주세요");year.focus();return}
+    const newImg=(cover&&cover.data)||spreads.some(x=>x.data);
+    if(newImg&&!$("#bOk").checked){toast("사진 사용 허락을 받았는지 확인해 주세요");return}
+    if(SBM()){
+      const slug=isNew?newId("b"):bk.id;
+      dbDo(async()=>{
+        const up=async(data,name)=>{const blob=await (await fetch(data)).blob();const path=`books/${slug}/${Date.now()}-${name}.jpg`;
+          const r=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(r.error)throw r.error;return path};
+        const cp=cover?(cover.data?await up(cover.data,"cover"):cover.path):null;
+        const sp=[];for(let i=0;i<spreads.length;i++)sp.push(spreads[i].data?await up(spreads[i].data,"p"+(i+1)):spreads[i].path);
+        const row={artist_id:v.artist,slug,kind:v.kind,title:v.title,year:v.year,pages:v.pages,size:v.size||null,publisher:v.publisher||null,isbn:v.isbn||null,writer:v.writer||null,
+          description:v.desc||null,cover_path:cp,spreads:sp,full_view:v.full,work_refs:v.works,exhibition_id:v.exhibition||null,toc:v.toc,links:v.links};
+        return isNew?ARTTAN_DB.from("books").insert(row):ARTTAN_DB.from("books").update(row).eq("id",bk.dbId)},isNew?"책을 추가했어요":"저장했어요",true);return}
+    /* Supabase 없이: 이 브라우저에만 저장 */
+    const imgs={cover:cover?(cover.data||cover.show):undefined,spreads:spreads.map(x=>x.data||x.show)};
+    if(isNew){const o={...v,...imgs,id:"b"+Date.now().toString(36)};AD.books=AD.books||[];AD.books.push(o);if(!adSave()){AD.books.pop();return}BOOKS.push({...o,added:true});toast("책을 추가했어요")}
+    else{const patch={...v,...imgs};if(bk.added)Object.assign(AD.books.find(x=>x.id===bk.id),patch);else{AD.bookEdits=AD.bookEdits||{};AD.bookEdits[bk.id]=patch}
+      if(!adSave())return;Object.assign(bk,patch);toast("저장했어요")}
+    closeSheet();refreshPublic();renderAdmin()});
+  const foot=[];
+  if(!isNew){foot.push(tBtn("사이트에서 보기","ghost",()=>window.open(bookPath(bk),"_blank")));
+    foot.push(tBtn("삭제","ghost",()=>confirmSheet(`『${bk.title}』을 삭제할까요?`,"책 정보와 연결이 사라지고 되돌릴 수 없어요.","삭제하기",()=>{
+      if(SBM()){dbDo(()=>ARTTAN_DB.from("books").delete().eq("id",bk.dbId),"삭제했어요");return}
+      if(bk.added)AD.books=AD.books.filter(x=>x.id!==bk.id);else{AD.bookDel=AD.bookDel||{};AD.bookDel[bk.id]=true}
+      adSave();BOOKS.splice(BOOKS.indexOf(bk),1);refreshPublic();renderAdmin();toast("삭제했어요")})))}
+  foot.push(save);openSheet(isNew?"도록 추가":"도록 수정",f,foot);
+}
+
 function adGal(m){adHead(m,"갤러리",`${GALLERIES.length}곳`,["갤러리 추가",soon]);const c=card(m);
   GALLERIES.forEach(g=>{const ex=exOfGal(g.id),l=ex.filter(e=>e.st.k==="live").length,s2=ex.filter(e=>e.st.k==="soon").length;
     c.append(row({title:g.name,sub:`${g.area} · 전시 ${ex.length}건`,right:[l?el(`<span class="t-pill green">진행중 ${l}</span>`):"",s2?el(`<span class="t-pill blue">예정 ${s2}</span>`):""].filter(Boolean),onClick:()=>{location.href="index.html#galleries"}}))});

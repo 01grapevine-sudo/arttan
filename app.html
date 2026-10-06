@@ -1608,14 +1608,15 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=22"></script>
+<script src="core.js?v=25"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=22"></script>
-<script src="artists/lmg/artist.js?v=22"></script>
-<script src="artists/lhw/artist.js?v=22"></script>
+<script src="artists/jmh/artist.js?v=25"></script>
+<script src="artists/lmg/artist.js?v=25"></script>
+<script src="artists/lhw/artist.js?v=25"></script>
+<script src="artists/eloi/artist.js?v=25"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=22"></script>
-<script src="data.js?v=22"></script>
+<script src="config.js?v=25"></script>
+<script src="data.js?v=25"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1800,7 +1801,7 @@ function renderBookPage(id){
   const acts=sp.querySelector(".bkp-acts");
   if(bk.spreads&&bk.spreads.length){const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=bk.full?"e북으로 읽기":"미리보기 펼치기";b.onclick=()=>openSpreads(bk);acts.append(b)}
   (bk.links||[]).forEach(x=>acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`));
-  acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${libSearch(bk)}" target="_blank" rel="noopener">도서관에서 찾기 ↗</a>`);
+  if(a.real)acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${libSearch(bk)}" target="_blank" rel="noopener">도서관에서 찾기 ↗</a>`);
   const sec=(t,html)=>{const s=document.createElement("div");s.className="bkp-sec";s.innerHTML=`<h2>${t}</h2>`;if(html)s.insertAdjacentHTML("beforeend",html);sp.append(s);return s};
   if(bk.desc)sec("소개",`<p class="bkp-desc">${esc(bk.desc)}</p>`);
   if(bk.spreads&&bk.spreads.length){const s=sec(bk.full?"펼쳐 보기":"미리보기");const g=document.createElement("div");g.className="bkp-spreads";

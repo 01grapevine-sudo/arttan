@@ -53,7 +53,7 @@ async function loadFromSupabase() {
       interviews: iv.filter(x => x.artist_id === r.id).map(x => ({ id: x.id, title: x.title, date: x.date || "", lead: x.lead || "", qa: x.qa || [] })),
       video: v ? { title: v.title, len: v.len, date: v.date, place: v.place, url: v.url } : null,
       books: bk.filter(x => x.artist_id === r.id).map(x => ({ id: x.slug || String(x.id), kind: x.kind || "도록", title: x.title, year: x.year, pages: x.pages, size: x.size || "",
-        writer: x.writer || "", publisher: x.publisher || "", isbn: x.isbn || "", desc: x.description || "", cover: x.cover_path ? workImageUrl(x.cover_path) : undefined,
+        writer: x.writer || "", publisher: x.publisher || "", isbn: x.isbn || "", desc: x.description || "", cover: x.cover_path ? workImageUrl(x.cover_path) : undefined, coverPath: x.cover_path || null, spreadPaths: x.spreads || [], dbId: x.id,
         spreads: (x.spreads || []).map(workImageUrl), full: !!x.full_view, works: x.work_refs || [], exhibition: x.exhibition_id || undefined, toc: x.toc || [], links: x.links || [] }))
     });
   });
@@ -61,7 +61,7 @@ async function loadFromSupabase() {
   gl.forEach(g => { const o = { id: g.id, name: g.name, area: g.area || "", addr: g.addr, hours: g.hours, tel: g.tel, site: g.site, intro: g.intro }; GALLERIES.push(o); galById[o.id] = o; });
   EXHIBITIONS.length = 0;
   ex.forEach(e => EXHIBITIONS.push({ id: e.id, g: e.gallery_id, title: e.title, kind: e.kind || "", start: e.start_date, end: e.end_date,
-    artists: (e.artists || []).filter(id => byId[id]), desc: e.description || "", venue: galById[e.gallery_id]?.name || "", region: galById[e.gallery_id]?.area || "" }));
+    artists: (e.artists || []).filter(id => byId[id]), desc: e.description || "", poster: e.poster_path ? workImageUrl(e.poster_path) : undefined, venue: galById[e.gallery_id]?.name || "", region: galById[e.gallery_id]?.area || "" }));
   NOTICES.length = 0;
   nt.forEach(x => NOTICES.push({ id: x.id, tag: x.tag, title: x.title, body: x.body || "", date: x.date || (x.created_at || "").slice(0, 10).replaceAll("-", ".") }));
   return true;

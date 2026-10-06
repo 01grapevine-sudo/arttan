@@ -21,10 +21,10 @@ function registerArtist(a){
 }
 /* 모든 작가 파일을 읽은 뒤 한 번 호출: 정렬 + 관리자 변경 반영 */
 function finishArtists(){
+  adApply();
   const d=s=>s.replaceAll(".","");
   INTERVIEWS.sort((x,y)=>d(y.date).localeCompare(d(x.date)));
   BOOKS.sort((x,y)=>(y.year||0)-(x.year||0));
-  adApply();
 }
 
 const genresOf = a=>[a.genre,...(a.more||[])];
@@ -57,11 +57,15 @@ const GALLERIES = [
   {id:"dmma", name:"대전시립미술관", area:"대전"},
   {id:"jmhm", name:"정명희미술관", area:"대전", addr:"대전평생학습관 302호"},
   {id:"cbcc", name:"충북문화관 숲속갤러리", area:"청주"},
+  /* 테스트용 가상 갤러리 (엘로이 샘플 전시용) */
+  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요."},
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
-/* 전시 (출처로 확인한 실제 전시만 넣어요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
+/* 전시 (출처로 확인한 실제 전시만 넣어요. 단, id가 eloi- 로 시작하는 것은 테스트용 가상 전시예요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
 const EXHIBITIONS = [
+  {id:"eloi-2026", g:"testgal", title:"빛이 머무는 자리", artists:["eloi"], kind:"개인전", start:"2026-11-01", end:"2026-11-07", poster:"artists/eloi/posters/2026-light.jpg", desc:"[테스트용 가상 전시] 빛과 색이 겹쳐 머무는 순간을 그린 신작 8점. 전시·포스터·도록 기능을 시험하려고 만든 샘플이에요."},
+  {id:"eloi-2025", g:"testgal", title:"정원의 오후", artists:["eloi"], kind:"개인전", start:"2025-05-03", end:"2025-05-25", poster:"artists/eloi/posters/2025-garden.jpg", desc:"[테스트용 가상 전시] 오후의 정원을 색면과 곡선으로 옮긴 첫 개인전 (샘플)."},
   {g:"cbcc", title:"이홍원 작은 그림전 – 마동 30년 기념특별전", artists:["lhw"], kind:"특별전", start:"2025-03-11", end:"2025-03-16", desc:"청주 마동창작마을에서 작업한 30년을 기념해 충북문화관 숲속갤러리 전관에서 연 작은 그림전. 꽃 호랑이, 소나무, 싸움소, 질주, 연리지, 울림 등을 선보였다."},
   {g:"insaplaza", title:"이홍원 전 – 달항아리 노래", artists:["lhw"], kind:"기획 초대전", start:"2023-03-22", end:"2023-03-27", desc:"서울 인사아트프라자갤러리 기획 초대전."},
   {g:"jmhm", title:"물, 예술을 넘어", artists:["jmh"], kind:"소장전", start:"2023-02-06", end:"2023-06-30", desc:"대청댐 건설로 고향을 잃은 수몰민의 애환을 담은 작품들. 제4회 겸재미술상 수상기념전에 걸렸던 작품을 다시 소개했다."},
@@ -173,7 +177,10 @@ function chip(label,n,on,onClick){const b=document.createElement("button");b.typ
 
 
 /* ---------- 공통: 포스터 · 표지 · 전시 ---------- */
+/* 전시 포스터: 작가·갤러리가 준 포스터 이미지(ex.poster)가 있으면 그걸, 없으면 작품으로 만든 포스터 */
 function posterCanvas(ex,w,h){
+  if(ex.poster){const im=document.createElement("img");im.src=optImg(ex.poster,w<=480);im.alt=`「${ex.title}」 전시 포스터`;im.loading="lazy";im.decoding="async";
+    im.width=w;im.height=h;im.style.cssText="width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;display:block";return im}
   const a=byId[ex.artists[0]],c=document.createElement("canvas");c.width=w;c.height=h;c.setAttribute("role","img");c.setAttribute("aria-label",`「${ex.title}」 전시 포스터`);
   const ctx=c.getContext("2d");ctx.fillStyle=a.pal[0];ctx.fillRect(0,0,w,h);
   const art=document.createElement("canvas");art.width=w;art.height=h*.62;paint(art,a,"poster"+ex.title);ctx.drawImage(art,0,0);
@@ -203,7 +210,7 @@ const exPath=e=>`/exhibition/${encodeURIComponent(e.id)}`;
 /* 실제 작가와 그 작가의 전시만 검색에 노출해요. 예시 작가·예시 전시는 노출하지 않아요. */
 const artistIndexable=a=>!!(a&&a.real&&!a.hidden);
 const exIndexable=e=>!!(e&&e.id&&e.artists.some(id=>artistIndexable(byId[id])));
-const galIndexable=g=>!!g&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&&exIndexable(e)));
+const galIndexable=g=>!!g&&!g.test&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&&exIndexable(e)));
 function exNames(e){const n=e.artists.map(id=>byId[id]?.name).filter(Boolean);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
 /* 전시 제목은 사람들이 검색하는 순서로: 작가 개인전 : 「전시명」 - 장소 */
 const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.venue}`;
@@ -253,7 +260,7 @@ const NOTICES=[
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */
 const AD_KEY="arttan.admin.v1";
-const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[]});
+const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{}});
 let AD=AD_DEF();
 try{const j=JSON.parse(localStorage.getItem(AD_KEY)||"null");if(j)AD=Object.assign(AD_DEF(),j)}catch(e){}
 function adSave(){try{localStorage.setItem(AD_KEY,JSON.stringify(AD));return true}catch(e){toast("브라우저 저장 공간이 부족해서 저장하지 못했어요");return false}}
@@ -267,6 +274,10 @@ function adApply(){
   AD.artists.forEach(o=>{if(!byId[o.id]){const a=makeArtist(o);ARTISTS.push(a);byId[a.id]=a}});
   Object.entries(AD.edits).forEach(([id,e])=>{if(byId[id])Object.assign(byId[id],e)});
   ARTISTS.forEach(a=>a.hidden=!!AD.hidden[a.id]);
+  /* 관리자에서 추가·수정·삭제한 책 (Supabase 없이 이 브라우저에만 저장할 때) */
+  (AD.books||[]).forEach(b=>{if(!BOOKS.some(x=>x.id===b.id)&&byId[b.artist])BOOKS.push({...b,added:true})});
+  Object.entries(AD.bookEdits||{}).forEach(([id,e])=>{const b=BOOKS.find(x=>x.id===id);if(b)Object.assign(b,e)});
+  for(let i=BOOKS.length-1;i>=0;i--)if((AD.bookDel||{})[BOOKS[i].id])BOOKS.splice(i,1);
   AD.exhibitions.forEach(e=>{if(!EXHIBITIONS.some(x=>x.id===e.id)&&galById[e.g]&&e.artists.every(id=>byId[id]))EXHIBITIONS.push({...e,venue:galById[e.g].name,region:galById[e.g].area,added:true})});
 }
 const noticeList=()=>AD.notices||NOTICES;
