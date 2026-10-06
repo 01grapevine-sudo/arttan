@@ -181,11 +181,12 @@ function chip(label,n,on,onClick){const b=document.createElement("button");b.typ
 function posterCanvas(ex,w,h){
   if(ex.poster){const im=document.createElement("img");im.src=optImg(ex.poster,w<=480);im.alt=`「${ex.title}」 전시 포스터`;im.loading="lazy";im.decoding="async";
     im.width=w;im.height=h;im.style.cssText="width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;display:block";return im}
-  const a=byId[ex.artists[0]],c=document.createElement("canvas");c.width=w;c.height=h;c.setAttribute("role","img");c.setAttribute("aria-label",`「${ex.title}」 전시 포스터`);
+  /* 등록된 작가가 없는 전시(수집한 전시 등)는 차분한 기본 색으로 그려요 */
+  const a=byId[ex.artists[0]]||{id:"ex-"+(ex.id||ex.title),pal:["#EEEAF6","#3B2A6B","#8B7BB8","#D9CFEF","#1E1636"],style:"lines"},c=document.createElement("canvas");c.width=w;c.height=h;c.setAttribute("role","img");c.setAttribute("aria-label",`「${ex.title}」 전시 포스터`);
   const ctx=c.getContext("2d");ctx.fillStyle=a.pal[0];ctx.fillRect(0,0,w,h);
   const art=document.createElement("canvas");art.width=w;art.height=h*.62;paint(art,a,"poster"+ex.title);ctx.drawImage(art,0,0);
   const dark=["neon","grain"].includes(a.style);ctx.fillStyle=dark?"#F2F2F2":"#161616";
-  const names=ex.artists.length>2?`${byId[ex.artists[0]].name} 외 ${ex.artists.length-1}인`:ex.artists.map(id=>byId[id].name).join(" · ");
+  const names=exNames(ex)||ex.venue;
   ctx.font=`700 ${w*.1}px Hahmlet, serif`;ctx.fillText(ex.title,w*.07,h*.74,w*.86);
   ctx.font=`500 ${w*.05}px "IBM Plex Sans KR", sans-serif`;ctx.fillText(names,w*.07,h*.81,w*.86);
   ctx.font=`400 ${w*.042}px "IBM Plex Mono", monospace`;ctx.fillText(`${ex.start.replaceAll("-",".")} – ${ex.end.slice(5).replace("-",".")}`,w*.07,h*.88,w*.86);
@@ -211,7 +212,9 @@ const exPath=e=>`/exhibition/${encodeURIComponent(e.id)}`;
 const artistIndexable=a=>!!(a&&a.real&&!a.hidden);
 const exIndexable=e=>!!(e&&e.id&&e.artists.some(id=>artistIndexable(byId[id])));
 const galIndexable=g=>!!g&&!g.test&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&&exIndexable(e)));
-function exNames(e){const n=e.artists.map(id=>byId[id]?.name).filter(Boolean);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
+/* 참여 작가 이름: arttan 에 등록된 작가 + 등록되지 않은 작가(artists_text, 쉼표로 구분) */
+const exPeople=e=>[...e.artists.map(id=>byId[id]?.name).filter(Boolean),...String(e.artistsText||"").split(/[,·]/).map(s=>s.trim()).filter(Boolean)];
+function exNames(e){const n=exPeople(e);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
 /* 전시 제목은 사람들이 검색하는 순서로: 작가 개인전 : 「전시명」 - 장소 */
 const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.venue}`;
 /* 검색 제목: 사람들이 찾는 "이름 + 작가"를 맨 앞에 → "엘로이 작가 (1992~) · 서양화 청년작가" */
@@ -260,7 +263,7 @@ const NOTICES=[
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */
 const AD_KEY="arttan.admin.v1";
-const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{}});
+const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[]});
 let AD=AD_DEF();
 try{const j=JSON.parse(localStorage.getItem(AD_KEY)||"null");if(j)AD=Object.assign(AD_DEF(),j)}catch(e){}
 function adSave(){try{localStorage.setItem(AD_KEY,JSON.stringify(AD));return true}catch(e){toast("브라우저 저장 공간이 부족해서 저장하지 못했어요");return false}}
@@ -274,6 +277,10 @@ function adApply(){
   AD.artists.forEach(o=>{if(!byId[o.id]){const a=makeArtist(o);ARTISTS.push(a);byId[a.id]=a}});
   Object.entries(AD.edits).forEach(([id,e])=>{if(byId[id])Object.assign(byId[id],e)});
   ARTISTS.forEach(a=>a.hidden=!!AD.hidden[a.id]);
+  /* 관리자에서 추가·수정·삭제한 전시장 (Supabase 없이 이 브라우저에만 저장할 때) */
+  (AD.galleries||[]).forEach(g=>{if(!galById[g.id]){const o={...g,added:true};GALLERIES.push(o);galById[o.id]=o}});
+  Object.entries(AD.galEdits||{}).forEach(([id,e])=>{if(galById[id])Object.assign(galById[id],e)});
+  Object.keys(AD.galDel||{}).forEach(id=>{const i=GALLERIES.findIndex(g=>g.id===id);if(i>=0){GALLERIES.splice(i,1);delete galById[id]}});
   /* 관리자에서 추가·수정·삭제한 책 (Supabase 없이 이 브라우저에만 저장할 때) */
   (AD.books||[]).forEach(b=>{if(!BOOKS.some(x=>x.id===b.id)&&byId[b.artist])BOOKS.push({...b,added:true})});
   Object.entries(AD.bookEdits||{}).forEach(([id,e])=>{const b=BOOKS.find(x=>x.id===id);if(b)Object.assign(b,e)});

@@ -245,3 +245,34 @@ alter table public.books add column if not exists exhibition_id text;
 alter table public.books add column if not exists toc jsonb not null default '[]';
 alter table public.books add column if not exists links jsonb not null default '[]';
 alter table public.exhibitions add column if not exists poster_path text;   -- 전시 포스터 이미지 (작가·갤러리 제공)
+
+-- ─────────────────────────────────────────────
+-- 전시장 자동 수집
+--  · galleries.crawl_url: 전시 목록이 있는 주소 / crawl_on: 매일 자동 수집 여부
+--  · crawled_exhibitions: 모은 전시 (관리자가 '게시'하면 exhibitions 로 옮겨요)
+--    전시명·기간·원문 주소만 모아요. 소개 글·포스터는 가져오지 않아요.
+alter table public.galleries add column if not exists crawl_url text;
+alter table public.galleries add column if not exists crawl_on boolean not null default true;
+alter table public.galleries add column if not exists last_crawled_at timestamptz;
+alter table public.galleries add column if not exists last_crawl_note text;
+alter table public.exhibitions add column if not exists artists_text text;   -- arttan 에 등록되지 않은 참여 작가 이름
+alter table public.exhibitions add column if not exists source_url text;     -- 수집한 전시의 원문 주소 (출처 표시)
+create table if not exists public.crawled_exhibitions (
+  id           bigint generated always as identity primary key,
+  gallery_id   text not null references public.galleries(id) on delete cascade,
+  hash         text not null unique,
+  title        text not null,
+  context      text,
+  start_date   date,
+  end_date     date,
+  source_url   text,
+  image_url    text,                              -- 참고용 (사이트에 게시하지 않아요)
+  status       text not null default 'pending' check (status in ('pending','approved','rejected')),
+  exhibition_id text,
+  created_at   timestamptz not null default now(),
+  reviewed_at  timestamptz
+);
+alter table public.crawled_exhibitions enable row level security;
+drop policy if exists "crawled: admin all" on public.crawled_exhibitions;
+create policy "crawled: admin all" on public.crawled_exhibitions for all using (public.is_admin()) with check (public.is_admin());
+

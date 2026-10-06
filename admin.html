@@ -138,6 +138,10 @@ html,body{background:var(--t-bg)}
 .t-pi{position:relative;display:inline-block}
 .t-pi button{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:14px;line-height:22px;cursor:pointer;padding:0}
 .t-check{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--t-sub);cursor:pointer}
+.t-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 14px}
+.t-crawlprev .t-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;font-size:13px}
+.t-crawlprev .t-list span{color:var(--t-muted)}
+.t-pill.gray{background:var(--t-line);color:var(--t-sub)}
 </style>
 
 <div id="admin">
@@ -159,16 +163,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=27"></script>
+<script src="core.js?v=29"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=27"></script>
-<script src="artists/jmh/artist.js?v=27"></script>
-<script src="artists/lmg/artist.js?v=27"></script>
-<script src="artists/lhw/artist.js?v=27"></script>
+<script src="artists/eloi/artist.js?v=29"></script>
+<script src="artists/jmh/artist.js?v=29"></script>
+<script src="artists/lmg/artist.js?v=29"></script>
+<script src="artists/lhw/artist.js?v=29"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=27"></script>
-<script src="data.js?v=27"></script>
+<script src="config.js?v=29"></script>
+<script src="data.js?v=29"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -178,17 +182,17 @@ function refreshPublic(){}
 const IC={home:"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",user:"M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0",cal:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",inbox:"M4 13l2-8h12l2 8v6H4zM4 13h5l1 2h4l1-2h5",mic:"M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3",book:"M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11",building:"M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18",gear:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",chev:"M9 6l6 6-6 6",plus:"M12 5v14M5 12h14",mega:"M4 10v4h3l6 4V6l-6 4zM17 9a4 4 0 0 1 0 6",mail:"M4 6h16v12H4zM4 7l8 6 8-6",search:"M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"};
 const ic=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 const el=h=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild};
-const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["notice","공지사항","mega"],["iv","인터뷰","mic"],["books","도록","book"],["gal","갤러리","building"],["set","설정","gear"]];
+const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["notice","공지사항","mega"],["iv","인터뷰","mic"],["books","도록","book"],["set","설정","gear"]];
 let adView="dash";
 const pendingApps=()=>AD.apps.filter(a=>!AD.done[a.id]);
 function go(v){adView=v;renderAdmin();window.scrollTo(0,0)}
 function renderAdmin(){
   const nav=$("#adNav");nav.innerHTML="";
-  AD_MENU.forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:0;
+  AD_MENU.forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:k==="crawl"?CRAWLED.filter(x=>x.status==="pending").length:0;
     const b=el(`<button type="button" class="ad-nav${adView===k?" on":""}"${adView===k?' aria-current="page"':""}>${ic(IC[i])}<span>${l}</span>${n?`<em aria-label="대기 ${n}건">${n}</em>`:""}</button>`);
     b.onclick=()=>go(k);nav.append(b)});
   const m=$("#adMain");m.innerHTML=SBM()?`<p class="ad-note">Supabase에 연결돼 있어요. 여기서 저장한 내용은 바로 실제 사이트에 반영돼요.</p>`:`<p class="ad-note">예시 데이터 모드예요. 바꾼 내용은 이 브라우저에만 저장돼요. Supabase를 연결하면 실제 DB에 저장돼요.</p>`;
-  ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,set:adSet})[adView](m);
+  ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,set:adSet})[adView](m);
 }
 function adHead(m,title,sub,action){const h=el(`<div class="ad-head"><div><h1>${esc(title)}</h1>${sub?`<p>${esc(sub)}</p>`:""}</div></div>`);
   if(action){const b=el(`<button type="button" class="t-btn primary sm">${ic(IC.plus,18)}${esc(action[0])}</button>`);b.onclick=action[1];h.append(b)}m.append(h)}
@@ -230,7 +234,14 @@ async function loadApps(){
   if(!SBM())return;
   const {data}=await ARTTAN_DB.from("applications").select("*").eq("status","pending").order("created_at",{ascending:false});
   AD.apps=(data||[]).map(x=>({id:x.id,name:x.name,born:x.born,genre:x.genre||"",city:x.city||"",email:x.email||"",note:x.note||"",date:(x.created_at||"").slice(0,10).replaceAll("-",".")}));AD.done={}}
-async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();renderAdmin()}
+/* 수집한 전시 (DB: crawled_exhibitions / 로컬: AD.crawled) */
+let CRAWLED=[];
+async function loadCrawled(){
+  if(!SBM()){CRAWLED=AD.crawled||[];return}
+  const {data,error}=await ARTTAN_DB.from("crawled_exhibitions").select("*").order("start_date",{ascending:false}).limit(500);
+  if(error){console.warn("수집한 전시를 불러오지 못했어요",error.message);CRAWLED=[];return}
+  CRAWLED=(data||[]).map(x=>({id:x.id,gallery_id:x.gallery_id,hash:x.hash,title:x.title,context:x.context||"",start:x.start_date,end:x.end_date,source_url:x.source_url||"",status:x.status,exhibition_id:x.exhibition_id||null}))}
+async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();await loadCrawled();renderAdmin()}
 async function dbDo(fn,msg,closeAfter){
   const before=seoPages();
   try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg);pingSearch(before,seoPages())}
@@ -274,6 +285,7 @@ function adDash(m){
   m.append(g);
   const todo=card(m,"확인이 필요해요");const items=[];
   if(pa)items.push(["등록 신청이 기다리고 있어요",`${pa}건 · 승인하면 바로 작가 목록에 올라가요`,"apps"]);
+  const pc=CRAWLED.filter(x=>x.status==="pending").length;if(pc)items.push(["게시를 기다리는 수집한 전시",`${pc}건 · 확인하고 게시하거나 반려해 주세요`,"crawl"]);
   const nov=pub().filter(a=>!videoOf(a));if(nov.length)items.push(["인터뷰 영상이 없는 작가",`${nov.length}명`,"artists"]);
   const nob=pub().filter(a=>!BOOKS.some(b=>b.artist===a.id));if(nob.length)items.push(["도록이 없는 작가",`${nob.length}명`,"books"]);
   if(!items.length)todo.append(el(`<p class="t-empty">지금은 확인할 일이 없어요.</p>`));
@@ -520,10 +532,142 @@ function bookSheet(bk){
   foot.push(save);openSheet(isNew?"도록 추가":"도록 수정",f,foot);
 }
 
-function adGal(m){adHead(m,"갤러리",`${GALLERIES.length}곳`,["갤러리 추가",soon]);const c=card(m);
+/* ================= 전시장 =================
+   전시장 정보 + '전시 목록 주소'를 넣어 두면 그 페이지에서 전시명·기간을 모아요(수집).
+   매일 아침 자동 수집(배포 서버) 또는 '수집' 버튼으로 바로 모아요. 모은 전시는 '수집한 전시'에서 게시 여부를 정해요. */
+const ago=t=>{if(!t)return"아직 수집 안 함";const d=new Date(t),m=Math.round((Date.now()-d)/6e4);return m<1?"방금 수집":m<60?`${m}분 전 수집`:m<1440?`${Math.round(m/60)}시간 전 수집`:`${d.getMonth()+1}월 ${d.getDate()}일 수집`};
+async function crawlApi(body){
+  const h={"Content-Type":"application/json"};
+  if(SBM()){const {data:{session}}=await ARTTAN_DB.auth.getSession();if(session)h.Authorization="Bearer "+session.access_token}
+  const r=await fetch("/api/crawl",{method:"POST",headers:h,body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||`수집하지 못했어요 (${r.status})`);return j}
+const crawlHash=(gid,it)=>`${gid}|${it.title.replace(/\s+/g,"").toLowerCase()}|${it.start}`;
+/* 전시장 하나(또는 전체) 수집 */
+async function crawlNow(g,btn){
+  if(btn){btn.disabled=true;btn.textContent="수집 중…"}
+  try{
+    if(SBM()){const r=await crawlApi(g?{galleryId:g.id}:{});await reloadAll();
+      const bad=r.report.filter(x=>!x.ok);toast(`새로 모은 전시 ${r.total}건${bad.length?` · 실패 ${bad.length}곳 (${bad[0].name}: ${bad[0].error})`:""}`);return}
+    /* Supabase 없이(로컬): 결과를 이 브라우저에 저장 */
+    const L=g?[g]:GALLERIES.filter(x=>x.crawlUrl&&x.crawlOn!==false);let total=0,bad=[];
+    for(const v of L){
+      let note;
+      try{const r=await crawlApi({url:v.crawlUrl});
+        if(!r.ok){note=r.error;bad.push([v.name,r.error])}
+        else{let n=0;AD.crawled=AD.crawled||[];r.items.forEach(it=>{const h=crawlHash(v.id,it);if(AD.crawled.some(x=>x.hash===h))return;
+            AD.crawled.push({id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),gallery_id:v.id,hash:h,title:it.title,context:it.context||"",start:it.start,end:it.end,source_url:it.link,status:"pending"});n++});
+          total+=n;note=`${r.items.length}건 확인 · 새로 ${n}건${r.warn?" · "+r.warn:""}`}}
+      catch(err){note=err.message;bad.push([v.name,err.message])}
+      AD.galEdits=AD.galEdits||{};AD.galEdits[v.id]={...(AD.galEdits[v.id]||{}),lastCrawledAt:new Date().toISOString(),lastCrawlNote:note};Object.assign(v,{lastCrawledAt:new Date().toISOString(),lastCrawlNote:note})}
+    adSave();CRAWLED=AD.crawled||[];renderAdmin();
+    toast(`새로 모은 전시 ${total}건${bad.length?` · 실패 ${bad.length}곳 (${bad[0][0]}: ${bad[0][1]})`:""}`)}
+  catch(err){toast(err.message)}
+  finally{if(btn){btn.disabled=false;btn.textContent="수집"}}}
+function adGal(m){
+  const withUrl=GALLERIES.filter(g=>g.crawlUrl);
+  adHead(m,"전시장",`${GALLERIES.length}곳 · 자동 수집 ${withUrl.filter(g=>g.crawlOn!==false).length}곳`,["전시장 추가",()=>venueSheet()]);
+  const tools=el(`<div class="t-tools"></div>`);const all=tBtn("전체 수집","ghost sm",()=>crawlNow(null,all));tools.append(all,el(`<span class="t-desc">매일 아침 6시에 자동으로도 모아요 (배포 서버 · Supabase 연결 시)</span>`));m.append(tools);
+  const c=card(m);
   GALLERIES.forEach(g=>{const ex=exOfGal(g.id),l=ex.filter(e=>e.st.k==="live").length,s2=ex.filter(e=>e.st.k==="soon").length;
-    c.append(row({title:g.name,sub:`${g.area} · 전시 ${ex.length}건`,right:[l?el(`<span class="t-pill green">진행중 ${l}</span>`):"",s2?el(`<span class="t-pill blue">예정 ${s2}</span>`):""].filter(Boolean),onClick:()=>{location.href="index.html#galleries"}}))});
-  c.append(el(`<p class="t-info">주소, 관람시간, 연락처는 갤러리 확인 후 입력할 수 있게 만들 예정이에요.</p>`))}
+    const right=[];
+    if(l)right.push(el(`<span class="t-pill green">진행중 ${l}</span>`));if(s2)right.push(el(`<span class="t-pill blue">예정 ${s2}</span>`));
+    if(g.crawlUrl){const b=tBtn("수집","ghost sm",e=>{e.stopPropagation();crawlNow(g,b)});right.push(b)}
+    c.append(row({title:g.name+(g.test?" · 테스트":""),sub:`${g.area||"지역 미입력"} · 전시 ${ex.length}건 · ${g.crawlUrl?(g.crawlOn===false?"자동 수집 꺼짐 · ":"")+ago(g.lastCrawledAt)+(g.lastCrawlNote?` (${g.lastCrawlNote})`:""):"전시 목록 주소 없음"}`,right,onClick:()=>venueSheet(g)}))});
+  c.append(el(`<p class="t-info">전시명·기간·원문 주소만 모아요. 전시장 소개 글과 포스터는 가져오지 않아요(저작권). robots.txt 로 막은 사이트는 수집하지 않아요.</p>`))}
+function venueSheet(g){
+  const isNew=!g,f=el(`<div class="t-form"></div>`);
+  const name=inp("gName","text",g?.name||"","예: 인사아트센터"),area=inp("gArea","text",g?.area||"","예: 인사동");
+  const addr=inp("gAddr","text",g?.addr||"","예: 서울 종로구 인사동길 41-1"),hours=inp("gHours","text",g?.hours||"","예: 10:00–19:00, 화요일 휴관");
+  const tel=inp("gTel","text",g?.tel||"","예: 02-000-0000"),site=inp("gSite","url",g?.site||"","https://");
+  const curl=inp("gCrawl","url",g?.crawlUrl||"","전시 목록이 보이는 페이지 주소");
+  let auto=g?.crawlOn!==false;const on=switchEl(auto,v=>{auto=v},"자동 수집");
+  const intro=inp("gIntro","textarea",g?.intro||"","전시장 소개를 직접 써 주세요 (다른 사이트 글을 그대로 옮기지 않아요)");
+  const prev=el(`<div class="t-crawlprev"></div>`);
+  const test=tBtn("미리 수집해 보기","ghost sm",async()=>{if(!/^https?:\/\//.test(curl.value.trim())){toast("전시 목록 주소를 https:// 로 넣어 주세요");return}
+    test.disabled=true;test.textContent="읽는 중…";prev.innerHTML="";
+    try{const r=await crawlApi({url:curl.value.trim()});
+      if(!r.ok)prev.append(el(`<p class="t-desc">${esc(r.error)}</p>`));
+      else{prev.append(el(`<p class="t-desc">${r.items.length}건을 찾았어요${r.warn?` · ${esc(r.warn)}`:""}. 저장한 뒤 '수집'하면 '수집한 전시'에 쌓여요.</p>`));
+        const ul=el(`<ul class="t-list"></ul>`);r.items.slice(0,12).forEach(it=>ul.append(el(`<li><b>${esc(it.title)}</b> <span>${it.start} – ${it.end}${it.context?` · ${esc(it.context)}`:""}</span></li>`)));prev.append(ul)}}
+    catch(err){prev.append(el(`<p class="t-desc">${esc(err.message)}</p>`))}
+    finally{test.disabled=false;test.textContent="미리 수집해 보기"}});
+  const two=(x,y)=>{const t=el(`<div class="t-two"></div>`);t.append(x,y);return t};
+  f.append(two(fieldL("전시장 이름",name),fieldL("지역(동네)",area)),fieldL("주소",addr),two(fieldL("관람시간",hours),fieldL("전화",tel)),fieldL("홈페이지",site),
+    fieldL("전시 목록 주소",curl,"전시명과 기간이 나오는 페이지(예: 현재·예정 전시 목록). 이 주소에서 전시를 모아요."),test,prev,fieldD("매일 자동 수집",on),fieldL("소개",intro));
+  const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
+    const v={name:name.value.trim(),area:area.value.trim(),addr:addr.value.trim(),hours:hours.value.trim(),tel:tel.value.trim(),site:site.value.trim(),crawlUrl:curl.value.trim(),crawlOn:auto,intro:intro.value.trim()};
+    if(!v.name){toast("전시장 이름을 입력해 주세요");name.focus();return}
+    if(v.crawlUrl&&!/^https?:\/\//.test(v.crawlUrl)){toast("전시 목록 주소는 https:// 로 시작해야 해요");curl.focus();return}
+    if(SBM()){const row={name:v.name,area:v.area||null,addr:v.addr||null,hours:v.hours||null,tel:v.tel||null,site:v.site||null,intro:v.intro||null,crawl_url:v.crawlUrl||null,crawl_on:v.crawlOn};
+      dbDo(()=>isNew?ARTTAN_DB.from("galleries").insert({id:newId("g"),...row,sort:1000}):ARTTAN_DB.from("galleries").update(row).eq("id",g.id),isNew?"전시장을 추가했어요":"저장했어요",true);return}
+    if(isNew){const o={...v,id:"g"+Date.now().toString(36)};AD.galleries=AD.galleries||[];AD.galleries.push(o);if(!adSave()){AD.galleries.pop();return}const go2={...o,added:true};GALLERIES.push(go2);galById[o.id]=go2;toast("전시장을 추가했어요")}
+    else{if(g.added)Object.assign(AD.galleries.find(x=>x.id===g.id),v);else{AD.galEdits=AD.galEdits||{};AD.galEdits[g.id]={...(AD.galEdits[g.id]||{}),...v}}if(!adSave())return;Object.assign(g,v);toast("저장했어요")}
+    closeSheet();renderAdmin()});
+  const foot=[];
+  if(!isNew){foot.push(tBtn("삭제","ghost",()=>{
+    if(EXHIBITIONS.some(e=>e.g===g.id)){toast("이 전시장에 등록된 전시를 먼저 지우거나 옮겨 주세요");return}
+    confirmSheet(`${g.name}을(를) 삭제할까요?`,"수집한 전시 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{
+      if(SBM()){dbDo(()=>ARTTAN_DB.from("galleries").delete().eq("id",g.id),"삭제했어요");return}
+      if(g.added)AD.galleries=AD.galleries.filter(x=>x.id!==g.id);else{AD.galDel=AD.galDel||{};AD.galDel[g.id]=true}
+      AD.crawled=(AD.crawled||[]).filter(x=>x.gallery_id!==g.id);adSave();GALLERIES.splice(GALLERIES.indexOf(g),1);delete galById[g.id];CRAWLED=AD.crawled;renderAdmin();toast("삭제했어요")})}))}
+  foot.push(save);openSheet(isNew?"전시장 추가":"전시장 수정",f,foot)}
+
+/* ================= 수집한 전시 → 게시 여부 확인 ================= */
+let crawlTab="pending";
+function adCrawl(m){
+  const N=k=>CRAWLED.filter(x=>x.status===k).length;
+  adHead(m,"수집한 전시",`게시 대기 ${N("pending")}건`);
+  const tools=el(`<div class="t-tools"></div>`);
+  tools.append(segmented(["pending","approved","rejected"],crawlTab,v=>{crawlTab=v;renderAdmin()},k=>({pending:`게시 대기 ${N("pending")}`,approved:`게시함 ${N("approved")}`,rejected:`반려 ${N("rejected")}`})[k]));
+  const all=tBtn("전체 수집","ghost sm",()=>crawlNow(null,all));tools.append(all);m.append(tools);
+  const c=card(m);
+  const L=CRAWLED.filter(x=>x.status===crawlTab).sort((a,b)=>(b.start||"").localeCompare(a.start||""));
+  if(!L.length)c.append(el(`<p class="t-empty">${crawlTab==="pending"?"게시를 기다리는 전시가 없어요. '전시장'에서 전시 목록 주소를 넣고 수집해 보세요.":"없어요."}</p>`));
+  L.forEach(x=>{const g=galById[x.gallery_id],st=x.start&&x.end?status({start:x.start,end:x.end}):null;
+    const right=[];
+    if(st)right.push(el(`<span class="t-pill ${st.k==="live"?"green":st.k==="soon"?"blue":"gray"}">${esc(st.label.split(" · ")[0])}</span>`));
+    const src=el(`<a class="t-btn ghost sm" href="${esc(x.source_url||g?.crawlUrl||"#")}" target="_blank" rel="noopener">원문 ↗</a>`);src.onclick=e=>e.stopPropagation();right.push(src);
+    if(x.status==="pending"){right.push(tBtn("게시","primary sm",e=>{e.stopPropagation();publishSheet(x)}),tBtn("반려","ghost sm",e=>{e.stopPropagation();setCrawl(x,{status:"rejected"},"반려했어요")}))}
+    if(x.status==="approved")right.push(tBtn("게시 내리기","ghost sm",e=>{e.stopPropagation();confirmSheet(`「${x.title}」 게시를 내릴까요?`,"사이트에서 이 전시가 사라지고 '게시 대기'로 돌아가요.","내리기",()=>unpublish(x))}));
+    if(x.status==="rejected")right.push(tBtn("되돌리기","ghost sm",e=>{e.stopPropagation();setCrawl(x,{status:"pending"},"게시 대기로 돌렸어요")}));
+    c.append(row({title:x.title,sub:`${g?.name||"삭제된 전시장"} · ${x.start||"?"} – ${x.end||"?"}${x.context?` · ${x.context}`:""}`,right,onClick:x.status==="pending"?()=>publishSheet(x):null}))});
+  m.append(el(`<p class="t-info">수집한 건 전시명·기간·원문 주소뿐이에요. 게시할 때 소개 글은 직접 써 주세요(원문을 그대로 옮기지 않아요). 게시한 전시에는 '출처: 전시장 홈페이지' 링크가 붙어요.</p>`))}
+async function setCrawl(x,patch,msg){
+  if(SBM()){const row={reviewed_at:new Date().toISOString()};if("status" in patch)row.status=patch.status;if("exhibition_id" in patch)row.exhibition_id=patch.exhibition_id;
+    dbDo(()=>ARTTAN_DB.from("crawled_exhibitions").update(row).eq("id",x.id),msg);return}
+  Object.assign(AD.crawled.find(y=>y.id===x.id),patch);adSave();CRAWLED=AD.crawled;renderAdmin();toast(msg)}
+function guessKind(t){return /2인전|3인전|단체|그룹|group/i.test(t)?"그룹전":/기획/.test(t)?"기획전":/초대/.test(t)?"초대전":"개인전"}
+function publishSheet(x){
+  const g=galById[x.gallery_id];if(!g){toast("전시장이 없어서 게시할 수 없어요");return}
+  const text=`${x.title} ${x.context||""}`,f=el(`<div class="t-form"></div>`);
+  const title=inp("pTitle","text",x.title);
+  const kind=segField(["개인전","그룹전","기획전","초대전"],guessKind(text));
+  const ids=pub().map(a=>a.id),hit=ids.filter(id=>text.includes(byId[id].name));
+  const who=chipsField(ids,hit,8,id=>byId[id].name);
+  const solo=/^(.+?)\s*(개인전|초대전)/.exec(x.title);
+  const other=inp("pOther","text",solo&&!hit.some(id=>solo[1].includes(byId[id].name))?solo[1].trim():"","arttan 에 없는 작가 이름 (쉼표로 구분)");
+  const st=inp("pStart","date",x.start||""),en=inp("pEnd","date",x.end||"");
+  const two=el(`<div class="t-two"></div>`);two.append(fieldL("시작일",st),fieldL("종료일",en));
+  const desc=inp("pDesc","textarea","","전시를 한두 문장으로 직접 소개해 주세요 (원문을 그대로 옮기지 않아요)");
+  f.append(el(`<p class="t-desc">${esc(g.name)} · <a href="${esc(x.source_url||"#")}" target="_blank" rel="noopener">원문 보기 ↗</a>${x.context?` · 함께 적힌 글: ${esc(x.context)}`:""}</p>`),
+    fieldL("전시명",title),fieldD("전시 형태",kind),fieldD("참여 작가 (arttan 등록 작가)",who,"등록된 작가를 고르면 작가 공간과 연결돼요."),fieldL("그 외 참여 작가",other),two,fieldL("전시 소개",desc));
+  const save=tBtn("사이트에 게시","primary",()=>{
+    const v={title:title.value.trim(),kind:kind.dataset.value,artists:who.value(),artistsText:other.value.trim(),g:g.id,start:st.value,end:en.value,desc:desc.value.trim(),sourceUrl:x.source_url||""};
+    if(!v.title){toast("전시명을 입력해 주세요");return}
+    if(!v.start||!v.end||v.end<v.start){toast("기간을 확인해 주세요");return}
+    if(!v.artists.length&&!v.artistsText){toast("참여 작가를 고르거나 이름을 적어 주세요");return}
+    const eid=newId("e");
+    if(SBM()){dbDo(async()=>{
+        const r=await ARTTAN_DB.from("exhibitions").insert({id:eid,gallery_id:v.g,title:v.title,kind:v.kind,artists:v.artists,artists_text:v.artistsText||null,start_date:v.start,end_date:v.end,description:v.desc||null,source_url:v.sourceUrl||null});if(r.error)return r;
+        return ARTTAN_DB.from("crawled_exhibitions").update({status:"approved",exhibition_id:eid,reviewed_at:new Date().toISOString()}).eq("id",x.id)},"사이트에 게시했어요",true);return}
+    const o={...v,id:eid};AD.exhibitions.push(o);EXHIBITIONS.push({...o,venue:g.name,region:g.area,added:true});
+    Object.assign(AD.crawled.find(y=>y.id===x.id),{status:"approved",exhibition_id:eid});if(!adSave())return;CRAWLED=AD.crawled;closeSheet();renderAdmin();toast("사이트에 게시했어요")});
+  openSheet("수집한 전시 게시",f,[tBtn("반려","ghost",()=>{closeSheet();setCrawl(x,{status:"rejected"},"반려했어요")}),save])}
+function unpublish(x){
+  if(SBM()){dbDo(async()=>{if(x.exhibition_id){const r=await ARTTAN_DB.from("exhibitions").delete().eq("id",x.exhibition_id);if(r.error)return r}
+      return ARTTAN_DB.from("crawled_exhibitions").update({status:"pending",exhibition_id:null}).eq("id",x.id)},"게시를 내렸어요");return}
+  AD.exhibitions=AD.exhibitions.filter(e=>e.id!==x.exhibition_id);const i=EXHIBITIONS.findIndex(e=>e.id===x.exhibition_id);if(i>=0)EXHIBITIONS.splice(i,1);
+  Object.assign(AD.crawled.find(y=>y.id===x.id),{status:"pending",exhibition_id:null});adSave();CRAWLED=AD.crawled;renderAdmin();toast("게시를 내렸어요")}
 
 /* 설정 */
 function adSet(m){adHead(m,"설정");

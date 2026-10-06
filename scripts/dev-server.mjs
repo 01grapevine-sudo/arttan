@@ -5,6 +5,7 @@ import path from "node:path";
 import { render, parsePath } from "../lib/site.mjs";
 import { submitUrls } from "../lib/indexnow.mjs";
 import { handleSubmit } from "../lib/submit.mjs";
+import { crawlVenue } from "../lib/crawl.mjs";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 process.env.ARTTAN_DEV = "1";   // 파일을 고치면 바로 반영되게 캐시를 끕니다
@@ -26,6 +27,12 @@ http.createServer(async (req, res) => {
       // 로컬: TELEGRAM_BOT_TOKEN·TELEGRAM_CHAT_ID 가 있으면 실제로 보내고, 없으면 콘솔에만 찍어요
       const r = await handleSubmit(JSON.parse(b || "{}"), { ip: "local" });
       res.writeHead(r.status, { "Content-Type": "application/json" }); return res.end(JSON.stringify(r));
+    }
+    if (u.pathname === "/api/crawl" && req.method === "POST") {
+      // 로컬: 관리자 로그인 없이 주소(url)를 바로 읽어 결과만 돌려줘요 (저장은 관리자 화면이 이 브라우저에 해요)
+      let b = ""; for await (const c of req) b += c; const body = JSON.parse(b || "{}");
+      const r = body.url ? await crawlVenue(body.url) : { ok: false, error: "로컬에서는 전시장마다 주소로 수집해요" };
+      res.writeHead(200, { "Content-Type": "application/json" }); return res.end(JSON.stringify(r));
     }
     const route = parsePath(u.pathname);
     if (route) {
