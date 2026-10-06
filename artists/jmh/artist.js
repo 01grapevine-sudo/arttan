@@ -5,6 +5,7 @@
 registerArtist({
    id:"jmh", real:true, tier:"원로작가", name:"정명희", en:"Jeong Myeong-hee", genre:"한국화", more:[], tags:["기산(箕山)","수묵담채","금강 연작","족보 시리즈","기행 사생"], born:1945, from:"충남 홍성", city:"대전", style:"ink", pal:["#ECE8DF","#1C1C1C","#6B6A64","#8A3B2E","#C9C2B3"],
    portraits:["artists/jmh/photos/01.jpg","artists/jmh/photos/02.jpg"],
+   aka:["기산 정명희","箕山 정명희","정명희 화백"],   /* 검색할 때 쓰는 다른 이름 */
    portraitFocus:[.5,.12],   /* 얼굴이 사진 위쪽에 있어요: 가로 50%, 세로 12% 지점을 기준으로 잘라요 */
    sources:[
      {name:"한국예술디지털아카이브(DA-Arts) 미술작가 500人", url:"https://www.daarts.or.kr/visual/artist"},

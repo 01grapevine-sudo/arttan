@@ -5,6 +5,7 @@
 const LMG_WEB="「소우주(Microcosmos)」 연작 · 제목 확인 중";
 registerArtist({
    id:"lmg", real:true, tier:"중견작가", name:"이민구", genre:"설치·복합매체", more:["서양화"], tags:["거미줄 작가","소우주(Microcosmos)","혼합재료","자동차 도료·단청 안료"], born:null, city:"", style:"lines", pal:["#EFE7D6","#2B2620","#8A7B60","#B9A27A","#141210"],
+   aka:["거미줄 작가 이민구"],   /* 검색할 때 쓰는 다른 이름 */
    photos:["01","02","03","04","05","06","07","08","09","10","11","12","13","14"].map(n=>`artists/lmg/works/${n}.jpg`),
    sources:[
      {name:"경북매일 (2017, 라우갤러리 초대전)", url:"https://kbmaeil.com/article/201704040188929"},

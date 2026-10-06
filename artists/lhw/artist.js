@@ -7,6 +7,7 @@ const LHW_SUBJECTS=[[2,"말"],[4,"꽃무늬 말"],[2,"춤추는 인물"],[2,"북
 const LHW_WORKS=LHW_SUBJECTS.flatMap(([n,s])=>Array(n).fill(s)).map((s,i)=>[`작품 ${String(i+1).padStart(2,"0")}`,"","","",`소재: ${s} · 제목 확인 중`]);
 registerArtist({
    id:"lhw", real:true, tier:"원로작가", name:"이홍원", en:"Lee Hongwon", genre:"서양화", more:[], tags:["李鴻遠","마동창작마을","해학과 풍자","한지 부조","호랑이"], born:1955, city:"청주", style:"bands", pal:["#F4EEE4","#1F3B73","#E2A13B","#C8443A","#2D2A26"],
+   aka:["李鴻遠","이홍원 화백","Lee Hongwon"],   /* 검색할 때 쓰는 다른 이름 */
    photos:Array.from({length:90},(_,i)=>`artists/lhw/works/${String(i+1).padStart(2,"0")}.jpg`),
    sources:[
      {name:"사람과사회 인터뷰 「예술은 일상이고, 삶에 존재한다」 (2018)", url:"https://peopleciety.com/archives/13431"},
