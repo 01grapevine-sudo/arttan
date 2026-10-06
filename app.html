@@ -1325,6 +1325,8 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .svc-chk span{display:inline-block;padding:8px 14px;border-radius:999px;background:var(--surface);font-size:14px;font-weight:600;border:1px solid var(--line)}
 .svc-chk input:checked+span{background:var(--accent);color:#fff;border-color:var(--accent)}
 .svc-chk input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+/* 로봇 막기용 숨은 칸 */
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
 /* 작가 등록: 검색 안내 */
 .join-seo{margin:4px 0 14px;background:var(--surface);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6}
 .join-seo summary{cursor:pointer;font-weight:700;font-size:14px}
@@ -1577,6 +1579,7 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
       <label>연락처 (이메일)<input id="svMail" type="email" required autocomplete="email"></label>
       <label class="wide">내용<textarea id="svMsg" rows="4" placeholder="작품 수, 촬영 장소, 원하는 일정 등을 적어 주세요"></textarea></label>
     </div>
+    <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
     <button class="btn join-go" type="submit">문의 보내기</button>
   </form>
 </dialog>
@@ -1602,22 +1605,23 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
         <li><b>작가노트와 작품 설명을 직접 써서</b> 보내 주세요. 다른 사이트의 글을 그대로 옮기면 검색에서 원래 글이 먼저 나오고 arttan은 뒤로 밀려요.</li>
       </ol>
     </details>
+    <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
     <button class="btn join-go" type="submit">무료로 신청하기</button>
   </form>
 </dialog>
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=26"></script>
+<script src="core.js?v=27"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=26"></script>
-<script src="artists/jmh/artist.js?v=26"></script>
-<script src="artists/lmg/artist.js?v=26"></script>
-<script src="artists/lhw/artist.js?v=26"></script>
+<script src="artists/eloi/artist.js?v=27"></script>
+<script src="artists/jmh/artist.js?v=27"></script>
+<script src="artists/lmg/artist.js?v=27"></script>
+<script src="artists/lhw/artist.js?v=27"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=26"></script>
-<script src="data.js?v=26"></script>
+<script src="config.js?v=27"></script>
+<script src="data.js?v=27"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2302,9 +2306,9 @@ function renderArtistSite(id){
     <div class="as-two"><label>이름<input id="cfName" name="name" autocomplete="name" required></label><label>이메일<input id="cfMail" name="email" type="email" autocomplete="email" required></label></div>
     <label>문의 유형<select id="cfType"><option>작품 구매</option><option>전시 제안</option><option>인터뷰·취재</option><option>기타</option></select></label>
     <label>내용<textarea id="cfMsg" rows="5" required></textarea></label>
-    <button class="btn" type="submit">문의 보내기</button></form>`);
+    <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true"><button class="btn" type="submit">문의 보내기</button></form>`);
   cs.querySelector("form").onsubmit=async e=>{e.preventDefault();const f=e.target;if(!f.cfName.value.trim()||!f.cfMail.value.includes("@")||!f.cfMsg.value.trim()){toast("이름, 이메일, 내용을 모두 적어 주세요");return}
-    try{const r=await submitInquiry({artist_id:a.id,name:f.cfName.value.trim(),email:f.cfMail.value.trim(),type:f.cfType.value,message:f.cfMsg.value.trim()});toast(r.local?"시안 모드라 문의가 저장되지 않았어요":"문의를 보냈어요. arttan이 확인 후 작가에게 전달해요");f.reset()}
+    try{const r=await submitInquiry({artist_id:a.id,name:f.cfName.value.trim(),email:f.cfMail.value.trim(),type:f.cfType.value,message:f.cfMsg.value.trim()},f.website.value);toast(r.local?"아직 접수 창구가 연결되지 않아 문의가 저장되지 않았어요":"문의를 보냈어요. arttan이 확인 후 작가에게 전달해요");f.reset()}
     catch(err){toast("문의를 보내지 못했어요. 잠시 뒤 다시 시도해 주세요")}};
   /* 푸터 */
   const ft=document.createElement("footer");ft.className="as-foot";
@@ -2414,7 +2418,7 @@ $("#joinForm").onsubmit=async e=>{e.preventDefault();
   const v={name:$("#jName").value.trim(),born:+$("#jBorn").value,genre:$("#jGenre").value,city:$("#jCity").value.trim(),email:$("#jMail").value.trim(),note:$("#jNote").value.trim()};
   if(!v.name||!(v.born>1900&&v.born<=today.getFullYear())||!v.email.includes("@")){toast("이름, 출생연도(네 자리), 이메일을 확인해 주세요");return}
   const btn=e.target.querySelector(".join-go");btn.disabled=true;
-  try{const r=await submitApplication(v);$("#joinDlg").close();toast(r.local?"시안 모드라 신청이 저장되지 않았어요. Supabase를 연결하면 실제로 접수돼요":"신청을 받았어요. 확인 후 연락드릴게요")}
+  try{const r=await submitApplication(v,e.target.website.value);$("#joinDlg").close();toast(r.local?"아직 접수 창구가 연결되지 않아 신청이 저장되지 않았어요":"신청을 받았어요. 확인 후 연락드릴게요")}
   catch(err){toast("신청을 보내지 못했어요. 잠시 뒤 다시 시도해 주세요")}finally{btn.disabled=false}};
 $("#adJoin").onclick=()=>$("#joinBtn").click();
 /* 촬영·제작 서비스 문의 (작가 문의와 같은 곳에 쌓여요: 작가 지정 없이, 유형 "서비스 · …") */
@@ -2427,7 +2431,7 @@ $("#svcForm").onsubmit=async e=>{e.preventDefault();const f=e.target;
   if(!picked.length){toast("필요한 서비스를 하나 이상 골라 주세요");return}
   if(!v.name||!v.email.includes("@")){toast("이름과 이메일을 확인해 주세요");return}
   const btn=f.querySelector(".join-go");btn.disabled=true;
-  try{const r=await submitInquiry(v);$("#svcDlg").close();toast(r.local?"시안 모드라 문의가 저장되지 않았어요. Supabase를 연결하면 실제로 접수돼요":"문의를 받았어요. 확인 후 연락드릴게요")}
+  try{const r=await submitInquiry(v,f.website.value);$("#svcDlg").close();toast(r.local?"아직 접수 창구가 연결되지 않아 문의가 저장되지 않았어요":"문의를 받았어요. 확인 후 연락드릴게요")}
   catch(err){toast("문의를 보내지 못했어요. 잠시 뒤 다시 시도해 주세요")}finally{btn.disabled=false}};
 const links=[...document.querySelectorAll("nav.main a")];
 const VIEWS=["home","shows","artists","interviews","catalogue","galleries","exhibitions"];

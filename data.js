@@ -77,16 +77,23 @@ async function arttanBoot(start) {
   start();
 }
 
-/* 사이트에서 보내는 신청·문의 */
-async function submitApplication(v) {
+/* 사이트에서 보내는 신청·문의
+   서버(/api/submit)로 보내면 서버가 Supabase에 저장하고 관리자 텔레그램으로 알려요.
+   서버가 없는 곳(파일만 올린 미리보기 등)에서는 예전처럼 브라우저에서 바로 저장해요.
+   hp: 사람에게는 안 보이는 칸(로봇 막기) 값 */
+async function postSubmit(kind, data, hp, table) {
+  let r;
+  try { r = await fetch("/api/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, data, website: hp || "" }) }); }
+  catch (e) { r = null; }
+  if (r && r.status !== 404 && r.status !== 405) {
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || "접수하지 못했어요");
+    return { ok: true, local: !(j.stored || j.notified) };
+  }
   const sb = sbClient();
   if (!window.ARTTAN_SB || !sb) return { local: true };
-  const { error } = await sb.from("applications").insert(v);
+  const { error } = await sb.from(table).insert(data);
   if (error) throw error; return { ok: true };
 }
-async function submitInquiry(v) {
-  const sb = sbClient();
-  if (!window.ARTTAN_SB || !sb) return { local: true };
-  const { error } = await sb.from("inquiries").insert(v);
-  if (error) throw error; return { ok: true };
-}
+const submitApplication = (v, hp) => postSubmit("application", v, hp, "applications");
+const submitInquiry = (v, hp) => postSubmit("inquiry", v, hp, "inquiries");
