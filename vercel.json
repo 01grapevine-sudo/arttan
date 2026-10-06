@@ -5,25 +5,94 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/page.js": { "includeFiles": "{app.html,core.js,data.js,artists/*/artist.js}" }
+    "api/page.js": {
+      "includeFiles": "{app.html,core.js,data.js,artists/*/artist.js}"
+    }
   },
   "redirects": [
-    { "source": "/:path*", "has": [{ "type": "host", "value": "arttan.co.kr" }], "destination": "https://www.arttan.co.kr/:path*", "permanent": true },
-    { "source": "/app", "destination": "/", "permanent": true },
-    { "source": "/index", "destination": "/", "permanent": true }
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "arttan.co.kr"
+        }
+      ],
+      "destination": "https://www.arttan.co.kr/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/app",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/api/page?t=home" },
-    { "source": "/artist/:id", "destination": "/api/page?t=artist&id=:id" },
-    { "source": "/artist/:id/work/:n", "destination": "/api/page?t=work&id=:id&n=:n" },
-    { "source": "/gallery/:id", "destination": "/api/page?t=gallery&id=:id" },
-    { "source": "/exhibition/:id", "destination": "/api/page?t=exhibition&id=:id" },
-    { "source": "/sitemap.xml", "destination": "/api/page?t=sitemap" },
-    { "source": "/rss.xml", "destination": "/api/page?t=rss" }
+    {
+      "source": "/",
+      "destination": "/api/page?t=home"
+    },
+    {
+      "source": "/artist/:id",
+      "destination": "/api/page?t=artist&id=:id"
+    },
+    {
+      "source": "/artist/:id/work/:n",
+      "destination": "/api/page?t=work&id=:id&n=:n"
+    },
+    {
+      "source": "/gallery/:id",
+      "destination": "/api/page?t=gallery&id=:id"
+    },
+    {
+      "source": "/exhibition/:id",
+      "destination": "/api/page?t=exhibition&id=:id"
+    },
+    {
+      "source": "/book/:id",
+      "destination": "/api/page?t=book&id=:id"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/page?t=sitemap"
+    },
+    {
+      "source": "/rss.xml",
+      "destination": "/api/page?t=rss"
+    }
   ],
   "headers": [
-    { "source": "/(.*)\\.(js|css)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
-    { "source": "/artists/(.*)\\.(jpg|jpeg|png|webp)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] },
-    { "source": "/admin", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
+    {
+      "source": "/(.*)\\.(js|css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/artists/(.*)\\.(jpg|jpeg|png|webp)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
+        }
+      ]
+    },
+    {
+      "source": "/admin",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
   ]
 }

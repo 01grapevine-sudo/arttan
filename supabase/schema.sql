@@ -91,7 +91,19 @@ create table if not exists public.books (
   pages      int,
   size       text,
   writer     text,
-  price      text
+  price      text,
+  slug       text unique,                       -- 주소에 쓰는 아이디 (/book/slug)
+  kind       text,                              -- 전시 도록 · 화집 · 작가 저서
+  publisher  text,
+  isbn       text,
+  description text,
+  cover_path text,                              -- 표지 사진 (작가 제공)
+  spreads    text[] not null default '{}',      -- 펼침면 사진 (작가가 허락한 것만)
+  full_view  boolean not null default false,    -- 전체 공개(e북) 여부. false면 미리보기
+  work_refs  int[] not null default '{}',       -- 이 책에 실린 작품 (works.sort 번호)
+  exhibition_id text,                           -- 연결된 전시 id
+  toc        jsonb not null default '[]',       -- 목차 ["글 · 평론가", ...]
+  links      jsonb not null default '[]'        -- 구매·열람처 [{"name":"…","url":"…"}]
 );
 
 -- ─────────────────────────────────────────────
@@ -220,3 +232,15 @@ alter table public.artists add column if not exists sources jsonb not null defau
 alter table public.artists add column if not exists portraits text[] not null default '{}';
 alter table public.artists add column if not exists portrait_focus real[];
 alter table public.artists add column if not exists aka text[] not null default '{}';
+alter table public.books add column if not exists slug text unique;
+alter table public.books add column if not exists kind text;
+alter table public.books add column if not exists publisher text;
+alter table public.books add column if not exists isbn text;
+alter table public.books add column if not exists description text;
+alter table public.books add column if not exists cover_path text;
+alter table public.books add column if not exists spreads text[] not null default '{}';
+alter table public.books add column if not exists full_view boolean not null default false;
+alter table public.books add column if not exists work_refs int[] not null default '{}';
+alter table public.books add column if not exists exhibition_id text;
+alter table public.books add column if not exists toc jsonb not null default '[]';
+alter table public.books add column if not exists links jsonb not null default '[]';

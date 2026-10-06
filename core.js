@@ -17,13 +17,13 @@ function registerArtist(a){
   /* 인터뷰·도록은 항상 이 작가 것으로 묶어요 (다른 작가와 섞이지 않게) */
   interviews.forEach(v=>INTERVIEWS.push({...v,artist:profile.id}));
   if(video)VIDEOS[profile.id]=video;
-  books.forEach(b=>BOOKS.push({...b,artist:profile.id}));
+  books.forEach((b,k)=>BOOKS.push({...b,id:b.id||`${profile.id}-b${k+1}`,artist:profile.id}));
 }
 /* 모든 작가 파일을 읽은 뒤 한 번 호출: 정렬 + 관리자 변경 반영 */
 function finishArtists(){
   const d=s=>s.replaceAll(".","");
   INTERVIEWS.sort((x,y)=>d(y.date).localeCompare(d(x.date)));
-  BOOKS.sort((x,y)=>y.year-x.year);
+  BOOKS.sort((x,y)=>(y.year||0)-(x.year||0));
   adApply();
 }
 
@@ -211,6 +211,26 @@ const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.
 const artistHeadline=a=>`${a.name} 작가${a.born?` (${a.born}~)`:""} · ${a.genre} ${a.tier}`;
 /* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
 const optImg=(src,small)=>/^\/?artists\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
+/* ---------- 도록 · 화집 · 작가 저서 ----------
+   도록 데이터: {id, kind, title, year, pages, size, publisher, isbn, writer, desc,
+     cover(표지 사진), spreads[펼침면 사진], full(전체 공개 여부), works[이 작가 작품 번호(0부터)],
+     exhibition(전시 id), toc[목차], links[{name,url}]}
+   표지 사진이 없으면 글자로 만든 표지를 보여줘요 (다른 곳의 이미지를 가져오지 않아요). */
+const BOOK_KINDS=["전시 도록","화집","작가 저서"];
+const bookPath=b=>`/book/${encodeURIComponent(b.id)}`;
+const bookAccess=b=>b.spreads&&b.spreads.length?(b.full?"e북 열람":"미리보기"):"정보만";
+const bookIndexable=b=>!!b&&artistIndexable(byId[b.artist])&&!!(b.cover||(b.desc&&b.desc.length>=40)||(b.spreads&&b.spreads.length)||(b.works&&b.works.length));
+/* 국립중앙도서관 소장 검색 (제목으로 찾기) */
+const libSearch=b=>`https://www.nl.go.kr/NL/contents/search.do?kwd=${encodeURIComponent(b.title)}`;
+function bookCover(b,small){
+  if(b.cover){const im=document.createElement("img");im.src=optImg(b.cover,small);im.alt=`『${b.title}』 표지`;im.loading="lazy";im.className="bk-img";return im}
+  const a=byId[b.artist]||{},P=a.pal||["#EEEAF6","#3B2A6B","#8B7BB8","#D9CFEF","#1E1636"];
+  const d=document.createElement("div");d.className="bk-typo";d.setAttribute("role","img");d.setAttribute("aria-label",`『${b.title}』 표지 (글자 표지)`);
+  /* 책마다 작가 색 중 하나를 골라요. 밝은 바탕이면 글자를 어둡게 */
+  const bg=[P[1],P[3],P[2],P[4]][hash(b.id||b.title)%4],lum=(h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255})(bg);
+  d.style.cssText=`background:${bg};color:${lum>.6?"#1A1A1A":"#F7F4EE"}`;
+  d.innerHTML=`<span class="k">${esc(b.kind||"도록")}</span><b>${esc(b.title)}</b><span class="a">${esc(a.name||"")}</span><span class="y">${b.year||""}</span>`;
+  return d}
 /* 검색에 알릴 주소와 내용 요약. 관리자에서 저장한 뒤 바뀐 주소만 골라 네이버에 바로 알려요. */
 function seoPages(){const m={"/":"home"};
   ARTISTS.filter(artistIndexable).forEach(a=>{
@@ -218,6 +238,7 @@ function seoPages(){const m={"/":"home"};
     /* 작품 페이지는 사진이 있을 때만 노출해요 (글만 있는 얇은 페이지는 빼요) */
     if(a.photos)a.works.forEach((w,i)=>m[workPath(a.id,i)]=JSON.stringify([a.name,w,a.photos[i%a.photos.length]]))});
   EXHIBITIONS.filter(exIndexable).forEach(e=>m[exPath(e)]=JSON.stringify([e.title,e.kind,e.start,e.end,e.g,e.artists,e.desc]));
+  BOOKS.filter(bookIndexable).forEach(b=>m[bookPath(b)]=JSON.stringify(b));
   GALLERIES.filter(galIndexable).forEach(g=>m[galPath(g.id)]=JSON.stringify([g,EXHIBITIONS.filter(e=>e.g===g.id&&exIndexable(e)).map(e=>e.id)]));
   return m}
 const exOfGal=gid=>EXHIBITIONS.filter(e=>e.g===gid).map(e=>({...e,st:status(e)}));

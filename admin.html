@@ -156,14 +156,14 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=20"></script>
+<script src="core.js?v=22"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=20"></script>
-<script src="artists/lmg/artist.js?v=20"></script>
-<script src="artists/lhw/artist.js?v=20"></script>
+<script src="artists/jmh/artist.js?v=22"></script>
+<script src="artists/lmg/artist.js?v=22"></script>
+<script src="artists/lhw/artist.js?v=22"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=20"></script>
-<script src="data.js?v=20"></script>
+<script src="config.js?v=22"></script>
+<script src="data.js?v=22"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -437,7 +437,9 @@ function adInq(m){
 function adIv(m){adHead(m,"인터뷰",`${INTERVIEWS.length}편`,["인터뷰 추가",soon]);const c=card(m);
   INTERVIEWS.forEach(v=>{const a=byId[v.artist];c.append(row({thumb:thumbOf(a),title:v.title,sub:`${a.name} · ${v.date} · 영상 ${VIDEOS[a.id]?.len||"없음"}`}))})}
 function adBooks(m){adHead(m,"도록",`${BOOKS.length}권`,["도록 추가",soon]);const c=card(m);
-  BOOKS.forEach(bk=>{const a=byId[bk.artist];const cv=coverCanvas(bk,84,112);cv.className="t-cover";c.append(row({thumb:cv,title:bk.title,sub:`${a.name} · ${bk.year} · ${bk.pages}쪽 · ${bk.price}`}))})}
+  if(!BOOKS.length)c.append(el(`<p class="t-empty">등록된 책이 없어요.</p>`));
+  BOOKS.forEach(bk=>{const a=byId[bk.artist];const cv=bookCover(bk,true);cv.classList.add("t-cover");cv.style.width="42px";cv.style.height="56px";cv.style.fontSize="6px";cv.style.overflow="hidden";
+    c.append(row({thumb:cv,title:`『${bk.title}』`,sub:[a?.name,bk.kind,bk.year,bookAccess(bk)].filter(Boolean).join(" · "),onClick:()=>window.open(bookPath(bk),"_blank")}))})}
 function adGal(m){adHead(m,"갤러리",`${GALLERIES.length}곳`,["갤러리 추가",soon]);const c=card(m);
   GALLERIES.forEach(g=>{const ex=exOfGal(g.id),l=ex.filter(e=>e.st.k==="live").length,s2=ex.filter(e=>e.st.k==="soon").length;
     c.append(row({title:g.name,sub:`${g.area} · 전시 ${ex.length}건`,right:[l?el(`<span class="t-pill green">진행중 ${l}</span>`):"",s2?el(`<span class="t-pill blue">예정 ${s2}</span>`):""].filter(Boolean),onClick:()=>{location.href="index.html#galleries"}}))});

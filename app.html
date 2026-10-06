@@ -1258,6 +1258,51 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .as-rel-c b{font-size:16px}.as-rel-c span{font-size:13px;color:var(--muted)}
 .as-rel-c em{font-style:normal;font-size:12px;color:var(--accent)}
 .as-rel-c:hover b{color:var(--accent)}
+/* 도록 · 화집 · 저서 */
+.bk-intro{margin:-8px 0 16px;color:var(--muted);font-size:15px}
+#bookTabs{margin-bottom:24px}
+.bk-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:28px 20px}
+.rail .bk-card{width:170px}
+.bk-card{display:flex;flex-direction:column;gap:6px;color:inherit;text-decoration:none;min-width:0}
+.bk-cv{position:relative;aspect-ratio:3/4;border-radius:3px 6px 6px 3px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.12),0 12px 22px -14px rgba(0,0,0,.45);transition:transform .25s}
+.bk-cv::after{content:"";position:absolute;inset:0 auto 0 0;width:6%;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent)}
+.bk-card:hover .bk-cv{transform:translateY(-4px)}
+.bk-card .t{font-size:15px;font-weight:800;line-height:1.35;word-break:keep-all;margin-top:6px}
+.bk-card .m{font-size:12px;color:var(--muted)}
+.bk-card .acc{align-self:flex-start;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--surface);color:var(--muted)}
+.bk-card .acc.on{background:#EDE4FF;color:#6D28D9}
+.bk-img{width:100%;height:100%;object-fit:cover;display:block}
+.bk-typo{width:100%;height:100%;display:flex;flex-direction:column;padding:14% 12% 10%;gap:6px;word-break:keep-all}
+.bk-typo .k{font-size:10px;letter-spacing:.08em;opacity:.75}
+.bk-typo b{font-family:var(--serif);font-size:clamp(14px,1.6vw,20px);line-height:1.3;font-weight:700;margin-top:auto}
+.bk-typo .a{font-size:12px;opacity:.9}
+.bk-typo .y{font-size:11px;opacity:.7;font-family:var(--mono)}
+.bkp{max-width:1080px;margin:24px auto 64px}
+.bkp-bc{font-size:13px;color:var(--muted);margin-bottom:20px}.bkp-bc a{color:inherit}
+.bkp-top{display:grid;grid-template-columns:minmax(200px,320px) 1fr;gap:40px;align-items:start}
+.bkp-cv{aspect-ratio:3/4;border-radius:4px 8px 8px 4px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.1),0 24px 40px -24px rgba(0,0,0,.5)}
+.bkp-cv .bk-typo b{font-size:30px}
+.bkp-kind{font-size:13px;font-weight:700;color:var(--accent)}
+.bkp-info h1{font-size:clamp(26px,3.4vw,40px);line-height:1.25;margin:8px 0 10px;word-break:keep-all}
+.bkp-by{margin:0 0 18px;font-size:16px}.bkp-by a{color:var(--ink);font-weight:800}.bkp-by span{color:var(--muted);font-size:14px}
+.bkp-info dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0 0 22px;font-size:15px}.bkp-info dt{color:var(--muted)}.bkp-info dd{margin:0}
+.bkp-acts{display:flex;flex-wrap:wrap;gap:8px}
+.bkp-sec{margin-top:48px}.bkp-sec h2{font-size:22px;margin:0 0 16px}.bkp-sec h2 small{font-size:14px;color:var(--muted);font-weight:500}
+.bkp-desc{font-size:17px;line-height:1.8;max-width:760px;margin:0}
+.bkp-spreads{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.bkp-spreads button{border:0;padding:0;background:var(--surface);border-radius:8px;overflow:hidden;cursor:zoom-in}
+.bkp-spreads img{width:100%;aspect-ratio:3/2;object-fit:contain;display:block}
+.bkp-works{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px}
+.bkp-works a{color:inherit;text-decoration:none;display:flex;flex-direction:column;gap:4px}
+.bkp-works .th{aspect-ratio:1;background:var(--surface);border-radius:10px;overflow:hidden;display:grid;place-items:center}
+.bkp-works .th img,.bkp-works .th canvas{max-width:88%;max-height:88%;object-fit:contain}
+.bkp-works b{font-size:14px}.bkp-works span{font-size:12px;color:var(--muted)}
+.bkp-toc{padding-left:20px;line-height:1.9}
+.bkp-note{margin-top:40px;font-size:13px;color:var(--muted)}
+.bk-view{width:min(1200px,calc(100vw - 24px))}
+.bk-spread{display:grid;place-items:center;min-height:50vh;background:var(--surface);border-radius:12px}
+.bk-spread img{max-width:100%;max-height:72vh;object-fit:contain;display:block}
+@media (max-width:720px){.bkp-top{grid-template-columns:1fr;gap:24px}.bkp-cv{max-width:240px}.bk-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* 홈: 촬영·제작 서비스 광고 */
 .svcbar{word-break:keep-all;display:grid;grid-template-columns:minmax(260px,1fr) 2.2fr;gap:24px;align-items:center;margin-top:28px;padding:26px 28px;border-radius:24px;background:linear-gradient(120deg,#1B1430 0%,#2A1B4D 55%,#3B2378 100%);color:#fff;position:relative;overflow:hidden}
 .svcbar::before{content:"";position:absolute;left:-80px;bottom:-120px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.28),transparent 70%);pointer-events:none}
@@ -1436,7 +1481,9 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
   <section class="block" id="catalog" data-view="catalogue">
     <div class="shead"><h2>도록</h2><span class="en">Catalogue</span></div>
-    <div class="books" id="books"></div>
+    <p class="bk-intro">작가의 전시 도록, 화집, 저서를 모았어요. 책을 누르면 정보와 실린 작품, 허락된 펼침면을 볼 수 있어요.</p>
+    <div class="tabs" id="bookTabs" role="group" aria-label="책 종류"></div>
+    <div class="bk-shelf" id="books"></div>
   </section>
 
   <section class="block" id="gallery" data-view="galleries">
@@ -1491,10 +1538,10 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
   <div class="dlg-body" id="pfBody"></div>
 </dialog>
 
-<dialog id="bkDlg" aria-labelledby="bkTitle">
-  <div class="dlg-head"><span class="eyebrow" id="bkTitle">e북 도록</span><button class="x" type="button" data-close aria-label="닫기">×</button></div>
+<dialog id="bkDlg" class="bk-view" aria-labelledby="bkTitle">
+  <div class="dlg-head"><span class="eyebrow" id="bkTitle">펼쳐 보기</span><button class="x" type="button" data-close aria-label="닫기">×</button></div>
   <div class="dlg-body viewer">
-    <div class="page" id="bkPage"></div>
+    <div class="bk-spread" id="bkPage"></div>
     <div class="pager">
       <button class="btn ghost" type="button" id="bkPrev">이전</button>
       <span id="bkNum"></span>
@@ -1561,14 +1608,14 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=20"></script>
+<script src="core.js?v=22"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=20"></script>
-<script src="artists/lmg/artist.js?v=20"></script>
-<script src="artists/lhw/artist.js?v=20"></script>
+<script src="artists/jmh/artist.js?v=22"></script>
+<script src="artists/lmg/artist.js?v=22"></script>
+<script src="artists/lhw/artist.js?v=22"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=20"></script>
-<script src="data.js?v=20"></script>
+<script src="config.js?v=22"></script>
+<script src="data.js?v=22"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1671,11 +1718,7 @@ function openPortfolioModal(id){
   const bks=BOOKS.map((b,i)=>[b,i]).filter(([b])=>b.artist===id);
   const s5=mk("ap-books");s5.innerHTML=secHead("도록","Catalogue",`${bks.length}권`);
   if(!bks.length)s5.insertAdjacentHTML("beforeend",`<div class="none">아직 등록된 도록이 없어요.</div>`);
-  if(a.books)s5.insertAdjacentHTML("beforeend",`<div class="eyebrow" style="margin:24px 0 8px">저서</div><ul class="plain">${a.books.map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`);
-  else{const g=document.createElement("div");g.className="ap-books";bks.forEach(([bk,i])=>{const b=document.createElement("button");b.type="button";b.className="book";
-    const cv=document.createElement("div");cv.className="cover";cv.append(coverCanvas(bk,360,480));b.append(cv);
-    b.insertAdjacentHTML("beforeend",`<div><div class="t">${esc(bk.title)}</div><div class="spec">${bk.year} · ${bk.pages}쪽 · ${esc(bk.size)}<br>글 ${esc(bk.writer)} · ${esc(bk.price)}</div></div>`);
-    b.onclick=()=>openBook(i);g.append(b)});s5.append(g)}
+  if(bks.length){const g=document.createElement("div");g.className="bk-shelf";bks.forEach(([bk])=>g.append(bookCard(bk)));s5.append(g)}
 
   /* 6. 전시일정 (지난 전시 포함) */
   const exs=EXHIBITIONS.filter(e=>e.artists.includes(id)).map(e=>({...e,st:status(e)}));
@@ -1717,25 +1760,63 @@ function renderInterview(i){
   const more=document.createElement("button");more.type="button";more.className="linkbtn";more.style.marginTop="16px";more.style.alignSelf="flex-start";more.textContent="인터뷰 전체 목록";more.onclick=()=>toast(`시안에는 인터뷰 ${INTERVIEWS.length}편만 있어요`);list.append(more);
 }
 
-/* ---------- catalog ---------- */
-function renderBooks(){const box=$("#books");box.innerHTML="";if(!BOOKS.length)box.innerHTML=`<p class="empty">아직 올라온 도록이 없어요. 작가의 저서는 작가 공간의 '도록 · 저서'에서 볼 수 있어요.</p>`;BOOKS.forEach((bk,i)=>{const a=byId[bk.artist];const b=document.createElement("button");b.type="button";b.className="book";
-  const cv=document.createElement("div");cv.className="cover";cv.append(coverCanvas(bk,360,480));b.append(cv);
-  b.insertAdjacentHTML("beforeend",`<div><div class="t">${esc(bk.title)}</div><div class="spec">${esc(a.name)} · ${esc(a.genre)} · ${bk.year}<br>${bk.pages}쪽 · ${esc(bk.size)}<br>글 ${esc(bk.writer)} · ${esc(bk.price)}</div></div>`);
-  b.onclick=()=>openBook(i);box.append(b)})}
-
-let bkIdx=0,bkPage=0;
-function bookPages(bk){const a=byId[bk.artist];return[{type:"cover"},...a.works.map((w,i)=>({type:"work",w,i})),{type:"colophon"}]}
-function renderPage(){
-  const bk=BOOKS[bkIdx],a=byId[bk.artist],pages=bookPages(bk),p=pages[bkPage],el=$("#bkPage");el.innerHTML="";
-  if(p.type==="cover"){el.append(coverCanvas(bk,880,1173))}
-  else if(p.type==="work"){const pc=document.createElement("div");pc.className="pc";pc.append(artCanvas(a,"w"+p.i,640,800,p.w[0]));el.append(pc);el.insertAdjacentHTML("beforeend",`<div class="pcap"><i>${esc(p.w[0])}</i>${p.w[1]}, ${esc(p.w[2])}, ${esc(p.w[3])}</div>`)}
-  else{el.insertAdjacentHTML("beforeend",`<div class="pc"><div class="colophon"><b>${esc(bk.title)}</b><span>작가 ${esc(a.name)}</span><span>글 ${esc(bk.writer)}</span><span>판형 ${esc(bk.size)} · ${bk.pages}쪽</span><span>발행 ${bk.year} · arttan</span></div></div>`)}
-  $("#bkNum").textContent=`${bkPage+1} / ${pages.length}`;$("#bkPrev").disabled=bkPage===0;$("#bkNext").disabled=bkPage===pages.length-1;
-}
-function openBook(i){bkIdx=i;bkPage=0;$("#bkTitle").textContent=`e북 도록 · 「${BOOKS[i].title}」`;renderPage();$("#bkDlg").showModal()}
-$("#bkPrev").onclick=()=>{if(bkPage>0){bkPage--;renderPage()}};
-$("#bkNext").onclick=()=>{if(bkPage<bookPages(BOOKS[bkIdx]).length-1){bkPage++;renderPage()}};
+/* ---------- 도록 · 화집 · 저서 ---------- */
+function bookCard(bk,opt={}){const a=byId[bk.artist]||{};
+  const l=document.createElement("a");l.className="bk-card";l.href=bookPath(bk);
+  const cv=document.createElement("div");cv.className="bk-cv";cv.append(bookCover(bk,true));l.append(cv);
+  const acc=bookAccess(bk);
+  l.insertAdjacentHTML("beforeend",`<b class="t">『${esc(bk.title)}』</b><span class="m">${opt.noArtist?"":esc(a.name||"")+" · "}${esc(bk.kind||"도록")}${bk.year?` · ${bk.year}`:""}</span><span class="acc ${acc==="정보만"?"":"on"}">${acc}</span>`);
+  return l}
+let bookKind=null;
+function renderBooks(){
+  const L=BOOKS.filter(b=>byId[b.artist]&&!byId[b.artist].hidden);
+  const tabs=$("#bookTabs");tabs.innerHTML="";
+  [["전체",null],...BOOK_KINDS.map(k=>[k,k])].forEach(([l,v])=>tabs.append(chip(l,L.filter(b=>!v||b.kind===v).length,bookKind===v,()=>{bookKind=v;renderBooks()})));
+  const box=$("#books");box.innerHTML="";const S=L.filter(b=>!bookKind||b.kind===bookKind);
+  if(!S.length){box.innerHTML=`<p class="empty">이 종류의 책이 아직 없어요.</p>`;return}
+  S.forEach(b=>box.append(bookCard(b)))}
+/* 펼쳐 보기: 작가가 허락한 펼침면 사진만 보여줘요 */
+let bkCur=null,bkPage=0;
+function renderSpread(){const bk=bkCur,n=bk.spreads.length,el=$("#bkPage");el.innerHTML="";
+  const im=document.createElement("img");im.src=optImg(bk.spreads[bkPage]);im.alt=`『${bk.title}』 펼침면 ${bkPage+1}`;el.append(im);
+  $("#bkNum").textContent=`${bkPage+1} / ${n}${bk.full?"":" · 미리보기"}`;$("#bkPrev").disabled=bkPage===0;$("#bkNext").disabled=bkPage===n-1}
+function openSpreads(bk,i=0){if(!bk.spreads||!bk.spreads.length)return;bkCur=bk;bkPage=i;$("#bkTitle").textContent=`펼쳐 보기 · 『${bk.title}』`;renderSpread();$("#bkDlg").showModal()}
+$("#bkPrev").onclick=()=>{if(bkPage>0){bkPage--;renderSpread()}};
+$("#bkNext").onclick=()=>{if(bkCur&&bkPage<bkCur.spreads.length-1){bkPage++;renderSpread()}};
 $("#bkDlg").addEventListener("keydown",e=>{if(e.key==="ArrowLeft")$("#bkPrev").click();if(e.key==="ArrowRight")$("#bkNext").click()});
+/* 책 한 권의 페이지: /book/<id> */
+function renderBookPage(id){
+  const bk=BOOKS.find(b=>b.id===id),a=byId[bk.artist],root=$("#artistSite");siteId=null;root.innerHTML="";
+  const sp=document.createElement("section");sp.className="bkp";
+  const row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
+  sp.innerHTML=`<nav class="bkp-bc" aria-label="위치"><a href="/#catalogue">도록</a> › <a href="${artistPath(a.id)}">${esc(a.name)}</a></nav>
+    <div class="bkp-top"><div class="bkp-cv"></div><div class="bkp-info">
+      <span class="bkp-kind">${esc(bk.kind||"도록")} · ${bookAccess(bk)}</span>
+      <h1>『${esc(bk.title)}』</h1>
+      <p class="bkp-by"><a href="${artistPath(a.id)}">${esc(a.name)}</a> <span>${esc(a.tier)} · ${esc(a.genre)}</span>${bk.writer?` · 글 ${esc(bk.writer)}`:""}</p>
+      <dl>${row("발행",bk.year?bk.year+"년":"")}${row("쪽수",bk.pages?bk.pages+"쪽":"")}${row("판형",bk.size)}${row("발행처",bk.publisher)}${row("ISBN",bk.isbn)}</dl>
+      <div class="bkp-acts"></div></div></div>`;
+  sp.querySelector(".bkp-cv").append(bookCover(bk));
+  const acts=sp.querySelector(".bkp-acts");
+  if(bk.spreads&&bk.spreads.length){const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=bk.full?"e북으로 읽기":"미리보기 펼치기";b.onclick=()=>openSpreads(bk);acts.append(b)}
+  (bk.links||[]).forEach(x=>acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`));
+  acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${libSearch(bk)}" target="_blank" rel="noopener">도서관에서 찾기 ↗</a>`);
+  const sec=(t,html)=>{const s=document.createElement("div");s.className="bkp-sec";s.innerHTML=`<h2>${t}</h2>`;if(html)s.insertAdjacentHTML("beforeend",html);sp.append(s);return s};
+  if(bk.desc)sec("소개",`<p class="bkp-desc">${esc(bk.desc)}</p>`);
+  if(bk.spreads&&bk.spreads.length){const s=sec(bk.full?"펼쳐 보기":"미리보기");const g=document.createElement("div");g.className="bkp-spreads";
+    bk.spreads.forEach((src,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",`펼침면 ${i+1} 크게 보기`);const im=document.createElement("img");im.src=optImg(src,true);im.alt="";im.loading="lazy";b.append(im);b.onclick=()=>openSpreads(bk,i);g.append(b)});s.append(g)}
+  const W=(bk.works||[]).filter(i=>a.works[i]);
+  if(W.length){const s=sec(`이 책에 실린 작품 <small>${W.length}점</small>`);const g=document.createElement("div");g.className="bkp-works";
+    W.forEach(i=>{const l=document.createElement("a");l.href=workPath(a.id,i);const f=document.createElement("div");f.className="th";f.append(workImg(a,i,320,320,a.works[i][0]));l.append(f);l.insertAdjacentHTML("beforeend",`<b>${esc(a.works[i][0])}</b><span>${esc(a.works[i][1]||"")}</span>`);g.append(l)});s.append(g)}
+  if(bk.toc&&bk.toc.length)sec("목차",`<ol class="bkp-toc">${bk.toc.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>`);
+  const ex=bk.exhibition&&EXHIBITIONS.find(e=>e.id===bk.exhibition);
+  if(ex){const s=sec("연결된 전시");const g=document.createElement("div");g.className="exgrid";g.append(exListCard(ex));s.append(g)}
+  const more=BOOKS.filter(b=>b.artist===a.id&&b.id!==bk.id);
+  if(more.length){const s=sec(`${esc(a.name)}의 다른 책`);const g=document.createElement("div");g.className="bk-shelf";more.forEach(b=>g.append(bookCard(b,{noArtist:true})));s.append(g)}
+  if(!bk.cover&&!(bk.spreads&&bk.spreads.length))sp.insertAdjacentHTML("beforeend",`<p class="bkp-note">표지와 펼침면 사진은 작가에게 받는 대로 올려요. 지금 표지는 arttan이 글자로 만든 임시 표지예요.</p>`);
+  root.append(sp);
+  document.title=`『${bk.title}』 ${a.name} ${bk.kind||"도록"} | arttan`;
+}
 
 /* ---------- galleries ---------- */
 const AREAS=["전체",...new Set(GALLERIES.map(g=>g.area))];let curArea="전체";
@@ -2070,7 +2151,7 @@ function renderPicks(){
   const artist=(a,lab,key)=>{if(!a||a.hidden)return;const r=archiveOf(a);card(artCanvas(a,key,360,480,`${a.name} 대표작`),lab,a.name,`${esc(a.tier)} · ${esc(genresOf(a).join(", "))}<br>작품 ${r.works} · 전시 ${r.ex} · 도록 ${r.books}`,()=>openPortfolio(a.id))};
   pub().forEach((a,k)=>artist(a,k===0?"이달의 작가":`${a.tier.replace("작가","")}작가 아카이브`,a.photos?"c"+((hash(a.id)+3)%a.photos.length):"c1"));
   const bk=BOOKS[0];
-  if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(coverCanvas(bk,360,480),"추천 도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${bk.year}`,()=>openBook(0));
+  if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(bookCover(bk,true),"추천 도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${esc(bk.kind||"도록")}${bk.year?` · ${bk.year}`:""}`,()=>{location.href=bookPath(bk)});
   const v=INTERVIEWS[0];
   if(v&&byId[v.artist]&&!byId[v.artist].hidden)card(artCanvas(byId[v.artist],"iv",360,480,""),"추천 인터뷰",v.title,`${esc(byId[v.artist].name)}<br>${esc(v.date)}`,()=>{ivOpen=false;renderInterview(0);location.hash="interviews"});
   const live=EXHIBITIONS.map(e=>({...e,st:status(e)})).filter(e=>e.st.k==="live").sort((a,b)=>parse(a.end)-parse(b.end))[0];
@@ -2102,10 +2183,8 @@ function renderHome(){
     b.onclick=()=>{ivOpen=false;renderInterview(k);location.hash="interviews"};hi.append(b)});
   /* 도록 아카이브 */
   const hb=$("#homeBooks");hb.innerHTML="";
-  BOOKS.forEach((bk,i)=>{const a=byId[bk.artist];if(!a||a.hidden)return;const b=document.createElement("button");b.type="button";b.className="rc";
-    const pw=document.createElement("div");pw.className="poster";pw.append(coverCanvas(bk,360,480));b.append(pw);
-    b.insertAdjacentHTML("beforeend",`<div><div class="when">${esc(a.name)}</div><h3>『${esc(bk.title)}』</h3><div class="m">${bk.year} · ${bk.pages}쪽 · ${esc(bk.size)}</div></div>`);
-    b.onclick=()=>openBook(i);hb.append(b)});
+  BOOKS.forEach(bk=>{const a=byId[bk.artist];if(!a||a.hidden)return;hb.append(bookCard(bk))});
+  if(!hb.children.length)hb.innerHTML=`<p class="empty">아직 올라온 도록이 없어요.</p>`;
   /* 최근 기록 */
   const lg=$("#alog");lg.innerHTML="";
   const added=AD.artists.slice().reverse().map(o=>["새로 등록",o.id,"새 작가로 아카이브에 등록됐어요",""]);
@@ -2194,9 +2273,7 @@ function renderArtistSite(id){
   const bks=BOOKS.map((b,i)=>[b,i]).filter(([b])=>b.artist===id);
   const bs=sec("as-books","Catalogue","도록 · 저서");
   if(!bks.length&&!a.books)bs.insertAdjacentHTML("beforeend",`<div class="none">등록된 도록이 아직 없어요.</div>`);
-  if(bks.length){const g=document.createElement("div");g.className="as-books";bks.forEach(([bk,i])=>{const b=document.createElement("button");b.type="button";b.className="book";
-      const cv=document.createElement("div");cv.className="cover";cv.append(coverCanvas(bk,360,480));b.append(cv);
-      b.insertAdjacentHTML("beforeend",`<div><div class="t">『${esc(bk.title)}』</div><div class="spec">${bk.year} · ${bk.pages}쪽 · ${esc(bk.size)}<br>글 ${esc(bk.writer)} · ${esc(bk.price)}</div></div>`);b.onclick=()=>openBook(i);g.append(b)});bs.append(g)}
+  if(bks.length){const g=document.createElement("div");g.className="bk-shelf";bks.forEach(([bk])=>g.append(bookCard(bk,{noArtist:true})));bs.append(g)}
   if(a.books)bs.insertAdjacentHTML("beforeend",`<ul class="as-pubs">${a.books.map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`);
   /* 전시 */
   const exs=EXHIBITIONS.filter(e=>e.artists.includes(id)).map(e=>({...e,st:status(e)}));
@@ -2358,6 +2435,7 @@ function pathPage(){const p=location.pathname.replace(/\/+$/,"");let m;
   if((m=/^\/artist\/([^/]+)$/.exec(p)))return{t:"artist",id:decodeURIComponent(m[1])};
   if((m=/^\/gallery\/([^/]+)$/.exec(p)))return{t:"gallery",id:decodeURIComponent(m[1])};
   if((m=/^\/exhibition\/([^/]+)$/.exec(p)))return{t:"exhibition",id:decodeURIComponent(m[1])};
+  if((m=/^\/book\/([^/]+)$/.exec(p)))return{t:"book",id:decodeURIComponent(m[1])};
   return null}
 function showSite(draw,navHref){
   document.body.classList.add("is-site");
@@ -2379,6 +2457,8 @@ function route(){
       if(P.t==="work"&&a.works[P.n-1]){document.getElementById("as-works").scrollIntoView();openLightbox(P.n-1)}
       return}
     if(P.t==="gallery"&&galById[P.id]){showSite(()=>renderGallerySite(P.id),"#galleries");return}
+    const bk=P.t==="book"&&BOOKS.find(b=>b.id===P.id);
+    if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden){showSite(()=>renderBookPage(P.id),"#catalogue");return}
     const x=P.t==="exhibition"&&EXHIBITIONS.find(e=>e.id===P.id);
     if(!x){location.replace("/");return}
     v="shows";setTimeout(()=>openExhibit(x),0);

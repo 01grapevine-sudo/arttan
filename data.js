@@ -52,7 +52,9 @@ async function loadFromSupabase() {
       photos: (imgs.length && imgs.every(Boolean)) ? imgs : undefined,
       interviews: iv.filter(x => x.artist_id === r.id).map(x => ({ id: x.id, title: x.title, date: x.date || "", lead: x.lead || "", qa: x.qa || [] })),
       video: v ? { title: v.title, len: v.len, date: v.date, place: v.place, url: v.url } : null,
-      books: bk.filter(x => x.artist_id === r.id).map(x => ({ id: x.id, title: x.title, year: x.year, pages: x.pages, size: x.size || "", writer: x.writer || "", price: x.price || "" }))
+      books: bk.filter(x => x.artist_id === r.id).map(x => ({ id: x.slug || String(x.id), kind: x.kind || "도록", title: x.title, year: x.year, pages: x.pages, size: x.size || "",
+        writer: x.writer || "", publisher: x.publisher || "", isbn: x.isbn || "", desc: x.description || "", cover: x.cover_path ? workImageUrl(x.cover_path) : undefined,
+        spreads: (x.spreads || []).map(workImageUrl), full: !!x.full_view, works: x.work_refs || [], exhibition: x.exhibition_id || undefined, toc: x.toc || [], links: x.links || [] }))
     });
   });
   GALLERIES.length = 0; Object.keys(galById).forEach(k => delete galById[k]);
