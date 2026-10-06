@@ -62,15 +62,15 @@ const GALLERIES = [
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
-/* 전시 (출처로 확인한 실제 전시만 넣어요. 단, id가 eloi- 로 시작하는 것은 테스트용 가상 전시예요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
+/* 전시 (주소가 바뀌지 않게 id 를 꼭 적어요. 출처로 확인한 실제 전시만 넣어요. 단, id가 eloi- 로 시작하는 것은 테스트용 가상 전시예요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
 const EXHIBITIONS = [
   {id:"eloi-2026", g:"testgal", title:"빛이 머무는 자리", artists:["eloi"], kind:"개인전", start:"2026-11-01", end:"2026-11-07", poster:"artists/eloi/posters/2026-light.jpg", desc:"[테스트용 가상 전시] 빛과 색이 겹쳐 머무는 순간을 그린 신작 8점. 전시·포스터·도록 기능을 시험하려고 만든 샘플이에요."},
   {id:"eloi-2025", g:"testgal", title:"정원의 오후", artists:["eloi"], kind:"개인전", start:"2025-05-03", end:"2025-05-25", poster:"artists/eloi/posters/2025-garden.jpg", desc:"[테스트용 가상 전시] 오후의 정원을 색면과 곡선으로 옮긴 첫 개인전 (샘플)."},
-  {g:"cbcc", title:"이홍원 작은 그림전 – 마동 30년 기념특별전", artists:["lhw"], kind:"특별전", start:"2025-03-11", end:"2025-03-16", desc:"청주 마동창작마을에서 작업한 30년을 기념해 충북문화관 숲속갤러리 전관에서 연 작은 그림전. 꽃 호랑이, 소나무, 싸움소, 질주, 연리지, 울림 등을 선보였다."},
-  {g:"insaplaza", title:"이홍원 전 – 달항아리 노래", artists:["lhw"], kind:"기획 초대전", start:"2023-03-22", end:"2023-03-27", desc:"서울 인사아트프라자갤러리 기획 초대전."},
-  {g:"jmhm", title:"물, 예술을 넘어", artists:["jmh"], kind:"소장전", start:"2023-02-06", end:"2023-06-30", desc:"대청댐 건설로 고향을 잃은 수몰민의 애환을 담은 작품들. 제4회 겸재미술상 수상기념전에 걸렸던 작품을 다시 소개했다."},
-  {g:"jmhm", title:"한 장의 편지 – 한 숟가락의 물", artists:["jmh"], kind:"소장전", start:"2022-02-07", end:"2022-06-30", desc:"'금강 아리랑, 이 한잔의 물'을 부제로, 물과 고향을 주제로 한 작품을 모은 소장전."},
-  {g:"dmma", title:"금강홍 열두가지 변주", artists:["jmh"], kind:"초대전", start:"2016-06-14", end:"2016-06-19", desc:"대전시립미술관 초대전."},
+  {id:"ex01", g:"cbcc", title:"이홍원 작은 그림전 – 마동 30년 기념특별전", artists:["lhw"], kind:"특별전", start:"2025-03-11", end:"2025-03-16", desc:"청주 마동창작마을에서 작업한 30년을 기념해 충북문화관 숲속갤러리 전관에서 연 작은 그림전. 꽃 호랑이, 소나무, 싸움소, 질주, 연리지, 울림 등을 선보였다."},
+  {id:"ex02", g:"insaplaza", title:"이홍원 전 – 달항아리 노래", artists:["lhw"], kind:"기획 초대전", start:"2023-03-22", end:"2023-03-27", desc:"서울 인사아트프라자갤러리 기획 초대전."},
+  {id:"ex03", g:"jmhm", title:"물, 예술을 넘어", artists:["jmh"], kind:"소장전", start:"2023-02-06", end:"2023-06-30", desc:"대청댐 건설로 고향을 잃은 수몰민의 애환을 담은 작품들. 제4회 겸재미술상 수상기념전에 걸렸던 작품을 다시 소개했다."},
+  {id:"ex04", g:"jmhm", title:"한 장의 편지 – 한 숟가락의 물", artists:["jmh"], kind:"소장전", start:"2022-02-07", end:"2022-06-30", desc:"'금강 아리랑, 이 한잔의 물'을 부제로, 물과 고향을 주제로 한 작품을 모은 소장전."},
+  {id:"ex05", g:"dmma", title:"금강홍 열두가지 변주", artists:["jmh"], kind:"초대전", start:"2016-06-14", end:"2016-06-19", desc:"대전시립미술관 초대전."},
 ].map((e,i)=>({id:"ex"+String(i+1).padStart(2,"0"),...e,venue:galById[e.g].name,region:galById[e.g].area}));
 
 /* ---------- generative artwork ---------- */
