@@ -59,6 +59,7 @@ async function loadFromSupabase() {
   });
   GALLERIES.length = 0; Object.keys(galById).forEach(k => delete galById[k]);
   gl.forEach(g => { const o = { id: g.id, name: g.name, area: g.area || "", addr: g.addr, hours: g.hours, tel: g.tel, site: g.site, intro: g.intro,
+    photo: g.photo_path ? workImageUrl(g.photo_path) : undefined, photoPath: g.photo_path || null, video: g.video_url || "",
     crawlUrl: g.crawl_url || "", crawlOn: g.crawl_on !== false, lastCrawledAt: g.last_crawled_at || null, lastCrawlNote: g.last_crawl_note || "" }; GALLERIES.push(o); galById[o.id] = o; });
   EXHIBITIONS.length = 0;
   ex.forEach(e => EXHIBITIONS.push({ id: e.id, g: e.gallery_id, title: e.title, kind: e.kind || "", start: e.start_date, end: e.end_date,

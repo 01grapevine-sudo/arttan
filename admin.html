@@ -163,16 +163,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=29"></script>
+<script src="core.js?v=33"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=29"></script>
-<script src="artists/jmh/artist.js?v=29"></script>
-<script src="artists/lmg/artist.js?v=29"></script>
-<script src="artists/lhw/artist.js?v=29"></script>
+<script src="artists/eloi/artist.js?v=33"></script>
+<script src="artists/jmh/artist.js?v=33"></script>
+<script src="artists/lmg/artist.js?v=33"></script>
+<script src="artists/lhw/artist.js?v=33"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=29"></script>
-<script src="data.js?v=29"></script>
+<script src="config.js?v=33"></script>
+<script src="data.js?v=33"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -582,6 +582,12 @@ function venueSheet(g){
   const curl=inp("gCrawl","url",g?.crawlUrl||"","전시 목록이 보이는 페이지 주소");
   let auto=g?.crawlOn!==false;const on=switchEl(auto,v=>{auto=v},"자동 수집");
   const intro=inp("gIntro","textarea",g?.intro||"","전시장 소개를 직접 써 주세요 (다른 사이트 글을 그대로 옮기지 않아요)");
+  const video=inp("gVideo","url",g?.video||"","유튜브·비메오 주소 (전시장 소개·전시 전경 영상)");
+  /* 대표 사진: {show, path, data} */
+  let photo=g?.photo?{show:g.photo,path:g.photoPath??g.photo}:null;
+  const phBox=el(`<div class="t-prev"></div>`),drawPh=()=>{phBox.innerHTML="";if(photo){const w=el(`<span class="t-pi"><img src="${photo.data||photo.show}" alt="대표 사진" style="width:160px;height:100px"><button type="button" aria-label="사진 지우기">×</button></span>`);w.querySelector("button").onclick=()=>{photo=null;drawPh()};phBox.append(w)}};
+  const phFile=inp("gPhoto","file");phFile.accept="image/*";phFile.onchange=async()=>{const u=phFile.files[0]&&await shrink(phFile.files[0],1800);if(u){photo={data:u};drawPh()}};drawPh();
+  const phOk=el(`<label class="t-check"><input type="checkbox" id="gPhOk"> 이 사진은 전시장(또는 촬영자)의 사용 허락을 받았어요</label>`);
   const prev=el(`<div class="t-crawlprev"></div>`);
   const test=tBtn("미리 수집해 보기","ghost sm",async()=>{if(!/^https?:\/\//.test(curl.value.trim())){toast("전시 목록 주소를 https:// 로 넣어 주세요");return}
     test.disabled=true;test.textContent="읽는 중…";prev.innerHTML="";
@@ -593,13 +599,20 @@ function venueSheet(g){
     finally{test.disabled=false;test.textContent="미리 수집해 보기"}});
   const two=(x,y)=>{const t=el(`<div class="t-two"></div>`);t.append(x,y);return t};
   f.append(two(fieldL("전시장 이름",name),fieldL("지역(동네)",area)),fieldL("주소",addr),two(fieldL("관람시간",hours),fieldL("전화",tel)),fieldL("홈페이지",site),
-    fieldL("전시 목록 주소",curl,"전시명과 기간이 나오는 페이지(예: 현재·예정 전시 목록). 이 주소에서 전시를 모아요."),test,prev,fieldD("매일 자동 수집",on),fieldL("소개",intro));
+    fieldL("전시 목록 주소",curl,"전시명과 기간이 나오는 페이지(예: 현재·예정 전시 목록). 이 주소에서 전시를 모아요."),test,prev,fieldD("매일 자동 수집",on),fieldL("소개",intro),
+    fieldL("대표 사진",phFile,"홈 화면 갤러리 카드와 전시장 페이지 맨 위에 나와요. 전시장 홈페이지 사진을 허락 없이 가져오지 마세요."),phBox,phOk,fieldL("영상",video));
   const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
-    const v={name:name.value.trim(),area:area.value.trim(),addr:addr.value.trim(),hours:hours.value.trim(),tel:tel.value.trim(),site:site.value.trim(),crawlUrl:curl.value.trim(),crawlOn:auto,intro:intro.value.trim()};
+    const v={name:name.value.trim(),area:area.value.trim(),addr:addr.value.trim(),hours:hours.value.trim(),tel:tel.value.trim(),site:site.value.trim(),crawlUrl:curl.value.trim(),crawlOn:auto,intro:intro.value.trim(),video:video.value.trim()};
+    if(photo&&photo.data&&!$("#gPhOk").checked){toast("사진 사용 허락을 받았는지 확인해 주세요");return}
+    if(v.video&&!/^https?:\/\//.test(v.video)){toast("영상 주소는 https:// 로 시작해야 해요");video.focus();return}
     if(!v.name){toast("전시장 이름을 입력해 주세요");name.focus();return}
     if(v.crawlUrl&&!/^https?:\/\//.test(v.crawlUrl)){toast("전시 목록 주소는 https:// 로 시작해야 해요");curl.focus();return}
-    if(SBM()){const row={name:v.name,area:v.area||null,addr:v.addr||null,hours:v.hours||null,tel:v.tel||null,site:v.site||null,intro:v.intro||null,crawl_url:v.crawlUrl||null,crawl_on:v.crawlOn};
-      dbDo(()=>isNew?ARTTAN_DB.from("galleries").insert({id:newId("g"),...row,sort:1000}):ARTTAN_DB.from("galleries").update(row).eq("id",g.id),isNew?"전시장을 추가했어요":"저장했어요",true);return}
+    if(SBM()){const gid=isNew?newId("g"):g.id;
+      dbDo(async()=>{let pp=photo?photo.path||null:null;
+        if(photo&&photo.data){const blob=await (await fetch(photo.data)).blob();pp=`galleries/${gid}/${Date.now()}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(pp,blob,{contentType:"image/jpeg"});if(up.error)return up}
+        const row={name:v.name,area:v.area||null,addr:v.addr||null,hours:v.hours||null,tel:v.tel||null,site:v.site||null,intro:v.intro||null,crawl_url:v.crawlUrl||null,crawl_on:v.crawlOn,video_url:v.video||null,photo_path:pp};
+        return isNew?ARTTAN_DB.from("galleries").insert({id:gid,...row,sort:1000}):ARTTAN_DB.from("galleries").update(row).eq("id",g.id)},isNew?"전시장을 추가했어요":"저장했어요",true);return}
+    v.photo=photo?(photo.data||photo.show):undefined;
     if(isNew){const o={...v,id:"g"+Date.now().toString(36)};AD.galleries=AD.galleries||[];AD.galleries.push(o);if(!adSave()){AD.galleries.pop();return}const go2={...o,added:true};GALLERIES.push(go2);galById[o.id]=go2;toast("전시장을 추가했어요")}
     else{if(g.added)Object.assign(AD.galleries.find(x=>x.id===g.id),v);else{AD.galEdits=AD.galEdits||{};AD.galEdits[g.id]={...(AD.galEdits[g.id]||{}),...v}}if(!adSave())return;Object.assign(g,v);toast("저장했어요")}
     closeSheet();renderAdmin()});

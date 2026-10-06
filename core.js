@@ -58,7 +58,7 @@ const GALLERIES = [
   {id:"jmhm", name:"정명희미술관", area:"대전", addr:"대전평생학습관 302호"},
   {id:"cbcc", name:"충북문화관 숲속갤러리", area:"청주"},
   /* 테스트용 가상 갤러리 (엘로이 샘플 전시용) */
-  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요."},
+  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", photo:"galleries/testgal.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 arttan이 직접 그린 샘플이에요."},
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
@@ -220,7 +220,7 @@ const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.
 /* 검색 제목: 사람들이 찾는 "이름 + 작가"를 맨 앞에 → "엘로이 작가 (1992~) · 서양화 청년작가" */
 const artistHeadline=a=>`${a.name} 작가${a.born?` (${a.born}~)`:""} · ${a.genre} ${a.tier}`;
 /* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
-const optImg=(src,small)=>/^\/?artists\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
+const optImg=(src,small)=>/^\/?(artists|galleries)\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
 /* ---------- 도록 · 화집 · 작가 저서 ----------
    도록 데이터: {id, kind, title, year, pages, size, publisher, isbn, writer, desc,
      cover(표지 사진), spreads[펼침면 사진], full(전체 공개 여부), works[이 작가 작품 번호(0부터)],
@@ -241,6 +241,15 @@ function bookCover(b,small){
   d.style.cssText=`background:${bg};color:${lum>.6?"#1A1A1A":"#F7F4EE"}`;
   d.innerHTML=`<span class="k">${esc(b.kind||"도록")}</span><b>${esc(b.title)}</b><span class="a">${esc(a.name||"")}</span><span class="y">${b.year||""}</span>`;
   return d}
+/* 전시장 대표 사진: 전시장이 허락한 사진(g.photo)만 써요. 없으면 이름으로 만든 카드 */
+function galCover(g,small){
+  if(g.photo){const im=document.createElement("img");im.src=optImg(g.photo,small);im.alt=`${g.name} 전경`;im.loading="lazy";im.decoding="async";im.className="g-photo";return im}
+  const d=document.createElement("div");d.className="g-typo";d.setAttribute("role","img");d.setAttribute("aria-label",`${g.name} (사진 준비 중)`);
+  d.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18"/></svg><span>전시장 사진 준비 중</span>`;return d}
+/* 영상 주소 → 넣어서 볼 수 있는 주소 (유튜브·비메오) */
+function videoEmbed(u){if(!u)return null;let m;
+  if((m=/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(u)))return `https://www.youtube-nocookie.com/embed/${m[1]}`;
+  if((m=/vimeo\.com\/(?:video\/)?(\d+)/.exec(u)))return `https://player.vimeo.com/video/${m[1]}`;return null}
 /* 검색에 알릴 주소와 내용 요약. 관리자에서 저장한 뒤 바뀐 주소만 골라 네이버에 바로 알려요. */
 function seoPages(){const m={"/":"home"};
   ARTISTS.filter(artistIndexable).forEach(a=>{

@@ -1,4 +1,4 @@
-// 테스트용 가상 작가 '엘로이'의 샘플 이미지를 직접 그려요 (작품 8점, 전시 포스터 2장, 도록 표지 1장, 펼침면 4장).
+// 테스트용 가상 작가 '엘로이'의 샘플 이미지를 직접 그려요 (작품 8점, 전시 포스터 2장, 도록 표지 1장, 펼침면 4장, 테스트 갤러리 전경 1장).
 // 외부 이미지를 쓰지 않아서 저작권 문제가 없어요.  실행: node scripts/make-sample-eloi.mjs
 import fs from "node:fs";
 import path from "node:path";
@@ -71,6 +71,19 @@ async function main() {
       <text x="200" y="1500" ${FONT} font-size="26" fill="#A8A3B8">${k * 2 + 12}</text><text x="2200" y="1500" ${FONT} font-size="26" fill="#A8A3B8" text-anchor="end">${k * 2 + 13}</text></svg>`;
     await sharp(Buffer.from(sp)).composite([{ input: art, top: 425, left: 100 }]).jpeg({ quality: 84 }).toFile(out(`books/light-${String(k + 1).padStart(2, "0")}.jpg`));
   }
+  /* 테스트 갤러리 전경 (1800×1100): 흰 벽에 엘로이 작품 3점 */
+  const W = 1800, H = 1100, frames = [[2, 260, 330, 380, 285], [0, 720, 290, 430, 322], [5, 1230, 330, 330, 248]];
+  const room = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+    <defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F5F1"/><stop offset="1" stop-color="#ECE8E1"/></linearGradient>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9BBA6"/><stop offset="1" stop-color="#A8977F"/></linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="url(#w)"/><rect y="820" width="${W}" height="280" fill="url(#f)"/>
+    <rect y="812" width="${W}" height="10" fill="#DAD3C8"/>
+    ${[300, 900, 1500].map(x => `<ellipse cx="${x}" cy="40" rx="150" ry="18" fill="#FFFFFF" opacity=".9"/><path d="M ${x - 160} 60 L ${x - 260} 760 L ${x + 260} 760 L ${x + 160} 60 Z" fill="#FFFDF6" opacity=".35"/>`).join("")}
+    ${frames.map(([, x, y, w, h]) => `<rect x="${x - 6}" y="${y + 14}" width="${w + 12}" height="${h + 12}" fill="#000" opacity=".12"/><rect x="${x - 6}" y="${y - 6}" width="${w + 12}" height="${h + 12}" fill="#2B2620"/>`).join("")}
+    <text x="1760" y="1060" ${FONT} font-size="26" fill="#5E5244" text-anchor="end">arttan 테스트 갤러리 · 샘플 이미지</text></svg>`;
+  const comps = [];
+  for (const [wi, x, y, w, h] of frames) comps.push({ input: await sharp(Buffer.from(artwork(wi, w, h))).png().toBuffer(), left: x, top: y });
+  await sharp(Buffer.from(room)).composite(comps).jpeg({ quality: 85 }).toFile(path.join(root, "galleries/testgal.jpg"));
   console.log("엘로이 샘플 이미지를 만들었어요.");
 }
 main();

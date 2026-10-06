@@ -23,4 +23,15 @@ for (const id of fs.readdirSync(dir)) {
   }
   }
 }
+/* 전시장 사진 (galleries/*.jpg) */
+const gd = path.join(root, "galleries");
+if (fs.existsSync(gd)) for (const f of fs.readdirSync(gd)) {
+  if (f.startsWith(".") || !/\.jpe?g$/i.test(f)) continue;
+  const src = path.join(gd, f);
+  for (const [suffix, width, quality] of [[".webp", 1600, 80], ["-480.webp", 640, 74]]) {
+    const out = src.replace(/\.jpe?g$/i, suffix);
+    if (fs.existsSync(out) && fs.statSync(out).mtimeMs >= fs.statSync(src).mtimeMs) { kept++; continue; }
+    await sharp(src).rotate().resize({ width, height: width, fit: "inside", withoutEnlargement: true }).webp({ quality }).toFile(out); made++;
+  }
+}
 console.log(`작품 이미지 WebP: 새로 ${made}개, 그대로 ${kept}개`);

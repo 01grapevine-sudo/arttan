@@ -275,4 +275,5 @@ create table if not exists public.crawled_exhibitions (
 alter table public.crawled_exhibitions enable row level security;
 drop policy if exists "crawled: admin all" on public.crawled_exhibitions;
 create policy "crawled: admin all" on public.crawled_exhibitions for all using (public.is_admin()) with check (public.is_admin());
-
+alter table public.galleries add column if not exists photo_path text;   -- 전시장 대표 사진 (전시장이 허락한 것만)
+alter table public.galleries add column if not exists video_url text;    -- 유튜브·비메오 영상 주소
