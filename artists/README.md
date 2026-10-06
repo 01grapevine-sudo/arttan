@@ -4,9 +4,11 @@
 
 ```
 artists/
-  jmh/
-    artist.js     ← 정명희: 정보 · 작품 목록 · 인터뷰 · 영상 · 도록
-    works/        ← 정명희 작품 이미지만
+  eloi/
+    artist.js     ← 엘로이(테스트용 가상 작가): 정보 · 작품 목록 · 인터뷰 · 영상 · 도록
+    works/        ← 엘로이 작품 이미지만
+    books/        ← 엘로이 도록 표지·펼침면
+    posters/      ← 엘로이 전시 포스터
   hsy/
     artist.js
   ...
@@ -27,21 +29,21 @@ artists/
 
 전시(여러 작가가 함께하는 전시 포함)와 갤러리는 작가 폴더가 아니라 `core.js` 에서 작가 id로 연결해요.
 
-현재 작가: jmh, ysg, sjw, cjs, mjh, oeb, pjo, jmr, hsy, ldh, knr, rhj
+현재 작가: eloi(테스트용 가상), jmh, lmg, lhw
 
 ## 도록 · 화집 · 저서 넣기
 
 `artist.js` 의 `books:[ … ]` 에 한 권씩 넣어요. 주소는 `/book/<id>` 가 돼요.
 
 ```js
-{id:"lhw-2025", kind:"전시 도록",          // 전시 도록 · 화집 · 작가 저서
+{id:"eloi-light", kind:"전시 도록",          // 전시 도록 · 화집 · 작가 저서
  title:"…", year:2025, pages:96, size:"230×300mm", publisher:"…", isbn:"…", writer:"글쓴이",
  desc:"소개 글 (40자 이상이면 검색에 노출)",
- cover:"artists/lhw/books/2025-cover.jpg",   // 표지 사진 (작가 제공). 없으면 글자 표지
- spreads:["artists/lhw/books/2025-01.jpg"],  // 펼침면 사진 (작가가 허락한 것만)
+ cover:"artists/eloi/books/light-cover.jpg",   // 표지 사진 (작가 제공). 없으면 글자 표지
+ spreads:["artists/eloi/books/light-01.jpg"],  // 펼침면 사진 (작가가 허락한 것만)
  full:false,                                 // true = 전체 공개(e북), false = 미리보기
  works:[27,28],                              // 이 책에 실린 작품 (works 목록 순서, 0부터)
- exhibition:"ex01",                          // 연결된 전시 id
+ exhibition:"eloi-2026",                          // 연결된 전시 id
  toc:["인사말","작품","약력"], links:[{name:"구매처",url:"https://…"}]}
 ```
 

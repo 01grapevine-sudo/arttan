@@ -1608,15 +1608,16 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=25"></script>
+<script src="core.js?v=26"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=25"></script>
-<script src="artists/lmg/artist.js?v=25"></script>
-<script src="artists/lhw/artist.js?v=25"></script>
-<script src="artists/eloi/artist.js?v=25"></script>
+<!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
+<script src="artists/eloi/artist.js?v=26"></script>
+<script src="artists/jmh/artist.js?v=26"></script>
+<script src="artists/lmg/artist.js?v=26"></script>
+<script src="artists/lhw/artist.js?v=26"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=25"></script>
-<script src="data.js?v=25"></script>
+<script src="config.js?v=26"></script>
+<script src="data.js?v=26"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2078,6 +2079,7 @@ function renderTierRail(){
   const L=cur.filter(e=>has(e,homeTier)).sort((x,y)=>parse(y.start)-parse(x.start)).slice(0,10);
   const r=$("#tierRail");r.innerHTML="";if(!L.length)r.innerHTML=`<p class="empty">지금 열리고 있거나 열릴 예정인 전시가 없어요. 지난 전시는 <a href="#shows">전시</a> 메뉴에서 볼 수 있어요.</p>`;L.forEach(e=>r.append(railCard(e)))}
 const ALOG=[
+  ["2026.10.07","eloi","[테스트] 샘플 작품 8점·전시 포스터·도록을 올렸어요","테스트용 가상 작가 · 이미지 직접 생성"],
   ["2026.10.06","lhw","작품 90점과 전시 기록을 올렸어요","작가 제공 사진 · 사용 허락"],
   ["2026.10.06","lmg","거미줄 「소우주」 연작 등 작품 14점을 올렸어요","작가 제공 사진 · 사용 허락"],
   ["2026.10.06","jmh","인물 사진과 작품 기록 12건, 전시 이력을 정리했어요","DA-Arts·언론 보도 자료"]];

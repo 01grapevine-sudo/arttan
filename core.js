@@ -214,7 +214,7 @@ const galIndexable=g=>!!g&&!g.test&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.
 function exNames(e){const n=e.artists.map(id=>byId[id]?.name).filter(Boolean);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
 /* 전시 제목은 사람들이 검색하는 순서로: 작가 개인전 : 「전시명」 - 장소 */
 const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.venue}`;
-/* 검색 제목: 사람들이 찾는 "이름 + 작가"를 맨 앞에 → "정명희 작가 (1945~) · 한국화 원로작가" */
+/* 검색 제목: 사람들이 찾는 "이름 + 작가"를 맨 앞에 → "엘로이 작가 (1992~) · 서양화 청년작가" */
 const artistHeadline=a=>`${a.name} 작가${a.born?` (${a.born}~)`:""} · ${a.genre} ${a.tier}`;
 /* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
 const optImg=(src,small)=>/^\/?artists\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;

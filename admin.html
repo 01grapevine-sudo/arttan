@@ -159,15 +159,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=25"></script>
+<script src="core.js?v=26"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=25"></script>
-<script src="artists/lmg/artist.js?v=25"></script>
-<script src="artists/lhw/artist.js?v=25"></script>
-<script src="artists/eloi/artist.js?v=25"></script>
+<!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
+<script src="artists/eloi/artist.js?v=26"></script>
+<script src="artists/jmh/artist.js?v=26"></script>
+<script src="artists/lmg/artist.js?v=26"></script>
+<script src="artists/lhw/artist.js?v=26"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=25"></script>
-<script src="data.js?v=25"></script>
+<script src="config.js?v=26"></script>
+<script src="data.js?v=26"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -357,7 +358,7 @@ function adEx(m){
 }
 function exSheet(e){
   const isNew=!e;const f=el(`<div class="t-form"></div>`);
-  const title=inp("xTitle","text",e?.title||"","예: 금강, 다시 흐르다");
+  const title=inp("xTitle","text",e?.title||"","예: 빛이 머무는 자리");
   const kind=segField(["개인전","그룹전","기획전","초대전"],e?.kind||"개인전");
   const ids=pub().map(a=>a.id);const who=chipsField(ids,e?.artists||[],8,id=>byId[id].name);
   const gal=document.createElement("select");gal.id="xGal";gal.innerHTML=`<option value="">갤러리를 골라 주세요</option>`+GALLERIES.map(g=>`<option value="${g.id}">${esc(g.name)} · ${esc(g.area)}</option>`).join("");gal.value=e?.g||"";
@@ -452,7 +453,7 @@ function bookSheet(bk){
   const A=pub();if(!A.length){toast("작가를 먼저 등록해 주세요");return}
   const who=document.createElement("select");who.id="bArtist";who.innerHTML=A.map(a=>`<option value="${a.id}">${esc(a.name)} · ${esc(a.genre)}</option>`).join("");who.value=bk?.artist||A[0].id;
   const kind=segField(BOOK_KINDS,bk?.kind||"전시 도록");
-  const title=inp("bTitle","text",bk?.title||"","예: 마동 30년");
+  const title=inp("bTitle","text",bk?.title||"","예: 빛이 머무는 자리");
   const year=inp("bYear","number",bk?.year||"","예: 2025"),pages=inp("bPages","number",bk?.pages||"","예: 96");
   const size=inp("bSize","text",bk?.size||"","예: 230×300mm"),pubr=inp("bPub","text",bk?.publisher||"","예: 출판사 이름");
   const isbn=inp("bIsbn","text",bk?.isbn||"","예: 979-11-…"),writer=inp("bWriter","text",bk?.writer||"","예: 평론가 이름");

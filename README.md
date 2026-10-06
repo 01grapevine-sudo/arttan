@@ -64,13 +64,13 @@ vercel --prod
 ### 페이지 주소
 | 주소 | 내용 |
 |---|---|
-| `/artist/<id>` | 작가 공간 (예: `/artist/jmh`) |
+| `/artist/<id>` | 작가 공간 (예: `/artist/eloi`) |
 | `/artist/<id>/work/<번호>` | 작품 한 점 |
 | `/gallery/<id>` | 갤러리 |
 | `/exhibition/<id>` | 전시 |
 | `/sitemap.xml`, `/rss.xml` | 검색엔진에 알리는 주소 목록, 새 소식 |
 
-- 예전 주소(`/#a-jmh`, `/#g-hanmi`)로 들어오면 새 주소로 자동으로 옮겨요.
+- 예전 주소(`/#a-eloi`, `/#g-testgal`)로 들어오면 새 주소로 자동으로 옮겨요.
 - 서버가 페이지마다 제목·설명·공유 미리보기·구조화 데이터(JSON-LD)를 넣은 완성된 HTML을 보내요.
 - **실제 작가(`is_real`)와 그 작가의 전시만** 검색에 노출해요. 예시 작가·예시 전시는 `noindex` 이고 사이트맵에도 없어요.
 - `arttan.co.kr` 로 들어오면 `www.arttan.co.kr` 로 옮겨요 (대표 주소 하나).
@@ -110,11 +110,14 @@ vercel --prod
 
 ## 6. 작가와 이미지 (저작권)
 
-- 지금 사이트에는 **작품·사진 사용을 허락받은 세 작가만** 있어요: 기산 정명희(`jmh`), 이민구(`lmg`), 이홍원(`lhw`).
+- 지금 사이트에는 **작품·사진 사용을 허락받은 세 작가**가 있어요: 기산 정명희(`jmh`), 이민구(`lmg`), 이홍원(`lhw`).
+- **엘로이(`eloi`)는 테스트용 가상 작가**예요. 샘플·예시는 모두 엘로이로 만들어요. 이미지(작품·포스터·도록)는
+  `node scripts/make-sample-eloi.mjs` 로 직접 그렸고, 검색에는 노출되지 않아요. 실제 오픈 전에 `artists/eloi/`,
+  `app.html`·`admin.html` 의 script 태그, `core.js` 의 `eloi-` 전시와 `testgal` 갤러리를 지우세요.
   예시 작가 11명과 예시 전시, 예전 DA-Arts 작품 이미지는 모두 지웠어요.
 - 원본 사진은 `초기자료 /미술/<작가>/` 에 있고, 사이트용으로 줄여서 넣었어요.
   ```bash
-  node scripts/import-photos.mjs "초기자료 /미술/이홍원" lhw works    # → artists/lhw/works/01.jpg …
+  node scripts/import-photos.mjs "초기자료 /미술/<작가 폴더>" <작가id> works    # → artists/<작가id>/works/01.jpg …
   ```
   원본 파일 이름과의 대응은 `artists/<id>/works/_원본파일.txt` 에 있어요.
 - 작가 소개 글은 공개된 기사·자료의 **사실만** 골라 arttan이 새로 썼고, 참고 자료 주소를 작가 공간 아래에 적어 두었어요.
@@ -125,7 +128,7 @@ vercel --prod
 
 ```bash
 npm install     # 처음 한 번 (이미지 변환용 sharp)
-npm run dev     # http://localhost:8799  — 배포와 같은 주소 규칙(/artist/jmh 등)으로 떠요
+npm run dev     # http://localhost:8799  — 배포와 같은 주소 규칙(/artist/eloi 등)으로 떠요
 ```
 `config.js` 가 비어 있으면 예시 데이터로, 값을 넣으면 Supabase 데이터로 보여요.
 서버 렌더링도 환경변수 `SUPABASE_URL`, `SUPABASE_ANON_KEY` 가 있으면 Supabase 데이터를 써요.
