@@ -4,3 +4,5 @@ supabase
 scripts/make-seed.mjs
 무제 폴더
 *.md
+초기자료 /
+artists/*/works/_원본파일.txt

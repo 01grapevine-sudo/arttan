@@ -29,9 +29,9 @@ const out = ["-- arttan 초기 데이터 (scripts/make-seed.mjs 로 생성). sch
   "delete from public.exhibitions; delete from public.artists; delete from public.galleries; delete from public.notices;"];
 
 D.ARTISTS.forEach((a, i) => {
-  out.push(`insert into public.artists (id,name,en,tier,genre,more,tags,born,birthplace,city,quote,line,bio,cv,history,collections,pubs,source,works_total,style,pal,is_real,hidden,sort) values (` +
+  out.push(`insert into public.artists (id,name,en,tier,genre,more,tags,born,birthplace,city,quote,line,bio,cv,history,collections,pubs,source,sources,portraits,works_total,style,pal,is_real,hidden,sort) values (` +
     [q(a.id), q(a.name), q(a.en), q(a.tier), q(a.genre), arr(a.more), arr(a.tags), n(a.born), q(a.from), q(a.city), q(a.quote), q(a.line), q(a.bio),
-     js(a.cv || []), js(a.history || []), q(a.collections), arr(a.books), js(a.source || null), n(a.worksTotal), q(a.style), arr(a.pal), b(a.real), b(a.hidden || (a.source && !ALLOW_LICENSED)), (i + 1) * 10].join(",") + ");");
+     js(a.cv || []), js(a.history || []), q(a.collections), arr(a.books), js(a.source || null), js(a.sources || []), arr(a.portraits), n(a.worksTotal), q(a.style), arr(a.pal), b(a.real), b(a.hidden || ((a.source || a.sources) && !ALLOW_LICENSED)), (i + 1) * 10].join(",") + ");");
   (a.works || []).forEach((w, k) => {
     const img = a.photos ? a.photos[k % a.photos.length] : null;
     out.push(`insert into public.works (artist_id,sort,title,year,material,size,description,image_path) values (` +

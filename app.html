@@ -1244,6 +1244,12 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .foot-dir b{min-width:84px;color:var(--ink)}
 .foot-dir a{color:var(--muted);text-decoration:none}.foot-dir a:hover{color:var(--accent)}
 .foot-dir small{font-size:11px;opacity:.75}
+/* 작가 공간: 작품 기록 표 (사진 없는 작가) */
+.as-wtable table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+.as-wtable th,.as-wtable td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.as-wtable th{color:var(--muted);font-weight:600;font-size:13px}
+.as-wtable td:first-child{font-weight:700}
+@media (max-width:600px){.as-wtable th:nth-child(4),.as-wtable td:nth-child(4){display:none}}
 /* 작가 공간: 관련 작가 */
 .as-rel{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
 .as-rel-c{display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none}
@@ -1290,7 +1296,7 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 <main class="wrap" id="top">
   <!--ssr-->
   <h1 class="vh" data-view="home">arttan 아트탄 — 원로·중견·청년 작가 아카이브</h1>
-  <div class="proto">홈페이지 초안 v1.1 · 정명희 작가 외 작가·전시·공지는 예시예요</div>
+  <div class="proto">홈페이지 초안 v1.2 · 작품 이미지는 작가의 허락을 받아 게재했어요</div>
 
   <section class="herowrap" data-view="home" aria-label="추천 작가 배너">
     <article class="bx bx-hero" aria-roledescription="carousel" aria-label="추천 배너">
@@ -1509,23 +1515,14 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=15"></script>
+<script src="core.js?v=16"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=15"></script>
-<script src="artists/ysg/artist.js?v=15"></script>
-<script src="artists/sjw/artist.js?v=15"></script>
-<script src="artists/cjs/artist.js?v=15"></script>
-<script src="artists/mjh/artist.js?v=15"></script>
-<script src="artists/oeb/artist.js?v=15"></script>
-<script src="artists/pjo/artist.js?v=15"></script>
-<script src="artists/jmr/artist.js?v=15"></script>
-<script src="artists/hsy/artist.js?v=15"></script>
-<script src="artists/ldh/artist.js?v=15"></script>
-<script src="artists/knr/artist.js?v=15"></script>
-<script src="artists/rhj/artist.js?v=15"></script>
+<script src="artists/jmh/artist.js?v=16"></script>
+<script src="artists/lmg/artist.js?v=16"></script>
+<script src="artists/lhw/artist.js?v=16"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=15"></script>
-<script src="data.js?v=15"></script>
+<script src="config.js?v=16"></script>
+<script src="data.js?v=16"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1562,7 +1559,7 @@ function artistCard(a){
   const b=document.createElement("button");b.className="acard";b.type="button";
   const th=document.createElement("div");th.className="thumb";th.append(artCanvas(a,"w0",480,600,`${a.name}, ${a.works[0]?.[0]||"대표작"}`));
   const r=archiveOf(a);
-  b.append(th);b.insertAdjacentHTML("beforeend",`<div><div class="nm">${esc(a.name)}${r.iv?'<span class="ivdot" title="인터뷰 있음">인터뷰</span>':""}</div><div class="sub"><span class="tier">${esc(a.tier.replace("작가",""))}</span><span>${esc(a.genre)}</span><span>${a.born}</span></div><div class="rec">작품 <b>${r.works}</b> · 전시 <b>${r.ex}</b> · 도록 <b>${r.books}</b></div></div>`);
+  b.append(th);b.insertAdjacentHTML("beforeend",`<div><div class="nm">${esc(a.name)}${r.iv?'<span class="ivdot" title="인터뷰 있음">인터뷰</span>':""}</div><div class="sub"><span class="tier">${esc(a.tier.replace("작가",""))}</span><span>${esc(a.genre)}</span>${a.born?`<span>${a.born}</span>`:""}</div><div class="rec">작품 <b>${r.works}</b> · 전시 <b>${r.ex}</b> · 도록 <b>${r.books}</b></div></div>`);
   b.onclick=()=>openPortfolio(a.id);return b}
 
 function exCard(e,opt){
@@ -1594,7 +1591,7 @@ function openPortfolioModal(id){
   const s1=mk("ap-artist");s1.innerHTML=`<div class="ap-hero"><div class="pic"></div><div>
     <div class="eyebrow">${esc(a.tier)} · ${esc(genresOf(a).join(" · "))}</div>
     <h2 id="pfName">${esc(a.name)}${a.en?` <span class="en-name">${esc(a.en)}</span>`:""}</h2>
-    <div class="sub">${a.born}년생 · ${a.from?esc(a.from)+" 출생 · ":""}${esc(a.city)} 활동</div>
+    <div class="sub">${[a.born?`${a.born}년생`:"",a.from?esc(a.from)+" 출생":"",a.city?esc(a.city)+" 활동":""].filter(Boolean).join(" · ")}</div>
     <ul class="tags">${a.tags.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
     ${(()=>{const r=archiveOf(a);return `<div class="ap-stats"><div><b>${r.works}</b><span>작품</span></div><div><b>${r.ex}</b><span>전시 이력</span></div><div><b>${r.books}</b><span>도록·저서</span></div><div><b>${r.iv?"있음":"없음"}</b><span>인터뷰</span></div></div>`})()}
     ${a.quote?`<blockquote>“${esc(a.quote)}”</blockquote>`:a.line?`<p class="line">${esc(a.line)}</p>`:""}
@@ -1656,7 +1653,8 @@ function openPortfolioModal(id){
 /* ---------- interview ---------- */
 let curIv=0,ivOpen=false;
 function renderInterview(i){
-  curIv=i;const v=INTERVIEWS[i],a=byId[v.artist];const m=$("#ivMain");m.innerHTML="";
+  curIv=i;const v=INTERVIEWS[i],a=v&&byId[v.artist];const m=$("#ivMain");m.innerHTML="";
+  if(!v||!a){m.innerHTML=`<p class="empty">아직 올라온 인터뷰가 없어요. 작가를 만나 촬영하면 이 자리에 영상과 대담이 올라와요.</p>`;const lst=$("#ivList");if(lst)lst.innerHTML="";return}
   const l=document.createElement("div");l.append(artCanvas(a,"iv",480,600,`${a.name} 작업 이미지`));
   const r=document.createElement("div");
   const qa=ivOpen?v.qa:v.qa.slice(0,1);
@@ -1674,7 +1672,7 @@ function renderInterview(i){
 }
 
 /* ---------- catalog ---------- */
-function renderBooks(){const box=$("#books");box.innerHTML="";BOOKS.forEach((bk,i)=>{const a=byId[bk.artist];const b=document.createElement("button");b.type="button";b.className="book";
+function renderBooks(){const box=$("#books");box.innerHTML="";if(!BOOKS.length)box.innerHTML=`<p class="empty">아직 올라온 도록이 없어요. 작가의 저서는 작가 공간의 '도록 · 저서'에서 볼 수 있어요.</p>`;BOOKS.forEach((bk,i)=>{const a=byId[bk.artist];const b=document.createElement("button");b.type="button";b.className="book";
   const cv=document.createElement("div");cv.className="cover";cv.append(coverCanvas(bk,360,480));b.append(cv);
   b.insertAdjacentHTML("beforeend",`<div><div class="t">${esc(bk.title)}</div><div class="spec">${esc(a.name)} · ${esc(a.genre)} · ${bk.year}<br>${bk.pages}쪽 · ${esc(bk.size)}<br>글 ${esc(bk.writer)} · ${esc(bk.price)}</div></div>`);
   b.onclick=()=>openBook(i);box.append(b)})}
@@ -1838,12 +1836,11 @@ function railCard(e){
 
 /* 히어로 (벤토 큰 카드) */
 function buildSlides(){
-  const L=[],j=byId.jmh,FEAT=["hsy","mjh","sjw","knr"];
-  if(j&&!j.hidden){const r=archiveOf(j);L.push({eb:`이달의 작가 · ${today.getMonth()+1}월`,title:`${j.name}\n금강을 그리다`,sub:j.line,meta:`${j.tier} · ${j.genre} · 작품 ${r.works}점 · 전시 이력 ${r.ex}건`,
-    bg:el=>el.append(artCanvas(j,"c5",1400,1000,`${j.name}, ${j.works[5][0]}`)),go:()=>openPortfolio(j.id)})}
-  FEAT.map(id=>byId[id]).filter(a=>a&&!a.hidden).forEach(a=>{const r=archiveOf(a),w=a.works[0];
-    L.push({eb:`작가 아카이브 · ${a.tier} · ${a.genre}`,title:a.name,sub:a.quote?`“${a.quote}”`:a.line||"",meta:`대표작 「${w[0]}」 · 작품 ${r.works}점 · 전시 ${r.ex}건${r.iv?" · 인터뷰":""}`,
-      bg:el=>el.append(artCanvas(a,"hero",1400,1000,`${a.name}, ${w[0]}`)),go:()=>openPortfolio(a.id)})});
+  const L=[];
+  pub().forEach((a,k)=>{const r=archiveOf(a);
+    L.push({eb:k===0?`이달의 작가 · ${today.getMonth()+1}월`:`작가 아카이브 · ${a.tier} · ${a.genre}`,title:a.name,sub:a.quote?`“${a.quote}”`:a.line||"",
+      meta:`${a.tier} · ${a.genre} · 작품 ${r.works}점 · 전시 이력 ${r.ex}건`,
+      bg:el=>el.append(artCanvas(a,a.photos?"c"+(hash(a.id)%a.photos.length):"c0",1400,1000,a.photos?`${a.name}의 작품`:`${a.name} 작가`)),go:()=>openPortfolio(a.id)})});
   const P=pub(),tot=P.reduce((n,a)=>n+archiveOf(a).works,0);
   L.push({eb:"arttan 작가 아카이브",title:"원로부터 청년까지\n작가를 기록합니다",sub:`작가 ${P.length}명 · 기록된 작품 ${tot}점`,meta:"www.arttan.co.kr",fill:true,
     bg:el=>{const f=document.createElement("div");f.className="hs-fan";P.slice(0,3).forEach(a=>f.append(artCanvas(a,"w0",300,400,"")));el.append(f)},go:()=>goArtists()});
@@ -1952,11 +1949,9 @@ function renderTierRail(){
   const L=ex.filter(e=>has(e,homeTier)).sort((x,y)=>ord[x.st.k]-ord[y.st.k]||(x.st.k==="end"?parse(y.start)-parse(x.start):parse(x.start)-parse(y.start))).slice(0,10);
   const r=$("#tierRail");r.innerHTML="";if(!L.length)r.innerHTML=`<p class="empty">해당하는 전시가 없어요.</p>`;L.forEach(e=>r.append(railCard(e)))}
 const ALOG=[
-  ["2026.09.28","jmh","작품 11점과 개인전 17건을 기록했어요","한국예술디지털아카이브(DA-Arts) 자료"],
-  ["2026.09.20","hsy","인터뷰 영상 「매일 다시 긋는 수평선」을 더했어요",""],
-  ["2026.09.08","sjw","인터뷰 영상 「획 하나에 하루를 쓰다」를 더했어요",""],
-  ["2026.09.02","mjh","도록 『무게의 문법』을 e북으로 올렸어요",""],
-  ["2026.08.18","knr","영상 작업 4점의 기록을 더했어요",""]];
+  ["2026.10.06","lhw","작품 90점과 전시 기록을 올렸어요","작가 제공 사진 · 사용 허락"],
+  ["2026.10.06","lmg","거미줄 「소우주」 연작 등 작품 14점을 올렸어요","작가 제공 사진 · 사용 허락"],
+  ["2026.10.06","jmh","인물 사진과 작품 기록 12건, 전시 이력을 정리했어요","DA-Arts·언론 보도 자료"]];
 let archTier=null,archGenre=null,choSel=null,archCho=null;
 function renderBento(){
   const P=pub(),tiers=TIERS.slice(1).map(([l,v])=>[l,P.filter(a=>a.tier===v).length]),mx=Math.max(1,...tiers.map(t=>t[1]));
@@ -2013,10 +2008,10 @@ function renderIndex(){
   const box=$("#idxList");box.innerHTML="";
   [...have].sort((a,b)=>a.localeCompare(b,"ko")).filter(c=>!choSel||c===choSel).forEach(c=>{
     const grp=document.createElement("div");grp.className="idx-g";grp.innerHTML=`<h3>${c}</h3>`;
-    P.filter(a=>choOf(a.name)===c).forEach(a=>{const b=document.createElement("button");b.type="button";b.innerHTML=`<b>${esc(a.name)}</b><span>${esc(a.tier.replace("작가",""))} · ${esc(a.genre)} · ${a.born}</span>`;b.onclick=()=>openPortfolio(a.id);grp.append(b)});
+    P.filter(a=>choOf(a.name)===c).forEach(a=>{const b=document.createElement("button");b.type="button";b.innerHTML=`<b>${esc(a.name)}</b><span>${esc(a.tier.replace("작가",""))} · ${esc(a.genre)}${a.born?` · ${a.born}`:""}</span>`;b.onclick=()=>openPortfolio(a.id);grp.append(b)});
     box.append(grp)})}
 function renderDecades(){
-  const P=pub(),ds=[...new Set(P.map(a=>Math.floor(a.born/10)*10))].sort((a,b)=>a-b),box=$("#decades");box.innerHTML="";
+  const P=pub().filter(a=>a.born),ds=[...new Set(P.map(a=>Math.floor(a.born/10)*10))].sort((a,b)=>a-b),box=$("#decades");box.innerHTML="";
   ds.forEach(d=>{const col=document.createElement("div");col.className="dec";const L=P.filter(a=>Math.floor(a.born/10)*10===d).sort((a,b)=>a.born-b.born);
     col.innerHTML=`<div class="dec-h"><i></i><b>${d}년대생</b><span>${L.length}명</span></div>`;
     L.forEach(a=>{const b=document.createElement("button");b.type="button";const c=artCanvas(a,"w0",88,88,"");b.append(c);b.insertAdjacentHTML("beforeend",`<span><b>${esc(a.name)}</b><small>${a.born} · ${esc(a.genre)}</small></span>`);b.onclick=()=>openPortfolio(a.id);col.append(b)});
@@ -2026,14 +2021,11 @@ function renderPicks(){
   const card=(img,lab,t,m,go)=>{const b=document.createElement("button");b.type="button";b.className="rc pick";const pw=document.createElement("div");pw.className="poster";pw.append(img);b.append(pw);
     b.insertAdjacentHTML("beforeend",`<div><div class="when">${esc(lab)}</div><h3>${esc(t)}</h3><div class="m">${m}</div></div>`);b.onclick=go;pk.append(b)};
   const artist=(a,lab,key)=>{if(!a||a.hidden)return;const r=archiveOf(a);card(artCanvas(a,key,360,480,`${a.name} 대표작`),lab,a.name,`${esc(a.tier)} · ${esc(genresOf(a).join(", "))}<br>작품 ${r.works} · 전시 ${r.ex} · 도록 ${r.books}`,()=>openPortfolio(a.id))};
-  artist(byId.jmh,"이달의 작가","c8");
-  artist(byId.ysg,"원로작가 추천","w0");
-  artist(byId.mjh,"중견작가 추천","w0");
-  artist(byId.hsy,"청년작가 추천","w0");
-  const bk=BOOKS.find(b=>b.artist==="ysg");
-  if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(coverCanvas(bk,360,480),"추천 도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${bk.year}<br>${bk.pages}쪽 · ${esc(bk.size)}`,()=>openBook(BOOKS.indexOf(bk)));
-  const v=INTERVIEWS.find(x=>x.artist==="sjw");
-  if(v&&byId.sjw&&!byId.sjw.hidden)card(artCanvas(byId.sjw,"iv",360,480,""),"추천 인터뷰",v.title,`${esc(byId.sjw.name)} · ${esc(byId.sjw.genre)}<br>${esc(v.date)}`,()=>{ivOpen=false;renderInterview(INTERVIEWS.indexOf(v));location.hash="interviews"});
+  pub().forEach((a,k)=>artist(a,k===0?"이달의 작가":`${a.tier.replace("작가","")}작가 아카이브`,a.photos?"c"+((hash(a.id)+3)%a.photos.length):"c1"));
+  const bk=BOOKS[0];
+  if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(coverCanvas(bk,360,480),"추천 도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${bk.year}`,()=>openBook(0));
+  const v=INTERVIEWS[0];
+  if(v&&byId[v.artist]&&!byId[v.artist].hidden)card(artCanvas(byId[v.artist],"iv",360,480,""),"추천 인터뷰",v.title,`${esc(byId[v.artist].name)}<br>${esc(v.date)}`,()=>{ivOpen=false;renderInterview(0);location.hash="interviews"});
   const live=EXHIBITIONS.map(e=>({...e,st:status(e)})).filter(e=>e.st.k==="live").sort((a,b)=>parse(a.end)-parse(b.end))[0];
   if(live){const c=railCard(live);c.querySelector(".when").textContent="지금 볼 만한 전시";pk.append(c)}
 }
@@ -2051,7 +2043,7 @@ function renderWeek(){
   const ord={live:0,soon:1,end:2};
   const L=(wkSel?runningOn(wkSel):EXHIBITIONS.filter(e=>parse(e.start)<=we&&parse(e.end)>=ws)).map(e=>({...e,st:status(e)})).sort((x,y)=>ord[x.st.k]-ord[y.st.k]||parse(x.end)-parse(y.end));
   const r=$("#weekRail");r.innerHTML="";
-  if(!L.length){r.innerHTML=`<p class="empty">이 날은 열리는 전시가 없어요.</p>`;return}
+  if(!L.length){r.innerHTML=`<p class="empty">${wkSel?"이 날은":"이번 주에는"} 열리는 전시가 없어요.</p>`;return}
   L.forEach(e=>r.append(railCard(e)))}
 function renderHome(){
   renderPicks();renderWeek();renderArchTop();renderArch();renderIndex();renderDecades();
@@ -2095,6 +2087,9 @@ const SITE_SECS=[["as-about","소개"],["as-works","작품"],["as-iv","인터뷰
 function workImg(a,i,w,h,label){
   if(a.photos){const im=document.createElement("img");im.src=optImg(a.photos[i%a.photos.length],w>0&&w<=480);im.alt=label||"";im.loading="lazy";im.decoding="async";return im}
   return artCanvas(a,"w"+i,w,h,label)}
+/* 출처: 소개 글은 공개 자료의 사실을 바탕으로 arttan이 새로 썼어요 */
+function srcList(a){const L=a.sources||(a.source?[a.source]:[]);
+  return `<p class="src">${a.photos||a.portraits?"작품·인물 사진은 작가의 허락을 받아 게재했어요.":""}${L.length?` 소개 글 참고 자료 · ${L.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>`).join(" · ")}`:""}</p>`}
 function renderArtistSite(id){
   const a=byId[id],root=$("#artistSite");siteId=id;root.innerHTML="";root.style.setProperty("--site","#7C3AED");
   const r=archiveOf(a),iv=INTERVIEWS.find(x=>x.artist===id),v=videoOf(a);
@@ -2112,7 +2107,7 @@ function renderArtistSite(id){
     <span class="as-eb">arttan 작가 공간 · ${esc(a.tier)} · ${esc(genresOf(a).join(" · "))}</span>
     <h1>${esc(a.name)}${a.en?`<span>${esc(a.en)}</span>`:""}</h1>
     <p class="as-line">${esc(a.quote?`“${a.quote}”`:a.line||"")}</p>
-    <p class="as-meta">${a.born}년생${a.from?` · ${esc(a.from)} 출생`:""}${a.city?` · ${esc(a.city)} 활동`:""}</p></div>`);
+    <p class="as-meta">${[a.born?`${a.born}년생`:"",a.from?`${esc(a.from)} 출생`:"",a.city?`${esc(a.city)} 활동`:""].filter(Boolean).join(" · ")}</p></div>`);
   root.append(hero);
   const sec=(sid,en,title,extra="")=>{const s=document.createElement("section");s.className="as-sec";s.id=sid;s.innerHTML=`<div class="as-h"><span class="en">${en}</span><h2>${title}</h2>${extra}</div>`;root.append(s);return s};
   /* 소개 */
@@ -2120,7 +2115,7 @@ function renderArtistSite(id){
   ab.insertAdjacentHTML("beforeend",`<div class="as-about">
     <div><p class="as-bio">${esc(a.bio||"작가 소개를 준비하고 있어요.")}</p>
       <ul class="tags">${(a.tags||[]).map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
-      ${a.source?`<p class="src">출처 · <a href="${a.source.url}" target="_blank" rel="noopener">${esc(a.source.name)}</a> · 작품 이미지는 사용 허락을 받아 게재했어요.</p>`:""}</div>
+      ${srcList(a)}</div>
     <div class="as-side">
       <div class="as-stats"><div><b>${r.works}</b><span>작품</span></div><div><b>${r.ex}</b><span>전시 이력</span></div><div><b>${r.books}</b><span>도록·저서</span></div><div><b>${r.iv?"있음":"없음"}</b><span>인터뷰</span></div></div>
       ${a.cv&&a.cv.length?`<h3>주요 이력</h3><ol class="as-cv">${(a.real?a.cv:a.cv.slice().sort((x,y)=>y[0]-x[0])).map(([y,t])=>`<li><span>${esc(y)}</span>${esc(t)}</li>`).join("")}</ol>`:""}
@@ -2130,7 +2125,10 @@ function renderArtistSite(id){
   const wk=sec("as-works","Works","작품",`<span class="as-cnt">${a.works.length}점${a.worksTotal?` · 아카이브 전체 ${a.worksTotal}점`:""}</span>`);
   const grid=document.createElement("div");grid.className="as-works";
   if(!a.works.length)grid.innerHTML=`<p class="none">등록된 작품 이미지가 아직 없어요.</p>`;
-  a.works.forEach((w,i)=>{const b=document.createElement("button");b.type="button";b.className="as-work";b.setAttribute("aria-label",`${w[0]} 크게 보기`);
+  /* 작품 사진이 없으면 작품 기록을 표로 보여줘요 (예시 그림을 만들지 않아요) */
+  if(a.works.length&&!a.photos){grid.className="as-wtable";grid.innerHTML=`<p class="none">작품 이미지는 준비 중이에요. 확인된 작품 기록을 먼저 정리했어요.</p>
+    <table><thead><tr><th>작품명</th><th>연도</th><th>재료</th><th>크기</th></tr></thead><tbody>${a.works.map(w=>`<tr><td>${esc(w[0])}</td><td>${esc(w[1]||"—")}</td><td>${esc(w[2]||"—")}</td><td>${esc(w[3]||"—")}</td></tr>`).join("")}</tbody></table>`}
+  else a.works.forEach((w,i)=>{const b=document.createElement("button");b.type="button";b.className="as-work";b.setAttribute("aria-label",`${w[0]} 크게 보기`);
     const f=document.createElement("div");f.className="as-work-img";f.append(workImg(a,i,480,600,w[0]));b.append(f);
     /* 작품 캡션: 번호 · 작품명 · 연도 · 재료 · 크기 · (설명) — 작품 데이터 [제목, 연도, 재료, 크기, 설명] */
     b.insertAdjacentHTML("beforeend",`<span class="as-work-cap"><span class="no">${String(i+1).padStart(2,"0")}</span>
@@ -2167,7 +2165,7 @@ function renderArtistSite(id){
   const rel=[...coIds.map(x=>[byId[x],"함께 전시"]),...pub().filter(b=>b.id!==id&&!coIds.includes(b.id)&&genresOf(b).includes(a.genre)).map(b=>[b,`같은 장르 · ${a.genre}`])].slice(0,8);
   if(rel.length){const rs=sec("as-rel","Related","관련 작가");const g=document.createElement("div");g.className="as-rel";
     rel.forEach(([b,why])=>{const l=document.createElement("a");l.className="as-rel-c";l.href=artistPath(b.id);
-      const th=document.createElement("div");th.className="th";th.append(workImg(b,0,320,400,`${b.name}, ${b.works[0]?.[0]||"대표작"}`));l.append(th);
+      const th=document.createElement("div");th.className="th";th.append(artCanvas(b,"c0",320,400,`${b.name}`));l.append(th);
       l.insertAdjacentHTML("beforeend",`<b>${esc(b.name)}</b><span>${esc(b.tier.replace("작가",""))} · ${esc(b.genre)}</span><em>${esc(why)}</em>`);g.append(l)});
     rs.append(g)}
   /* 문의 */
@@ -2195,7 +2193,7 @@ function renderArtistSite(id){
 /* 대화상자가 닫히면 실행 (open 속성 변화를 봐요: 백그라운드 탭에서도 확실히 동작) */
 function onDlgClose(d,fn){new MutationObserver(()=>{if(!d.open)fn()}).observe(d,{attributes:true,attributeFilter:["open"]})}
 function openLightbox(i){
-  const a=byId[siteId];if(!a||!a.works.length)return;lbI=(i+a.works.length)%a.works.length;const w=a.works[lbI];
+  const a=byId[siteId];if(!a||!a.works.length||!a.photos)return;lbI=(i+a.works.length)%a.works.length;const w=a.works[lbI];
   const box=$("#lbImg");box.innerHTML="";box.append(a.photos?workImg(a,lbI,0,0,w[0]):artCanvas(a,"w"+lbI,1200,1500,w[0]));
   $("#lbCap").innerHTML=`<b>${esc(w[0])}${w[1]?`, ${esc(w[1])}`:""}</b><span>${[w[2],w[3]].filter(Boolean).map(esc).join(" · ")}</span>${w[4]?`<em>${esc(w[4])}</em>`:""}<small>${lbI+1} / ${a.works.length}</small>`;
   /* 작품마다 주소가 있어요: /artist/<id>/work/<번호> */

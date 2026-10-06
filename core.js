@@ -53,45 +53,30 @@ const GALLERIES = [
   {id:"sema", name:"서울시립미술관", area:"서소문"},
   {id:"hakgojae", name:"학고재갤러리", area:"삼청동"},
   {id:"hyundai", name:"현대갤러리", area:"삼청동"},
+  /* 작가 전시 기록에서 확인한 곳 */
+  {id:"dmma", name:"대전시립미술관", area:"대전"},
+  {id:"jmhm", name:"정명희미술관", area:"대전", addr:"대전평생학습관 302호"},
+  {id:"cbcc", name:"충북문화관 숲속갤러리", area:"청주"},
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
-/* 전시 (모두 예시) */
+/* 전시 (출처로 확인한 실제 전시만 넣어요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
 const EXHIBITIONS = [
-  {g:"gyeongin", title:"획의 시간", artists:["sjw"], kind:"초대전", start:"2026-09-18", end:"2026-10-12", desc:"한글 궁체와 판본체를 바탕으로 한 근작 30점과 전각 12방을 함께 소개한다."},
-  {g:"gyeongin", title:"하루 한 장", artists:["rhj"], kind:"개인전", start:"2025-05-10", end:"2025-06-08", desc:"1년 동안 하루 한 장씩 그린 골목 드로잉 365점 중 120점."},
-  {g:"lamer", title:"골목의 오후", artists:["rhj"], kind:"개인전", start:"2026-10-21", end:"2026-10-27", desc:"그림책 『골목의 오후』 원화와 새 드로잉 40점."},
-  {g:"lamer", title:"번짐", artists:["jmr"], kind:"개인전", start:"2021-11-03", end:"2021-11-28", desc:"수묵담채 소품 30점으로 꾸린 첫 개인전."},
-  {g:"insaart", title:"수평의 시간", artists:["hsy"], kind:"개인전", start:"2026-09-10", end:"2026-10-18", desc:"같은 수평선을 스무 번 넘게 다시 그린 신작 18점. 오전과 오후, 흐린 날과 맑은 날의 차이가 한 벽에 나란히 걸린다."},
-  {g:"insaart", title:"한글, 획으로 서다", artists:["sjw"], kind:"초대전", start:"2023-10-05", end:"2023-11-12", desc:"훈민정음 해례본 서문을 여러 서체로 다시 쓴 연작."},
-  {g:"insaplaza", title:"청회", artists:["oeb"], kind:"개인전", start:"2026-11-04", end:"2026-11-17", desc:"청회색 유약 항아리와 잔 20점."},
-  {g:"insaplaza", title:"어긋난 격자", artists:["pjo"], kind:"개인전", start:"2025-03-01", end:"2025-03-30", desc:"격자 목판을 스무 가지 색 순서로 찍은 에디션 연작."},
-  {g:"topo", title:"새벽 남산", artists:["cjs"], kind:"개인전", start:"2026-09-23", end:"2026-10-06", desc:"새벽 안개 속 남산 능선을 그린 수묵담채 신작 15점."},
-  {g:"topo", title:"물때", artists:["hsy"], kind:"개인전", start:"2024-06-05", end:"2024-07-07", desc:"썰물과 밀물 시간에 맞춰 그린 수평선 연작의 시작."},
-  {g:"gwanhoon", title:"먹의 호흡", artists:["jmr"], kind:"개인전", start:"2026-09-01", end:"2026-09-27", desc:"한지에 먹을 여러 번 스며들게 한 수묵 대작 12점."},
-  {g:"gwanhoon", title:"2026 청년작가전", artists:["hsy","knr","rhj"], kind:"그룹전", start:"2026-08-12", end:"2026-09-06", desc:"올해 주목할 청년작가 세 명의 회화·미디어·드로잉을 한자리에 모았다."},
-  {g:"gana", title:"무게의 문법", artists:["mjh"], kind:"개인전", start:"2026-10-08", end:"2026-11-22", desc:"폐목재와 콘크리트 블록으로 쌓은 설치 작업을 전시 공간에 맞춰 새로 쌓는다."},
-  {g:"gana", title:"땅의 연대기 이후", artists:["ysg"], kind:"개인전", start:"2027-01-12", end:"2027-03-07", desc:"회고전 이후 새로 그린 흙빛 색면 회화 20점."},
-  {g:"sungkok", title:"여섯 개의 방", artists:["hsy","mjh","ldh","jmr","pjo","knr"], kind:"기획전", start:"2026-11-05", end:"2026-12-20", desc:"장르가 다른 작가 여섯 명이 각자 방 하나씩을 맡아 꾸미는 기획전."},
-  {g:"sungkok", title:"기울어진 탑", artists:["mjh"], kind:"개인전", start:"2025-05-02", end:"2025-06-15", desc:"쌓는 과정 자체를 전시장에서 공개한 설치전."},
-  {g:"mmca", title:"신호 없는 채널", artists:["knr"], kind:"개인전", start:"2026-12-03", end:"2027-01-31", desc:"방송이 끝난 뒤의 노이즈 화면을 재료로 한 4채널 영상과 인터랙티브 설치."},
-  {g:"mmca", title:"화면 밖", artists:["knr"], kind:"그룹전", start:"2023-09-01", end:"2023-10-15", desc:"스크린 바깥으로 나온 영상 설치를 모은 그룹전."},
-  {g:"hanmi", title:"밤의 입자", artists:["ldh"], kind:"개인전", start:"2026-09-24", end:"2026-10-26", desc:"새벽 세 시의 도시를 장노출로 기록한 연작 24점. 필름 입자가 드러나는 대형 프린트."},
-  {g:"hanmi", title:"도시의 온도", artists:["ldh"], kind:"그룹전", start:"2024-08-01", end:"2024-08-31", desc:"도시의 밤을 기록하는 사진가들의 그룹전."},
-  {g:"sema", title:"땅의 연대기", artists:["ysg"], kind:"회고전", start:"2025-03-04", end:"2025-06-01", desc:"1970년대 단색 추상부터 2025년 신작까지 55년의 작업을 정리한 회고전."},
-  {g:"hakgojae", title:"찍힌 자리", artists:["pjo"], kind:"개인전", start:"2026-10-20", end:"2026-11-30", desc:"한 판을 여러 색으로 겹쳐 찍은 다색 목판화와 목판 원판을 함께 전시한다."},
-  {g:"hakgojae", title:"남산 사십 년", artists:["cjs"], kind:"초대전", start:"2024-04-10", end:"2024-05-26", desc:"사십 년 동안 오른 경주 남산을 그린 실경산수 40점."},
-  {g:"hyundai", title:"흘러내린 자리", artists:["oeb"], kind:"개인전", start:"2026-10-15", end:"2026-11-09", desc:"장작가마에서 유약이 흘러내린 자국을 그대로 남긴 달항아리 16점."},
-  {g:"hyundai", title:"달, 기울다", artists:["oeb"], kind:"개인전", start:"2025-04-01", end:"2025-04-27", desc:"비대칭 달항아리 연작 첫 공개."},
+  {g:"cbcc", title:"이홍원 작은 그림전 – 마동 30년 기념특별전", artists:["lhw"], kind:"특별전", start:"2025-03-11", end:"2025-03-16", desc:"청주 마동창작마을에서 작업한 30년을 기념해 충북문화관 숲속갤러리 전관에서 연 작은 그림전. 꽃 호랑이, 소나무, 싸움소, 질주, 연리지, 울림 등을 선보였다."},
+  {g:"insaplaza", title:"이홍원 전 – 달항아리 노래", artists:["lhw"], kind:"기획 초대전", start:"2023-03-22", end:"2023-03-27", desc:"서울 인사아트프라자갤러리 기획 초대전."},
+  {g:"jmhm", title:"물, 예술을 넘어", artists:["jmh"], kind:"소장전", start:"2023-02-06", end:"2023-06-30", desc:"대청댐 건설로 고향을 잃은 수몰민의 애환을 담은 작품들. 제4회 겸재미술상 수상기념전에 걸렸던 작품을 다시 소개했다."},
+  {g:"jmhm", title:"한 장의 편지 – 한 숟가락의 물", artists:["jmh"], kind:"소장전", start:"2022-02-07", end:"2022-06-30", desc:"'금강 아리랑, 이 한잔의 물'을 부제로, 물과 고향을 주제로 한 작품을 모은 소장전."},
+  {g:"dmma", title:"금강홍 열두가지 변주", artists:["jmh"], kind:"초대전", start:"2016-06-14", end:"2016-06-19", desc:"대전시립미술관 초대전."},
 ].map((e,i)=>({id:"ex"+String(i+1).padStart(2,"0"),...e,venue:galById[e.g].name,region:galById[e.g].area}));
 
 /* ---------- generative artwork ---------- */
 function rng(seed){let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
 function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
 const IMG={};function photo(src){if(!IMG[src]){const im=new Image();im.src=src;IMG[src]=im}return IMG[src]}
-function paintPhoto(cv,artist,key){
+function paintPhoto(cv,artist,key,pics){
+  pics=pics||artist.photos;
   const ctx=cv.getContext("2d"),W=cv.width,H=cv.height,m=/^w(\d+)$/.exec(key),cm=/^c(\d+)$/.exec(key);
-  const idx=m?+m[1]:cm?+cm[1]:hash(key)%artist.photos.length, im=photo(optImg(artist.photos[idx%artist.photos.length]));
+  const idx=m?+m[1]:cm?+cm[1]:hash(key)%pics.length, im=photo(optImg(pics[idx%pics.length]));
   const draw=()=>{ctx.fillStyle=artist.pal[0];ctx.fillRect(0,0,W,H);if(!im.naturalWidth)return;
     const contain=!!m, s=contain?Math.min(W/im.naturalWidth,H/im.naturalHeight)*.88:Math.max(W/im.naturalWidth,H/im.naturalHeight);
     const w=im.naturalWidth*s,h=im.naturalHeight*s;ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h)};
@@ -99,6 +84,8 @@ function paintPhoto(cv,artist,key){
 }
 function paint(cv, artist, key){
   if(artist.photos)return paintPhoto(cv,artist,key);
+  /* 작품 사진이 없는 실제 작가는 인물 사진으로 (예시 그림을 만들지 않아요) */
+  if(artist.portraits)return paintPhoto(cv,artist,key.replace(/^w/,"p"),artist.portraits);
   const ctx=cv.getContext("2d"), W=cv.width, H=cv.height, r=rng(hash(artist.id+key)), P=artist.pal;
   const pick=()=>P[Math.floor(r()*P.length)];
   ctx.save();
@@ -217,14 +204,15 @@ const galIndexable=g=>!!g&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&
 function exNames(e){const n=e.artists.map(id=>byId[id]?.name).filter(Boolean);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
 /* 전시 제목은 사람들이 검색하는 순서로: 작가 개인전 : 「전시명」 - 장소 */
 const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.venue}`;
-const artistHeadline=a=>`${a.name} (${a.born}~) ${a.genre} ${a.tier}`;
+const artistHeadline=a=>`${a.name}${a.born?` (${a.born}~)`:""} ${a.genre} ${a.tier}`;
 /* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
 const optImg=(src,small)=>/^\/?artists\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
 /* 검색에 알릴 주소와 내용 요약. 관리자에서 저장한 뒤 바뀐 주소만 골라 네이버에 바로 알려요. */
 function seoPages(){const m={"/":"home"};
   ARTISTS.filter(artistIndexable).forEach(a=>{
     m[artistPath(a.id)]=JSON.stringify([a.name,a.en,a.born,a.tier,a.genre,a.more,a.tags,a.line,a.quote,a.bio,a.cv,a.history,a.collections,a.books,a.works.length]);
-    a.works.forEach((w,i)=>m[workPath(a.id,i)]=JSON.stringify([a.name,w,a.photos?a.photos[i%a.photos.length]:null]))});
+    /* 작품 페이지는 사진이 있을 때만 노출해요 (글만 있는 얇은 페이지는 빼요) */
+    if(a.photos)a.works.forEach((w,i)=>m[workPath(a.id,i)]=JSON.stringify([a.name,w,a.photos[i%a.photos.length]]))});
   EXHIBITIONS.filter(exIndexable).forEach(e=>m[exPath(e)]=JSON.stringify([e.title,e.kind,e.start,e.end,e.g,e.artists,e.desc]));
   GALLERIES.filter(galIndexable).forEach(g=>m[galPath(g.id)]=JSON.stringify([g,EXHIBITIONS.filter(e=>e.g===g.id&&exIndexable(e)).map(e=>e.id)]));
   return m}
@@ -233,18 +221,14 @@ const sameDay=(a,b)=>a.getTime()===b.getTime();
 const runningOn=d=>EXHIBITIONS.filter(e=>parse(e.start)<=d&&d<=parse(e.end));
 function weekStart(d){const k=(d.getDay()+6)%7;return new Date(d.getFullYear(),d.getMonth(),d.getDate()-k)}
 const NOTICES=[
-  {date:"2026.09.30",tag:"공지",title:"arttan 홈페이지 초안을 공개했어요",body:"작가 포트폴리오, 인터뷰, 도록, 갤러리, 전시일정을 한곳에서 보는 arttan의 첫 초안이에요. 정명희 작가 외의 작가·전시 정보는 예시예요."},
-  {date:"2026.09.29",tag:"안내",title:"작가 등록 신청은 이렇게 해요",body:"위쪽의 '작가 등록' 버튼으로 신청하면 운영팀이 확인한 뒤 승인해요. 분류(원로·중견·청년)는 나이를 기준으로 정하고, 필요하면 조정해요."},
-  {date:"2026.09.28",tag:"업데이트",title:"정명희 작가 아카이브를 열었어요",body:"한국예술디지털아카이브(DA-Arts) 미술작가 500人 자료를 바탕으로 작품 11점과 개인전 17건을 정리했어요."},
+  {date:"2026.10.06",tag:"공지",title:"세 작가의 공간으로 새로 시작해요",body:"작품 이미지 사용을 허락받은 기산 정명희, 이민구, 이홍원 작가의 공간을 먼저 열었어요. 시안에 넣었던 예시 작가와 예시 전시는 모두 지웠어요. 작가 소개는 공개된 기사와 자료를 바탕으로 arttan이 정리했고, 출처를 작가 공간에 함께 적어 두었어요."},
+  {date:"2026.09.29",tag:"안내",title:"작가 등록 신청은 이렇게 해요",body:"위쪽의 '작가 등록' 버튼으로 신청하면 운영팀이 확인한 뒤 승인해요. 작가 공간 개설과 작품 아카이브는 모두 무료예요."},
   {date:"2026.09.28",tag:"안내",title:"arttan 주소는 www.arttan.co.kr 이에요",body:"art(미술)와 灘(여울 탄)을 합친 이름이에요."}];
 
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */
 const AD_KEY="arttan.admin.v1";
-const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[
-  {id:"ap1",name:"서하늘",born:1997,genre:"사진",city:"서울",date:"2026.09.29",note:"개인전 2회"},
-  {id:"ap2",name:"민도윤",born:1972,genre:"조각",city:"강원 춘천",date:"2026.09.28",note:"개인전 9회 · 공공미술 3건"},
-  {id:"ap3",name:"윤채원",born:1990,genre:"판화",city:"대구",date:"2026.09.27",note:"개인전 3회"}]});
+const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[]});
 let AD=AD_DEF();
 try{const j=JSON.parse(localStorage.getItem(AD_KEY)||"null");if(j)AD=Object.assign(AD_DEF(),j)}catch(e){}
 function adSave(){try{localStorage.setItem(AD_KEY,JSON.stringify(AD));return true}catch(e){toast("브라우저 저장 공간이 부족해서 저장하지 못했어요");return false}}

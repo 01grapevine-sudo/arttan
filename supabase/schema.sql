@@ -18,7 +18,7 @@ $$;
 -- 작가 (작가 한 명 = 한 행. 작품·인터뷰·도록은 artist_id로만 연결돼 섞이지 않아요)
 -- ─────────────────────────────────────────────
 create table if not exists public.artists (
-  id           text primary key,                -- 예: jmh (작가 공간 주소 #a-jmh)
+  id           text primary key,                -- 예: jmh (작가 공간 주소 /artist/jmh)
   name         text not null,
   en           text,
   tier         text not null check (tier in ('원로작가','중견작가','청년작가')),
@@ -35,7 +35,9 @@ create table if not exists public.artists (
   history      jsonb not null default '[]',      -- 지난 개인전 [["1975","제목","장소"], ...]
   collections  text,
   pubs         text[] not null default '{}',     -- 저서
-  source       jsonb,                            -- {"name": "...", "url": "..."}
+  source       jsonb,                            -- (예전 형식) {"name": "...", "url": "..."}
+  sources      jsonb not null default '[]',      -- 소개 글 참고 자료 [{"name": "...", "url": "..."}, ...]
+  portraits    text[] not null default '{}',     -- 인물 사진 경로 (작품 사진이 없을 때 대표 이미지)
   works_total  int,                              -- 아카이브 전체 작품 수 (등록 이미지보다 많을 때)
   style        text,                             -- 이미지 없는 작품의 대체 그림 스타일
   pal          text[] not null default '{}',
@@ -210,3 +212,7 @@ create or replace function public.touch_updated_at() returns trigger language pl
 begin new.updated_at = now(); return new; end $$;
 drop trigger if exists artists_touch on public.artists;
 create trigger artists_touch before update on public.artists for each row execute function public.touch_updated_at();
+
+-- 이미 만든 DB에 새 열 추가 (여러 번 실행해도 괜찮아요)
+alter table public.artists add column if not exists sources jsonb not null default '[]';
+alter table public.artists add column if not exists portraits text[] not null default '{}';

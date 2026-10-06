@@ -156,23 +156,14 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=15"></script>
+<script src="core.js?v=16"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=15"></script>
-<script src="artists/ysg/artist.js?v=15"></script>
-<script src="artists/sjw/artist.js?v=15"></script>
-<script src="artists/cjs/artist.js?v=15"></script>
-<script src="artists/mjh/artist.js?v=15"></script>
-<script src="artists/oeb/artist.js?v=15"></script>
-<script src="artists/pjo/artist.js?v=15"></script>
-<script src="artists/jmr/artist.js?v=15"></script>
-<script src="artists/hsy/artist.js?v=15"></script>
-<script src="artists/ldh/artist.js?v=15"></script>
-<script src="artists/knr/artist.js?v=15"></script>
-<script src="artists/rhj/artist.js?v=15"></script>
+<script src="artists/jmh/artist.js?v=16"></script>
+<script src="artists/lmg/artist.js?v=16"></script>
+<script src="artists/lhw/artist.js?v=16"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=15"></script>
-<script src="data.js?v=15"></script>
+<script src="config.js?v=16"></script>
+<script src="data.js?v=16"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -300,7 +291,7 @@ function adArtists(m){
     const L=ARTISTS.filter(a=>(adTier==="전체"||a.tier===adTier)&&(!q||[a.name,...genresOf(a),a.city,...(a.tags||[])].join(" ").includes(q)));
     if(!L.length){c.append(el(`<p class="t-empty">찾는 작가가 없어요.</p>`));return}
     L.forEach(a=>{const sw=switchEl(!a.hidden,on=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").update({hidden:!on}).eq("id",a.id),on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);return}a.hidden=!on;if(on)delete AD.hidden[a.id];else AD.hidden[a.id]=true;adSave();refreshPublic();toast(on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);list()},`${a.name} 작가 공개`);
-      c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")} · ${a.born}년생${a.city?" · "+a.city:""}`,right:sw,onClick:()=>artistSheet(a)}))})};
+      c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")}${a.born?` · ${a.born}년생`:""}${a.city?" · "+a.city:""}`,right:sw,onClick:()=>artistSheet(a)}))})};
   list();const q=bar.querySelector("input");q.oninput=()=>{adQ=q.value;list()};
 }
 function artistSheet(a){
@@ -321,9 +312,9 @@ function artistSheet(a){
     f.append(fieldL("작품 이미지",file,"최대 6장, 긴 변 1200px로 줄여서 저장해요."),prev)}
   const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
     const g=genre.value()[0];
-    const v={name:name.value.trim(),born:+born.value,tier:tier.dataset.value,genre:g,more:more.value().filter(x=>x!==g),city:city.value.trim(),bio:bio.value.trim()};
+    const v={name:name.value.trim(),born:born.value?+born.value:null,tier:tier.dataset.value,genre:g,more:more.value().filter(x=>x!==g),city:city.value.trim(),bio:bio.value.trim()};
     if(!v.name){toast("이름을 입력해 주세요");name.focus();return}
-    if(!(v.born>1900&&v.born<=today.getFullYear())){toast("출생연도를 네 자리 숫자로 입력해 주세요");born.focus();return}
+    if(v.born&&!(v.born>1900&&v.born<=today.getFullYear())){toast("출생연도를 네 자리 숫자로 입력해 주세요 (모르면 비워 두세요)");born.focus();return}
     if(!v.genre){toast("대표 장르를 골라 주세요");return}
     if(SBM()){const row={name:v.name,born:v.born,tier:v.tier,genre:v.genre,more:v.more,city:v.city,bio:v.bio};
       dbDo(async()=>{
