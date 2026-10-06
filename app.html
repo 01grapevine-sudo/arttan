@@ -1561,14 +1561,14 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=19"></script>
+<script src="core.js?v=20"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
-<script src="artists/jmh/artist.js?v=19"></script>
-<script src="artists/lmg/artist.js?v=19"></script>
-<script src="artists/lhw/artist.js?v=19"></script>
+<script src="artists/jmh/artist.js?v=20"></script>
+<script src="artists/lmg/artist.js?v=20"></script>
+<script src="artists/lhw/artist.js?v=20"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=19"></script>
-<script src="data.js?v=19"></script>
+<script src="config.js?v=20"></script>
+<script src="data.js?v=20"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1990,10 +1990,11 @@ function renderTierRail(){
   const tabs=$("#tierTabs");tabs.innerHTML="";const ex=EXHIBITIONS.map(e=>({...e,st:status(e)}));
   /* 참여 작가의 대표·부가 장르 중 하나라도 맞으면 그 장르 전시로 봐요 */
   const has=(e,g)=>!g||e.artists.some(id=>byId[id]&&genresOf(byId[id]).includes(g));
-  [["전체",null],...GENRES.map(g=>[g,g])].forEach(([l,v])=>tabs.append(chip(l,ex.filter(e=>has(e,v)).length,homeTier===v,()=>{homeTier=v;renderTierRail()})));
-  const ord={live:0,soon:1,end:2};
-  const L=ex.filter(e=>has(e,homeTier)).sort((x,y)=>ord[x.st.k]-ord[y.st.k]||(x.st.k==="end"?parse(y.start)-parse(x.start):parse(x.start)-parse(y.start))).slice(0,10);
-  const r=$("#tierRail");r.innerHTML="";if(!L.length)r.innerHTML=`<p class="empty">해당하는 전시가 없어요.</p>`;L.forEach(e=>r.append(railCard(e)))}
+  /* 홈에서는 진행 중·예정 전시만, 최신순(시작일이 늦은 것부터)으로 보여줘요. 지난 전시는 전시 메뉴와 작가 공간에서 봐요. */
+  const cur=ex.filter(e=>e.st.k!=="end");
+  [["전체",null],...GENRES.map(g=>[g,g])].forEach(([l,v])=>tabs.append(chip(l,cur.filter(e=>has(e,v)).length,homeTier===v,()=>{homeTier=v;renderTierRail()})));
+  const L=cur.filter(e=>has(e,homeTier)).sort((x,y)=>parse(y.start)-parse(x.start)).slice(0,10);
+  const r=$("#tierRail");r.innerHTML="";if(!L.length)r.innerHTML=`<p class="empty">지금 열리고 있거나 열릴 예정인 전시가 없어요. 지난 전시는 <a href="#shows">전시</a> 메뉴에서 볼 수 있어요.</p>`;L.forEach(e=>r.append(railCard(e)))}
 const ALOG=[
   ["2026.10.06","lhw","작품 90점과 전시 기록을 올렸어요","작가 제공 사진 · 사용 허락"],
   ["2026.10.06","lmg","거미줄 「소우주」 연작 등 작품 14점을 올렸어요","작가 제공 사진 · 사용 허락"],
