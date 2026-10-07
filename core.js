@@ -234,7 +234,21 @@ const artistIndexable=a=>!!(a&&a.real&&!a.hidden);
 const exIndexable=e=>!!(e&&e.id&&e.artists.some(id=>artistIndexable(byId[id])));
 const galIndexable=g=>!!g&&!g.test&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&&exIndexable(e)));
 /* 참여 작가 이름: arttan 에 등록된 작가 + 등록되지 않은 작가(artists_text, 쉼표로 구분) */
-const exPeople=e=>[...e.artists.map(id=>byId[id]?.name).filter(Boolean),...String(e.artistsText||"").split(/[,·]/).map(s=>s.trim()).filter(Boolean)];
+/* ---------- 작가 주소 규칙(영문 이름 + 출생연도)과 동명이인 구분 ----------
+   새 작가 주소: /artist/lee-mingu-1975 (영문 이름이 없으면 한글 이름을 로마자로). 출생연도를 모르면 이름만, 겹치면 -2, -3 을 붙여요.
+   기존 작가(jmh·lmg·lhw)는 검색 등록이 끝난 주소라 바꾸지 않아요. */
+const HG_I=["g","kk","n","d","tt","r","m","b","pp","s","ss","","j","jj","ch","k","t","p","h"];
+const HG_M=["a","ae","ya","yae","eo","e","yeo","ye","o","wa","wae","oe","yo","u","wo","we","wi","yu","eu","ui","i"];
+const HG_F=["","k","k","k","n","n","n","t","l","k","m","l","l","l","p","l","m","p","p","t","t","ng","t","t","k","t","p","t"];
+const SURNAME={"이":"lee","박":"park","김":"kim","최":"choi","정":"jeong","강":"kang","조":"cho","윤":"yoon","장":"jang","임":"lim","한":"han","오":"oh","서":"seo","신":"shin","권":"kwon","황":"hwang","안":"ahn","송":"song","류":"ryu","유":"yoo","홍":"hong","전":"jeon","고":"ko","문":"moon","양":"yang","손":"son","배":"bae","백":"baek","허":"heo","노":"noh","심":"shim","하":"ha","곽":"kwak","성":"sung","차":"cha","주":"joo","우":"woo","구":"koo","민":"min","진":"jin","나":"na","엄":"eom","원":"won","천":"cheon","변":"byun","석":"seok","염":"yeom","방":"bang","공":"kong","현":"hyun","함":"ham","남궁":"namgung","황보":"hwangbo","제갈":"jegal","선우":"sunwoo","독고":"dokgo"};
+function romanize(s){let o="";for(const ch of String(s)){const c=ch.charCodeAt(0)-0xAC00;if(c<0||c>11171){o+=/[a-z0-9]/i.test(ch)?ch.toLowerCase():"-";continue}o+=HG_I[Math.floor(c/588)]+HG_M[Math.floor(c%588/28)]+HG_F[c%28]}return o}
+function nameRoman(name){const raw=String(name||"").trim(),n=raw.replace(/\s/g,"");if(!/^[가-힣]+$/.test(n))return raw.split(/\s+/).map(romanize).join("-");const sl=n.length>=3&&SURNAME[n.slice(0,2)]?2:SURNAME[n[0]]?1:0;if(!sl)return romanize(n);return `${SURNAME[n.slice(0,sl)]}-${romanize(n.slice(sl))}`}
+const slugify=s=>String(s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,32).replace(/-+$/,"");
+function artistSlug(o,taken=id=>!!byId[id]){const base=slugify(o.en||nameRoman(o.name))||"artist",b=o.born?`${base}-${o.born}`:base;let id=b,k=2;while(taken(id))id=`${b}-${k++}`;return id}
+/* 같은 이름의 작가가 2명 이상일 때만 이름 옆에 구분 꼬리표: 출생연도·장르 → 없으면 호·활동명 → 지역·장르 */
+const nameTag=a=>{if(!a||ARTISTS.filter(b=>!b.hidden&&b.name===a.name).length<2)return "";return a.born?`${a.born} · ${a.genre}`:(a.aka&&a.aka[0])||[a.city,a.genre].filter(Boolean).join(" · ")};
+const aName=a=>a?(nameTag(a)?`${a.name}(${nameTag(a)})`:a.name):"";
+const exPeople=e=>[...e.artists.map(id=>byId[id]&&aName(byId[id])).filter(Boolean),...String(e.artistsText||"").split(/[,·]/).map(s=>s.trim()).filter(Boolean)];
 function exNames(e){const n=exPeople(e);return n.length>2?`${n[0]} 외 ${n.length-1}인`:n.join("·")}
 /* 전시 제목은 사람들이 검색하는 순서로: 작가 개인전 : 「전시명」 - 장소 */
 const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.venue}`;
@@ -369,7 +383,7 @@ const STYLES=["bands","blocks","grain","ink","grid","neon","brush","vessel","lin
 const PALS=[["#E9E4DA","#3D5A6C","#A4B8C4","#D9C3A5","#1E2A33"],["#EDE6DC","#7A4B2E","#C79A6B","#2B2622","#C2B8A8"],["#F0EEE8","#2F3B2A","#8FA07F","#C75D3F","#D9CFB8"],["#0E1220","#E0567A","#5AC8E8","#C7F06A","#6A5CFF"]];
 function tierOf(born){const age=today.getFullYear()-born;return age>=70?"원로작가":age>=40?"중견작가":"청년작가"}
 function makeArtist(o){const k=hash(o.name+o.born);
-  return {id:o.id,added:true,real:true,tier:o.tier||tierOf(o.born),name:o.name,genre:o.genre,more:o.more||[],tags:o.tags||[],born:+o.born,city:o.city||"",
+  return {id:o.id,added:true,real:true,tier:o.tier||tierOf(o.born),name:o.name,genre:o.genre,more:o.more||[],tags:o.tags||[],born:o.born?+o.born:null,city:o.city||"",en:o.en||undefined,aka:o.aka&&o.aka.length?o.aka:undefined,
     style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],quote:"",line:"",bio:o.bio||"",cv:[],works:o.works||[],photos:o.photos&&o.photos.length?o.photos:undefined}}
 function adApply(){
   AD.artists.forEach(o=>{if(!byId[o.id]){const a=makeArtist(o);ARTISTS.push(a);byId[a.id]=a}});
