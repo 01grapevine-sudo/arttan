@@ -58,14 +58,14 @@ const GALLERIES = [
   {id:"jmhm", name:"정명희미술관", area:"대전", addr:"대전평생학습관 302호"},
   {id:"cbcc", name:"충북문화관 숲속갤러리", area:"청주"},
   /* 테스트용 가상 갤러리 (엘로이 샘플 전시용) */
-  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", photo:"galleries/testgal.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 arttan이 직접 그린 샘플이에요."},
+  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", photo:"galleries/testgal.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 AI로 생성한 샘플이에요."},
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
 /* 전시 (주소가 바뀌지 않게 id 를 꼭 적어요. 출처로 확인한 실제 전시만 넣어요. 단, id가 eloi- 로 시작하는 것은 테스트용 가상 전시예요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
 const EXHIBITIONS = [
-  {id:"eloi-2026", g:"testgal", title:"빛이 머무는 자리", artists:["eloi"], kind:"개인전", start:"2026-11-01", end:"2026-11-07", poster:"artists/eloi/posters/2026-light.jpg", desc:"[테스트용 가상 전시] 빛과 색이 겹쳐 머무는 순간을 그린 신작 8점. 전시·포스터·도록 기능을 시험하려고 만든 샘플이에요."},
-  {id:"eloi-2025", g:"testgal", title:"정원의 오후", artists:["eloi"], kind:"개인전", start:"2025-05-03", end:"2025-05-25", poster:"artists/eloi/posters/2025-garden.jpg", desc:"[테스트용 가상 전시] 오후의 정원을 색면과 곡선으로 옮긴 첫 개인전 (샘플)."},
+  {id:"eloi-2026", g:"testgal", title:"빛이 머무는 자리", artists:["eloi"], kind:"개인전", start:"2026-11-01", end:"2026-11-07", poster:"artists/eloi/posters/2026-light.jpg", desc:"[테스트용 가상 전시] 방 안으로 들어온 오후의 빛을 과슈와 색연필로 그린 일러스트 신작 8점. 전시·포스터·도록 기능을 시험하려고 만든 샘플이에요."},
+  {id:"eloi-2025", g:"testgal", title:"정원의 오후", artists:["eloi"], kind:"개인전", start:"2025-05-03", end:"2025-05-25", poster:"artists/eloi/posters/2025-garden.jpg", desc:"[테스트용 가상 전시] 서울의 작은 정원과 오후 햇살을 그린 일러스트 작가 엘로이의 첫 개인전 (샘플)."},
   {id:"ex01", g:"cbcc", title:"이홍원 작은 그림전 – 마동 30년 기념특별전", artists:["lhw"], kind:"특별전", start:"2025-03-11", end:"2025-03-16", desc:"청주 마동창작마을에서 작업한 30년을 기념해 충북문화관 숲속갤러리 전관에서 연 작은 그림전. 꽃 호랑이, 소나무, 싸움소, 질주, 연리지, 울림 등을 선보였다."},
   {id:"ex02", g:"insaplaza", title:"이홍원 전 – 달항아리 노래", artists:["lhw"], kind:"기획 초대전", start:"2023-03-22", end:"2023-03-27", desc:"서울 인사아트프라자갤러리 기획 초대전."},
   {id:"ex03", g:"jmhm", title:"물, 예술을 넘어", artists:["jmh"], kind:"소장전", start:"2023-02-06", end:"2023-06-30", desc:"대청댐 건설로 고향을 잃은 수몰민의 애환을 담은 작품들. 제4회 겸재미술상 수상기념전에 걸렸던 작품을 다시 소개했다."},
@@ -78,16 +78,16 @@ const EXHIBITIONS = [
    id 가 eloi- 로 시작하는 것은 테스트용 샘플이에요. */
 const REVIEWS = [
   {id:"eloi-garden", exhibition:"eloi-2025", title:"오후의 빛이 머무는 방 — 「정원의 오후」 스케치", date:"2025-05-10", author:"arttan 편집부",
-   body:"[테스트용 샘플 리뷰예요. 전시리뷰 기능을 시험하려고 만든 글이고, 실제 전시가 아니에요.]\n\n인사동 골목 안쪽, 흰 벽의 전시장에 들어서면 가장 먼저 「정원의 오후」라는 커다란 글자가 맞아요. 엘로이의 첫 개인전은 오후의 정원을 색면과 곡선으로 옮긴 작업들로 채워졌어요.\n\n세 점이 나란히 걸린 첫 번째 벽은 같은 정원을 시간대만 바꿔 그린 연작처럼 읽혀요. 겹쳐진 원들이 해와 나무, 그늘이 되고, 가로로 흐르는 선들이 바람이 돼요.\n\n대표작 「정원의 오후」 앞에는 오래 머무는 관람객이 많았어요. 가까이 다가가면 붓자국처럼 남은 곡선과 색이 겹친 경계가 보여요. 오프닝 날에는 작가와 관람객이 그림 앞에서 이야기를 나눴어요.",
+   body:"[테스트용 샘플 리뷰예요. 전시리뷰 기능을 시험하려고 만든 글이고, 실제 전시가 아니에요. 사진은 AI로 생성했어요.]\n\n인사동 골목 안쪽, 유리창에 커다란 정원 그림 배너가 걸린 작은 전시장이 보여요. 20대 일러스트 작가 엘로이의 첫 개인전 「정원의 오후」는 과슈와 색연필로 그린 일상의 풍경으로 채워졌어요.\n\n흰 벽에는 액자 속 그림들이 눈높이에 나란히 걸려 있어요. 나무 그늘 아래 책을 읽는 사람, 물 위에 누워 떠 있는 사람, 새벽빛이 들어온 작은 방. 모두 하루 중 빛이 가장 오래 머무는 순간을 붙잡은 장면이에요.\n\n대표작 「정원의 오후」 앞에서 작가는 관람객과 한참 이야기를 나눴어요. 전시장 한쪽 진열대에는 스케치북과 색 견본이 놓여 있어, 그림 한 장이 완성되기까지의 과정을 엿볼 수 있었어요.",
    photos:[
-     {src:"artists/eloi/reviews/garden-01.jpg", caption:"전시장 입구 — 전시 제목과 첫 작품"},
-     {src:"artists/eloi/reviews/garden-07.jpg", caption:"전시장 한쪽 벽 전체 (파노라마)"},
-     {src:"artists/eloi/reviews/garden-02.jpg", caption:"첫 번째 벽, 나란히 걸린 세 점"},
-     {src:"artists/eloi/reviews/garden-06.jpg", caption:"세로로 걸린 「새벽의 방」"},
-     {src:"artists/eloi/reviews/garden-03.jpg", caption:"대표작 「정원의 오후」 앞의 관람객"},
-     {src:"artists/eloi/reviews/garden-04.jpg", caption:"오프닝 날 전시장 풍경"},
-     {src:"artists/eloi/reviews/garden-05.jpg", caption:"가까이에서 본 「정원의 오후」"}],
-   works:[["eloi",1],["eloi",3],["eloi",2]],
+     {src:"artists/eloi/reviews/garden-01.jpg", caption:"인사동 골목의 전시장 입구 — 창에 걸린 전시 배너"},
+     {src:"artists/eloi/reviews/garden-02.jpg", caption:"전시장 전경"},
+     {src:"artists/eloi/reviews/garden-03.jpg", caption:"대표작 「정원의 오후」 옆에 선 작가"},
+     {src:"artists/eloi/reviews/garden-04.jpg", caption:"작품 앞에서 오래 머무는 관람객"},
+     {src:"artists/eloi/reviews/garden-05.jpg", caption:"가까이에서 본 「물결 위의 원」"},
+     {src:"artists/eloi/reviews/garden-06.jpg", caption:"오프닝 날, 관람객과 이야기를 나누는 작가"},
+     {src:"artists/eloi/reviews/garden-07.jpg", caption:"스케치북과 색 견본을 모은 진열대"}],
+   works:[["eloi",1],["eloi",2],["eloi",3]],
    /* 영상: [{url, title}] — 유튜브·비메오 주소. 없으면 칸이 안 보여요 */
    videos:[],
    /* 이 전시의 작가 인터뷰는 '인터뷰'(작가 파일의 interviews)에 exhibition 으로 연결해요 */

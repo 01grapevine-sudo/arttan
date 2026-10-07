@@ -960,6 +960,7 @@ body.is-site>header.top,body.is-site main>footer{display:none}
 .as-cnt{font-size:15px;color:var(--muted);font-weight:600}
 .as-about{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(28px,5vw,72px)}
 .as-bio{font-size:clamp(19px,1.8vw,23px);line-height:1.8;margin:0 0 20px;max-width:34em;letter-spacing:-.02em}
+.as-portrait{margin:0 0 22px;border-radius:14px;overflow:hidden;aspect-ratio:4/5;max-width:320px;background:var(--line,#eee)}.as-portrait img{width:100%;height:100%;object-fit:cover;display:block}
 .as-side h3{font-size:15px;font-weight:800;margin:28px 0 10px}
 .as-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .as-stats div{background:var(--surface);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column}
@@ -1751,16 +1752,16 @@ body.is-site .biz{margin-bottom:28px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=43"></script>
+<script src="core.js?v=44"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=43"></script>
-<script src="artists/jmh/artist.js?v=43"></script>
-<script src="artists/lmg/artist.js?v=43"></script>
-<script src="artists/lhw/artist.js?v=43"></script>
+<script src="artists/eloi/artist.js?v=44"></script>
+<script src="artists/jmh/artist.js?v=44"></script>
+<script src="artists/lmg/artist.js?v=44"></script>
+<script src="artists/lhw/artist.js?v=44"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=43"></script>
-<script src="data.js?v=43"></script>
+<script src="config.js?v=44"></script>
+<script src="data.js?v=44"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2499,7 +2500,7 @@ function workImg(a,i,w,h,label){
   return artCanvas(a,"w"+i,w,h,label)}
 /* 출처: 소개 글은 공개 자료의 사실을 바탕으로 arttan이 새로 썼어요 */
 function srcList(a){const L=a.sources||(a.source?[a.source]:[]);
-  return `<p class="src">${a.photos||a.portraits?"작품·인물 사진은 작가의 허락을 받아 게재했어요.":""}${L.length?` 소개 글 참고 자료 · ${L.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>`).join(" · ")}`:""}</p>`}
+  return `<p class="src">${a.real===false?"테스트용 가상 작가예요. 인물·작품 사진과 영상은 AI로 생성했어요.":a.photos||a.portraits?"작품·인물 사진은 작가의 허락을 받아 게재했어요.":""}${L.length?` 소개 글 참고 자료 · ${L.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a>`).join(" · ")}`:""}</p>`}
 function renderArtistSite(id){
   const a=byId[id],root=$("#artistSite");siteId=id;root.innerHTML="";root.style.setProperty("--site","#7C3AED");
   const r=archiveOf(a),iv=INTERVIEWS.find(x=>x.artist===id),v=videoOf(a);
@@ -2527,6 +2528,7 @@ function renderArtistSite(id){
       <ul class="tags">${(a.tags||[]).map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
       ${srcList(a)}</div>
     <div class="as-side">
+      ${a.photos&&a.portraits?`<figure class="as-portrait"><img src="${esc(optImg(a.portraits[0]))}" alt="${esc(a.name)} 작가" loading="lazy" style="object-position:${(a.portraitFocus||[.5,.3]).map(v=>v*100+"%").join(" ")}"></figure>`:""}
       <div class="as-stats"><div><b>${r.works}</b><span>작품</span></div><div><b>${r.ex}</b><span>전시 이력</span></div><div><b>${r.books}</b><span>도록·저서</span></div><div><b>${r.iv?"있음":"없음"}</b><span>인터뷰</span></div></div>
       ${a.cv&&a.cv.length?`<h3>주요 이력</h3><ol class="as-cv">${(a.real?a.cv:a.cv.slice().sort((x,y)=>y[0]-x[0])).map(([y,t])=>`<li><span>${esc(y)}</span>${esc(t)}</li>`).join("")}</ol>`:""}
       ${a.collections?`<h3>작품 소장</h3><p class="as-col">${esc(a.collections)}</p>`:""}

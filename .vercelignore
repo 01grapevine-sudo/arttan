@@ -8,3 +8,4 @@ scripts/make-seed.mjs
 artists/*/works/_원본파일.txt
 scripts/make-sample-eloi.mjs
 scripts/telegram-chatid.mjs
+scripts/make-eloi-photo.mjs
