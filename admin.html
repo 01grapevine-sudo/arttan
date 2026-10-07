@@ -49,6 +49,13 @@ canvas{display:block}
 .t-row-m span{font-size:13px;color:var(--t-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .t-row-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .chev{color:var(--t-muted);display:flex;opacity:.7}
+.t-bulk{border-top:1px solid var(--t-line);padding:12px 0}
+.t-bulk-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.t-bulk-h canvas.t-thumb{width:36px;height:36px;border-radius:8px}
+.t-bulk-g{display:grid;grid-template-columns:2fr 1fr 2fr 1.4fr;gap:6px}
+.t-bulk-g input{min-width:0;border:0;background:var(--t-bg);border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;color:var(--t-text);outline:none;width:100%}
+.t-bulk-g input:focus{box-shadow:inset 0 0 0 2px var(--t-blue)}
+@media (max-width:560px){.t-bulk-g{grid-template-columns:1fr 1fr}.t-bulk-g input:first-child{grid-column:1/-1}}
 canvas.t-thumb{width:48px;height:48px;border-radius:12px;flex-shrink:0;background:var(--t-bg)}
 canvas.t-cover{width:42px;height:56px;border-radius:6px;flex-shrink:0}
 .t-date{width:48px;height:48px;border-radius:12px;background:var(--t-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1.1}
@@ -172,16 +179,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=58"></script>
+<script src="core.js?v=59"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=58"></script>
-<script src="artists/jmh/artist.js?v=58"></script>
-<script src="artists/lmg/artist.js?v=58"></script>
-<script src="artists/lhw/artist.js?v=58"></script>
+<script src="artists/eloi/artist.js?v=59"></script>
+<script src="artists/jmh/artist.js?v=59"></script>
+<script src="artists/lmg/artist.js?v=59"></script>
+<script src="artists/lhw/artist.js?v=59"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=58"></script>
-<script src="data.js?v=58"></script>
+<script src="config.js?v=59"></script>
+<script src="data.js?v=59"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -347,6 +354,94 @@ function adArtists(m){
       c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")}${a.born?` · ${a.born}년생`:""}${a.city?" · "+a.city:""}`,right:[heroBtn(a,list),sw],onClick:()=>artistSheet(a)}))})};
   list();const q=bar.querySelector("input");q.oninput=()=>{adQ=q.value;list()};
 }
+/* ================= 작품 관리: 작품별 수정 · 표로 한꺼번에 수정 · 추가 · 삭제 =================
+   작품 번호(0부터)는 작품 페이지 주소(/artist/작가/work/번호)와 도록·전시리뷰 연결에 쓰여요.
+   그래서 순서는 바꾸지 않고, 삭제할 때는 뒤 작품들의 연결 번호를 자동으로 맞춰요. */
+const workThumb=(a,i)=>{const c=artCanvas(a,"w"+i,96,96,"");c.className="t-thumb";return c};
+const workRow=(a,i)=>{const w=a.works[i]||[];return {title:w[0]||"",year:w[1]||"",material:w[2]||"",size:w[3]||"",desc:w[4]||""}};
+const workSub=w=>[w.year,w.material,w.size].filter(x=>x&&!/미입력/.test(x)).join(" · ")||w.desc||"정보를 아직 넣지 않았어요";
+/* 로컬(예시) 모드 저장 */
+function workLocalSave(a,i,w){AD.workEdits=AD.workEdits||{};AD.workEdits[a.id]=AD.workEdits[a.id]||{};
+  const row=[w.title,w.year,w.material,w.size];if(w.desc)row.push(w.desc);AD.workEdits[a.id][i]=row;a.works[i]=row;return adSave()}
+const workDbRow=w=>({title:w.title,year:w.year?String(w.year):null,material:w.material||null,size:w.size||null,description:w.desc||null});
+
+function worksSheet(a,q=""){
+  const f=el(`<div class="t-form"></div>`);
+  const bar=el(`<div class="t-toolbar" style="margin:0 0 8px"><label class="t-search">${ic(IC.search,18)}<input type="search" placeholder="제목·연도·재료로 찾기" aria-label="작품 검색"></label></div>`);
+  const qi=bar.querySelector("input");qi.value=q;
+  const info=el(`<p class="t-desc" style="margin:0 0 8px"></p>`);
+  const list=el(`<div class="t-card" style="margin:0"></div>`);
+  const draw=()=>{list.innerHTML="";const s=qi.value.trim();
+    const L=a.works.map((_,i)=>i).filter(i=>{if(!s)return true;const w=workRow(a,i);return [w.title,w.year,w.material,w.size,w.desc,String(i+1)].join(" ").includes(s)});
+    info.textContent=`${a.works.length}점${s?` 중 ${L.length}점`:""} · 누르면 그 작품만 고쳐요`;
+    if(!L.length)list.append(el(`<p class="t-empty">찾는 작품이 없어요.</p>`));
+    L.forEach(i=>{const w=workRow(a,i);list.append(row({thumb:workThumb(a,i),title:`${String(i+1).padStart(2,"0")} ${w.title||"(제목 없음)"}`,sub:workSub(w),onClick:()=>workSheet(a,i,qi.value)}))})};
+  qi.oninput=draw;draw();
+  f.append(bar,info,list);
+  const foot=[tBtn("표로 한꺼번에 수정","ghost",()=>worksBulkSheet(a))];
+  if(SBM())foot.push(tBtn("작품 추가","primary",()=>workSheet(a,null)));
+  openSheet(`${a.name} 작품 관리`,f,foot)}
+
+function workSheet(a,i,backQ=""){
+  const isNew=i==null,w=isNew?{title:"",year:String(today.getFullYear()),material:"",size:"",desc:""}:workRow(a,i);
+  const f=el(`<div class="t-form"></div>`);
+  if(!isNew){const p=el(`<div class="t-prev"></div>`);const c=artCanvas(a,"w"+i,400,400,"");c.style.cssText="width:160px;height:160px;border-radius:12px";p.append(c);f.append(p)}
+  const title=inp("wTitle","text",w.title,"예: 달항아리 노래"),year=inp("wYear","text",w.year,"예: 2023"),mat=inp("wMat","text",/미입력/.test(w.material)?"":w.material,"예: 캔버스에 아크릴"),size=inp("wSize","text",/미입력/.test(w.size)?"":w.size,"예: 72.7×60.6cm");
+  const desc=inp("wDesc","textarea",w.desc,"작품 설명 (선택). 40자 이상이면 작품 페이지가 검색에 더 잘 나와요.");
+  const two=(x,y)=>{const t=el(`<div class="t-two"></div>`);t.append(x,y);return t};
+  let file=null;const fi=inp("wFile","file");fi.accept="image/*";const fprev=el(`<div class="t-prev"></div>`);
+  fi.onchange=async()=>{const fl=fi.files[0];if(!fl)return;file=await shrink(fl,2000);fprev.innerHTML="";if(file)fprev.append(el(`<img src="${file}" alt="">`))};
+  const ok=el(`<label class="t-check"><input type="checkbox" id="wOk"> 작품 사진 사용을 작가에게 허락받았어요</label>`);
+  f.append(fieldL("제목",title),two(fieldL("제작 연도",year),fieldL("크기",size)),fieldL("재료",mat),fieldL("설명",desc));
+  if(SBM())f.append(fieldL(isNew?"작품 사진":"사진 바꾸기",fi,isNew?"긴 변 2000px로 줄여서 저장해요.":"새 사진을 고르면 지금 사진 대신 들어가요."),fprev,ok);
+  if(!isNew)f.append(el(`<p class="t-desc">작품 페이지: <a href="${workPath(a.id,i)}" target="_blank" rel="noopener">${esc(workPath(a.id,i))}</a></p>`));
+  const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
+    const v={title:title.value.trim(),year:year.value.trim(),material:mat.value.trim(),size:size.value.trim(),desc:desc.value.trim()};
+    if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
+    if(isNew&&!file){toast("작품 사진을 골라 주세요");return}
+    if(file&&!$("#wOk").checked){toast("작품 사진 사용 허락을 확인해 주세요");return}
+    if(SBM()){dbDo(async()=>{let path=null;
+        if(file){const blob=await (await fetch(file)).blob();path=`${a.id}/${Date.now()}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
+        if(isNew){const sort=Math.max(-1,...(a.workSorts||[]))+1;return ARTTAN_DB.from("works").insert({artist_id:a.id,sort,...workDbRow(v),image_path:path})}
+        const id=(a.workIds||[])[i];if(!id)throw new Error("작품 번호를 찾지 못했어요. 새로고침 후 다시 해 주세요");
+        return ARTTAN_DB.from("works").update({...workDbRow(v),...(path?{image_path:path}:{})}).eq("id",id)},isNew?"작품을 추가했어요":"저장했어요",true);return}
+    if(!workLocalSave(a,i,v))return;toast("저장했어요");closeSheet();refreshPublic();worksSheet(a,backQ)});
+  const foot=[tBtn("목록으로","ghost",()=>worksSheet(a,backQ))];
+  if(!isNew&&SBM())foot.push(tBtn("삭제","ghost",()=>workDelete(a,i)));
+  foot.push(save);openSheet(isNew?`${a.name} 작품 추가`:`작품 ${String(i+1).padStart(2,"0")} 수정`,f,foot)}
+
+/* 삭제: 그 작품을 지우고, 도록(work_refs)·전시리뷰(works)의 연결 번호를 한 칸씩 당겨요 */
+function workDelete(a,i){const w=workRow(a,i);
+  confirmSheet(`「${w.title}」 작품을 삭제할까요?`,`되돌릴 수 없어요. 뒤에 있는 작품들의 번호가 하나씩 당겨져서 작품 페이지 주소도 바뀌어요. 도록·전시리뷰에 연결된 작품 번호는 자동으로 맞춰요.`,"삭제하기",()=>dbDo(async()=>{
+    const id=(a.workIds||[])[i];if(!id)throw new Error("작품 번호를 찾지 못했어요");
+    const r=await ARTTAN_DB.from("works").delete().eq("id",id);if(r.error)return r;
+    for(const bk of BOOKS.filter(b=>b.artist===a.id&&(b.works||[]).length&&b.dbId)){
+      const refs=bk.works.filter(x=>x!==i).map(x=>x>i?x-1:x);const u=await ARTTAN_DB.from("books").update({work_refs:refs}).eq("id",bk.dbId);if(u.error)return u}
+    for(const rv of REVIEWS.filter(r=>(r.works||[]).some(([aid])=>aid===a.id))){
+      const ws=rv.works.filter(([aid,x])=>!(aid===a.id&&x===i)).map(([aid,x])=>[aid,aid===a.id&&x>i?x-1:x]);const u=await ARTTAN_DB.from("reviews").update({works:ws}).eq("id",rv.id);if(u.error)return u}
+  },"작품을 삭제했어요",true))}
+
+/* 표로 한꺼번에 수정: 바뀐 칸이 있는 작품만 저장해요 (이홍원 작가처럼 작품이 많을 때) */
+function worksBulkSheet(a){
+  const f=el(`<div class="t-form"></div>`);
+  f.append(el(`<p class="t-desc" style="margin:0 0 8px">작품마다 제목·연도·재료·크기를 바로 고칠 수 있어요. 바꾼 작품만 저장돼요. 비어 있거나 「미입력」인 칸은 그대로 두셔도 돼요.</p>`));
+  const rows=a.works.map((_,i)=>{const w=workRow(a,i);
+    const box=el(`<div class="t-bulk"><div class="t-bulk-h"><b>${String(i+1).padStart(2,"0")}</b></div></div>`);
+    box.querySelector(".t-bulk-h").prepend(workThumb(a,i));
+    const t=inp("bt"+i,"text",w.title,"제목"),y=inp("by"+i,"text",w.year,"연도"),m=inp("bm"+i,"text",/미입력/.test(w.material)?"":w.material,"재료"),s=inp("bs"+i,"text",/미입력/.test(w.size)?"":w.size,"크기");
+    [t,y,m,s].forEach(x=>x.setAttribute("aria-label",`작품 ${i+1} ${x.placeholder}`));
+    const g=el(`<div class="t-bulk-g"></div>`);g.append(t,y,m,s);box.append(g);f.append(box);
+    const orig=JSON.stringify([t.value,y.value,m.value,s.value]);
+    return {i,w,changed:()=>JSON.stringify([t.value,y.value,m.value,s.value])!==orig,val:()=>({title:t.value.trim()||w.title,year:y.value.trim(),material:m.value.trim(),size:s.value.trim(),desc:w.desc})}});
+  const save=tBtn("바뀐 작품 저장","primary",()=>{
+    const ch=rows.filter(r=>r.changed());if(!ch.length){toast("바뀐 작품이 없어요");return}
+    if(SBM()){dbDo(async()=>{for(let k=0;k<ch.length;k+=10){const part=ch.slice(k,k+10);
+          const rs=await Promise.all(part.map(r=>{const id=(a.workIds||[])[r.i];return id?ARTTAN_DB.from("works").update(workDbRow(r.val())).eq("id",id):Promise.resolve({error:new Error(`작품 ${r.i+1} 번호를 찾지 못했어요`)})}));
+          const bad=rs.find(x=>x&&x.error);if(bad)return bad}},`작품 ${ch.length}점을 저장했어요`,true);return}
+    for(const r of ch)if(!workLocalSave(a,r.i,r.val()))return;
+    toast(`작품 ${ch.length}점을 저장했어요`);closeSheet();refreshPublic();worksSheet(a)});
+  openSheet(`${a.name} 작품 한꺼번에 수정 (${a.works.length}점)`,f,[tBtn("목록으로","ghost",()=>worksSheet(a)),save])}
+
 function artistSheet(a){
   const isNew=!a, T=["원로작가","중견작가","청년작가"];
   const f=el(`<div class="t-form"></div>`);
@@ -399,6 +494,7 @@ function artistSheet(a){
   if(a&&(SBM()||a.added))foot.push(tBtn("삭제","ghost",()=>{
     if(EXHIBITIONS.some(e=>e.artists.includes(a.id))){toast("이 작가가 참여한 전시를 먼저 삭제해 주세요");return}
     confirmSheet(`${a.name} 작가를 삭제할까요?`,"작품·인터뷰·도록 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").delete().eq("id",a.id),"삭제했어요");return}AD.artists=AD.artists.filter(x=>x.id!==a.id);delete AD.hidden[a.id];adSave();ARTISTS.splice(ARTISTS.indexOf(a),1);delete byId[a.id];refreshPublic();renderAdmin();toast("삭제했어요")})}));
+  if(!isNew&&a.works.length)foot.unshift(tBtn(`작품 관리 ${a.works.length}점`,"ghost",()=>worksSheet(a)));
   foot.push(save);openSheet(isNew?"작가 추가":"작가 정보 수정",f,foot);
 }
 

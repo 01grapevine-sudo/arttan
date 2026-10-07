@@ -375,7 +375,7 @@ const NOTICES=[
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */
 const AD_KEY="arttan.admin.v1";
-const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[],reviews:[],reviewEdits:{},reviewDel:{},heroOff:{},sns:null});
+const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[],reviews:[],reviewEdits:{},reviewDel:{},heroOff:{},sns:null,workEdits:{}});
 let AD=AD_DEF();
 try{const j=JSON.parse(localStorage.getItem(AD_KEY)||"null");if(j)AD=Object.assign(AD_DEF(),j)}catch(e){}
 function adSave(){try{localStorage.setItem(AD_KEY,JSON.stringify(AD));return true}catch(e){toast("브라우저 저장 공간이 부족해서 저장하지 못했어요");return false}}
@@ -388,6 +388,8 @@ function makeArtist(o){const k=hash(o.name+o.born);
 function adApply(){
   AD.artists.forEach(o=>{if(!byId[o.id]){const a=makeArtist(o);ARTISTS.push(a);byId[a.id]=a}});
   Object.entries(AD.edits).forEach(([id,e])=>{if(byId[id])Object.assign(byId[id],e)});
+  /* 관리자에서 고친 작품 정보 (Supabase 없이 이 브라우저에만 저장할 때): workEdits[작가id][번호] = [제목, 연도, 재료, 크기, 설명] */
+  Object.entries(AD.workEdits||{}).forEach(([id,m])=>{const a=byId[id];if(a)Object.entries(m).forEach(([i,row])=>{if(a.works[i])a.works[i]=row})});
   ARTISTS.forEach(a=>{a.hidden=!!AD.hidden[a.id];if((AD.heroOff||{})[a.id])a.hero=false});
   if(AD.sns)Object.assign(SNS,AD.sns);
   /* 관리자에서 추가·수정·삭제한 전시장 (Supabase 없이 이 브라우저에만 저장할 때) */

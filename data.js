@@ -50,6 +50,8 @@ async function loadFromSupabase() {
       sources: (r.sources && r.sources.length) ? r.sources : undefined, portraits: (r.portraits && r.portraits.length) ? r.portraits : undefined, aka: (r.aka && r.aka.length) ? r.aka : undefined, portraitFocus: (r.portrait_focus && r.portrait_focus.length === 2) ? r.portrait_focus : undefined, worksTotal: r.works_total || undefined,
       style: r.style || "lines", pal: (r.pal && r.pal.length >= 5) ? r.pal : FALLBACK_PAL, real: r.is_real, hidden: r.hidden, hero: r.hero !== false,
       works: w.map(x => { const row = [x.title, x.year || "", x.material || "", x.size || ""]; if (x.description) row.push(x.description); return row; }),
+      /* 관리자 작품 수정용: DB 행 id · 순서 · 이미지 경로 (작품 번호 i 와 같은 순서) */
+      workIds: w.map(x => x.id), workSorts: w.map(x => x.sort), workPaths: w.map(x => x.image_path || null),
       photos: (imgs.length && imgs.every(Boolean)) ? imgs : undefined,
       interviews: iv.filter(x => x.artist_id === r.id).map(x => ({ id: x.slug || String(x.id), dbId: x.id, title: x.title, date: x.date || "", lead: x.lead || "", qa: x.qa || [],
         body: x.body || "", kind: x.kind || "", exhibition: x.exhibition_id || undefined,
