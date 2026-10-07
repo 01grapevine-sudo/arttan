@@ -368,7 +368,19 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;border-bo
 .mega-in{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;row-gap:36px;padding-block:32px 40px}
 /* 머리글 줄(.top .wrap)의 가로 정렬이 전체 메뉴에도 걸려 칸이 어긋났어요 → 전체 메뉴는 격자로 */
 .top .mega-in{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;gap:36px 0;min-height:0;flex-wrap:nowrap}
-@media (max-width:960px){.top .mega-in{grid-template-columns:1fr 1fr;row-gap:28px}}
+@media (max-width:960px){.top .mega-in{grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:28px}}
+/* 휴대폰: 두 칸을 같은 너비로 고정하고, 긴 제목은 줄여요. 메뉴가 길면 메뉴 안에서만 스크롤 */
+@media (max-width:640px){
+  .mega{max-height:calc(100dvh - 72px);overflow-y:auto;overscroll-behavior:contain;padding-inline:20px}
+  .top .mega-in,.mega-in{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:26px 0!important;padding-block:18px 28px}
+  .mcol,.mcol:nth-child(4n+1){min-width:0;border-left:1px solid var(--line);padding:0 0 0 16px}
+  .mcol:nth-child(odd){border-left:0;padding:0 14px 0 0}
+  .mcol.two ul{grid-template-columns:minmax(0,1fr)!important}
+  .mcol ul,.mcol li{min-width:0}
+  .mcol li button{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mcol h3{font-size:14px;margin:0 0 6px}
+  .mcol li button{font-size:15px;padding:8px 0}
+}
 .mcol{padding:0 28px;border-left:1px solid var(--line)}
 .mcol:nth-child(4n+1){border-left:0;padding-left:0}
 .mcol li button{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -457,7 +469,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;border-bo
 .ndate{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .ntitle{font-weight:500}
 .notice details p{margin:0 0 18px;padding-left:180px;color:var(--muted);font-size:14px;max-width:calc(62ch + 180px)}
-@media (max-width:960px){.hcal{grid-template-columns:minmax(0,1fr)}.mega-in{grid-template-columns:1fr 1fr;row-gap:28px}.mcol{border-left:1px solid var(--line);padding-left:20px}.mcol:nth-child(odd){border-left:0;padding-left:0}}
+@media (max-width:960px){.hcal{grid-template-columns:minmax(0,1fr)}.mega-in{grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:28px}.mcol{border-left:1px solid var(--line);padding-left:20px}.mcol:nth-child(odd){border-left:0;padding-left:0}}
 @media (max-width:860px){
   .top nav.main{display:none}
   .util{margin-left:auto}
@@ -1817,16 +1829,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=49"></script>
+<script src="core.js?v=50"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=49"></script>
-<script src="artists/jmh/artist.js?v=49"></script>
-<script src="artists/lmg/artist.js?v=49"></script>
-<script src="artists/lhw/artist.js?v=49"></script>
+<script src="artists/eloi/artist.js?v=50"></script>
+<script src="artists/jmh/artist.js?v=50"></script>
+<script src="artists/lmg/artist.js?v=50"></script>
+<script src="artists/lhw/artist.js?v=50"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=49"></script>
-<script src="data.js?v=49"></script>
+<script src="config.js?v=50"></script>
+<script src="data.js?v=50"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
