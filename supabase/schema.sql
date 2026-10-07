@@ -305,3 +305,6 @@ alter table public.interviews add column if not exists body text;
 alter table public.interviews add column if not exists photos jsonb not null default '[]';
 alter table public.interviews add column if not exists video jsonb;
 alter table public.interviews add column if not exists exhibition_id text;
+
+-- 홈 히어로(첫 화면 큰 배너) 노출 여부: 관리자 작가 목록의 '히어로' 버튼으로 바꿔요
+alter table public.artists add column if not exists hero boolean not null default true;

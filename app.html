@@ -1752,16 +1752,16 @@ body.is-site .biz{margin-bottom:28px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=44"></script>
+<script src="core.js?v=45"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=44"></script>
-<script src="artists/jmh/artist.js?v=44"></script>
-<script src="artists/lmg/artist.js?v=44"></script>
-<script src="artists/lhw/artist.js?v=44"></script>
+<script src="artists/eloi/artist.js?v=45"></script>
+<script src="artists/jmh/artist.js?v=45"></script>
+<script src="artists/lmg/artist.js?v=45"></script>
+<script src="artists/lhw/artist.js?v=45"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=44"></script>
-<script src="data.js?v=44"></script>
+<script src="config.js?v=45"></script>
+<script src="data.js?v=45"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2237,7 +2237,8 @@ function railCard(e){
 /* 히어로 (벤토 큰 카드) */
 function buildSlides(){
   const L=[];
-  pub().forEach((a,k)=>{const r=archiveOf(a);
+  /* 관리자 작가 목록의 '히어로' 버튼으로 끈 작가는 빼요 */
+  pub().filter(a=>a.hero!==false).forEach((a,k)=>{const r=archiveOf(a);
     L.push({eb:k===0?`이달의 작가 · ${today.getMonth()+1}월`:`작가 아카이브 · ${a.tier} · ${a.genre}`,title:a.name,sub:a.quote?`“${a.quote}”`:a.line||"",
       meta:`${a.tier} · ${a.genre} · 작품 ${r.works}점 · 전시 이력 ${r.ex}건`,
       bg:el=>el.append(artCanvas(a,a.photos?"c"+(hash(a.id)%a.photos.length):"c0",1400,1000,a.photos?`${a.name}의 작품`:`${a.name} 작가`)),go:()=>openPortfolio(a.id)})});

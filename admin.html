@@ -78,6 +78,8 @@ canvas.t-cover{width:42px;height:56px;border-radius:6px;flex-shrink:0}
 .t-sheet .t-seg{background:var(--t-bg);display:flex}
 .t-sheet .t-seg button{flex:1}
 .t-sheet .t-seg button[aria-pressed="true"]{background:var(--t-card);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.t-hero{border:0;font:inherit;font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px;margin-right:8px;white-space:nowrap;cursor:pointer;background:var(--t-bg);color:var(--t-muted)}
+.t-hero[aria-pressed="true"]{background:var(--t-blue-soft);color:var(--t-blue)}
 .t-switch{width:50px;height:30px;border-radius:15px;border:0;background:var(--t-line);position:relative;padding:0;flex-shrink:0;transition:background .2s}
 .t-switch i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--t-knob);box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
 .t-switch[aria-checked="true"]{background:var(--t-blue)}
@@ -168,16 +170,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=44"></script>
+<script src="core.js?v=45"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=44"></script>
-<script src="artists/jmh/artist.js?v=44"></script>
-<script src="artists/lmg/artist.js?v=44"></script>
-<script src="artists/lhw/artist.js?v=44"></script>
+<script src="artists/eloi/artist.js?v=45"></script>
+<script src="artists/jmh/artist.js?v=45"></script>
+<script src="artists/lmg/artist.js?v=45"></script>
+<script src="artists/lhw/artist.js?v=45"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=44"></script>
-<script src="data.js?v=44"></script>
+<script src="config.js?v=45"></script>
+<script src="data.js?v=45"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -303,6 +305,14 @@ function adDash(m){
 
 /* 작가 */
 let adTier="전체",adQ="";
+/* 홈 첫 화면 큰 배너(히어로)에 이 작가를 넣을지 정하는 버튼 */
+function heroBtn(a,redraw){const on=a.hero!==false;
+  const b=el(`<button type="button" class="t-hero" aria-pressed="${on}">${on?"히어로 노출":"히어로 숨김"}</button>`);
+  b.setAttribute("aria-label",`${a.name} 작가 홈 히어로 노출`);b.title=a.hidden?"비공개 작가는 히어로에도 나오지 않아요":"홈 첫 화면 큰 배너에 보여요";
+  b.onclick=e=>{e.stopPropagation();const v=!on,msg=v?`${a.name} 작가를 홈 히어로에 보여줘요`:`${a.name} 작가를 홈 히어로에서 뺐어요`;
+    if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").update({hero:v}).eq("id",a.id),msg);return}
+    a.hero=v;AD.heroOff=AD.heroOff||{};if(v)delete AD.heroOff[a.id];else AD.heroOff[a.id]=true;adSave();refreshPublic();toast(msg);redraw()};
+  return b}
 function adArtists(m){
   adHead(m,"작가",`공개 ${pub().length}명 · 전체 ${ARTISTS.length}명`,["작가 추가",()=>artistSheet()]);
   const bar=el(`<div class="t-toolbar"><label class="t-search">${ic(IC.search,18)}<input id="adQ" type="search" placeholder="이름, 장르, 지역으로 찾기" aria-label="작가 검색"></label></div>`);
@@ -313,7 +323,7 @@ function adArtists(m){
     const L=ARTISTS.filter(a=>(adTier==="전체"||a.tier===adTier)&&(!q||[a.name,...genresOf(a),a.city,...(a.tags||[])].join(" ").includes(q)));
     if(!L.length){c.append(el(`<p class="t-empty">찾는 작가가 없어요.</p>`));return}
     L.forEach(a=>{const sw=switchEl(!a.hidden,on=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").update({hidden:!on}).eq("id",a.id),on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);return}a.hidden=!on;if(on)delete AD.hidden[a.id];else AD.hidden[a.id]=true;adSave();refreshPublic();toast(on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);list()},`${a.name} 작가 공개`);
-      c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")}${a.born?` · ${a.born}년생`:""}${a.city?" · "+a.city:""}`,right:sw,onClick:()=>artistSheet(a)}))})};
+      c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")}${a.born?` · ${a.born}년생`:""}${a.city?" · "+a.city:""}`,right:[heroBtn(a,list),sw],onClick:()=>artistSheet(a)}))})};
   list();const q=bar.querySelector("input");q.oninput=()=>{adQ=q.value;list()};
 }
 function artistSheet(a){

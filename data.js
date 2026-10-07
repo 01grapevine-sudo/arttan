@@ -47,7 +47,7 @@ async function loadFromSupabase() {
       cv: r.cv || [], history: (r.history && r.history.length) ? r.history : undefined, collections: r.collections || undefined,
       pubs: (r.pubs && r.pubs.length) ? r.pubs : undefined, source: r.source || undefined,
       sources: (r.sources && r.sources.length) ? r.sources : undefined, portraits: (r.portraits && r.portraits.length) ? r.portraits : undefined, aka: (r.aka && r.aka.length) ? r.aka : undefined, portraitFocus: (r.portrait_focus && r.portrait_focus.length === 2) ? r.portrait_focus : undefined, worksTotal: r.works_total || undefined,
-      style: r.style || "lines", pal: (r.pal && r.pal.length >= 5) ? r.pal : FALLBACK_PAL, real: r.is_real, hidden: r.hidden,
+      style: r.style || "lines", pal: (r.pal && r.pal.length >= 5) ? r.pal : FALLBACK_PAL, real: r.is_real, hidden: r.hidden, hero: r.hero !== false,
       works: w.map(x => { const row = [x.title, x.year || "", x.material || "", x.size || ""]; if (x.description) row.push(x.description); return row; }),
       photos: (imgs.length && imgs.every(Boolean)) ? imgs : undefined,
       interviews: iv.filter(x => x.artist_id === r.id).map(x => ({ id: x.slug || String(x.id), dbId: x.id, title: x.title, date: x.date || "", lead: x.lead || "", qa: x.qa || [],
