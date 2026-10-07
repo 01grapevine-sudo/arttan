@@ -64,6 +64,10 @@
       "destination": "/api/page?t=book&id=:id"
     },
     {
+      "source": "/review/:id",
+      "destination": "/api/page?t=review&id=:id"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/page?t=sitemap"
     },

@@ -8,7 +8,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 const dir = path.join(root, "artists");
 let made = 0, kept = 0;
 for (const id of fs.readdirSync(dir)) {
-  for (const sub of ["works", "photos", "books", "posters"]) {
+  for (const sub of ["works", "photos", "books", "posters", "reviews"]) {
   const wd = path.join(dir, id, sub);
   if (!fs.existsSync(wd)) continue;
   for (const f of fs.readdirSync(wd)) {

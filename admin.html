@@ -142,6 +142,11 @@ html,body{background:var(--t-bg)}
 .t-crawlprev .t-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;font-size:13px}
 .t-crawlprev .t-list span{color:var(--t-muted)}
 .t-pill.gray{background:var(--t-line);color:var(--t-sub)}
+.t-phlist{display:grid;gap:8px}
+.t-phrow{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center}
+.t-phrow img{width:96px;height:64px;object-fit:cover;border-radius:8px}
+.t-phrow input{font:inherit;font-size:14px;padding:10px 12px;border:0;border-radius:10px;background:var(--t-bg);color:var(--t-text)}
+.t-phbtn{display:flex;gap:4px}.t-phbtn button{width:30px;height:30px;border:0;border-radius:8px;background:var(--t-bg);cursor:pointer}
 </style>
 
 <div id="admin">
@@ -163,16 +168,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=35"></script>
+<script src="core.js?v=36"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=35"></script>
-<script src="artists/jmh/artist.js?v=35"></script>
-<script src="artists/lmg/artist.js?v=35"></script>
-<script src="artists/lhw/artist.js?v=35"></script>
+<script src="artists/eloi/artist.js?v=36"></script>
+<script src="artists/jmh/artist.js?v=36"></script>
+<script src="artists/lmg/artist.js?v=36"></script>
+<script src="artists/lhw/artist.js?v=36"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=35"></script>
-<script src="data.js?v=35"></script>
+<script src="config.js?v=36"></script>
+<script src="data.js?v=36"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -182,7 +187,7 @@ function refreshPublic(){}
 const IC={home:"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",user:"M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0",cal:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",inbox:"M4 13l2-8h12l2 8v6H4zM4 13h5l1 2h4l1-2h5",mic:"M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3",book:"M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11",building:"M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18",gear:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",chev:"M9 6l6 6-6 6",plus:"M12 5v14M5 12h14",mega:"M4 10v4h3l6 4V6l-6 4zM17 9a4 4 0 0 1 0 6",mail:"M4 6h16v12H4zM4 7l8 6 8-6",search:"M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"};
 const ic=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 const el=h=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild};
-const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["notice","공지사항","mega"],["iv","인터뷰","mic"],["books","도록","book"],["set","설정","gear"]];
+const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["review","전시리뷰","book"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["notice","공지·질문","mega"],["iv","인터뷰","mic"],["books","도록","book"],["set","설정","gear"]];
 let adView="dash";
 const pendingApps=()=>AD.apps.filter(a=>!AD.done[a.id]);
 function go(v){adView=v;renderAdmin();window.scrollTo(0,0)}
@@ -192,7 +197,7 @@ function renderAdmin(){
     const b=el(`<button type="button" class="ad-nav${adView===k?" on":""}"${adView===k?' aria-current="page"':""}>${ic(IC[i])}<span>${l}</span>${n?`<em aria-label="대기 ${n}건">${n}</em>`:""}</button>`);
     b.onclick=()=>go(k);nav.append(b)});
   const m=$("#adMain");m.innerHTML=SBM()?`<p class="ad-note">Supabase에 연결돼 있어요. 여기서 저장한 내용은 바로 실제 사이트에 반영돼요.</p>`:`<p class="ad-note">예시 데이터 모드예요. 바꾼 내용은 이 브라우저에만 저장돼요. Supabase를 연결하면 실제 DB에 저장돼요.</p>`;
-  ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,set:adSet})[adView](m);
+  ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,review:adReview,set:adSet})[adView](m);
 }
 function adHead(m,title,sub,action){const h=el(`<div class="ad-head"><div><h1>${esc(title)}</h1>${sub?`<p>${esc(sub)}</p>`:""}</div></div>`);
   if(action){const b=el(`<button type="button" class="t-btn primary sm">${ic(IC.plus,18)}${esc(action[0])}</button>`);b.onclick=action[1];h.append(b)}m.append(h)}
@@ -415,9 +420,9 @@ function adApps(m){
 
 
 /* 공지사항 */
-const NTAGS=["공지","안내","업데이트","이벤트"];
+const NTAGS=["공지","안내","업데이트","이벤트","자주하는 질문"];
 function adNotice(m){
-  const L=noticeList();adHead(m,"공지사항",`${L.length}건 · 사이트 홈 맨 아래에 보여요`,["공지 쓰기",()=>noticeSheet()]);
+  const L=noticeList();adHead(m,"공지·질문",`${L.length}건 · 공지는 홈과 소식에, '자주하는 질문'은 소식 › 자주하는 질문에 보여요`,["새로 쓰기",()=>noticeSheet()]);
   const c=card(m);if(!L.length)c.append(el(`<p class="t-empty">등록된 공지가 없어요.</p>`));
   L.forEach((n,i)=>c.append(row({thumb:el(`<span class="t-pill ${n.tag==="공지"?"blue":"gray"}">${esc(n.tag)}</span>`),title:n.title,sub:`${n.date} · ${n.body}`,onClick:()=>noticeSheet(i)})));
 }
@@ -624,6 +629,69 @@ function venueSheet(g){
       if(g.added)AD.galleries=AD.galleries.filter(x=>x.id!==g.id);else{AD.galDel=AD.galDel||{};AD.galDel[g.id]=true}
       AD.crawled=(AD.crawled||[]).filter(x=>x.gallery_id!==g.id);adSave();GALLERIES.splice(GALLERIES.indexOf(g),1);delete galById[g.id];CRAWLED=AD.crawled;renderAdmin();toast("삭제했어요")})}))}
   foot.push(save);openSheet(isNew?"전시장 추가":"전시장 수정",f,foot)}
+
+/* ================= 전시리뷰 (전시장 스케치) =================
+   전시 하나를 골라 현장 사진·리뷰 글·전시에 걸린 작품을 묶어요. 작가 공간의 '전시리뷰'와 전시 카드에 연결돼요. */
+function adReview(m){
+  adHead(m,"전시리뷰",`${REVIEWS.length}건 · 전시를 누르면 리뷰 페이지로 이동해요`,["리뷰 쓰기",()=>reviewSheet()]);
+  const c=card(m);if(!REVIEWS.length)c.append(el(`<p class="t-empty">아직 전시리뷰가 없어요. 전시를 다녀와 현장 사진과 글을 올려 보세요.</p>`));
+  REVIEWS.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(r=>{const e=EXHIBITIONS.find(x=>x.id===r.exhibition);
+    const th=r.photos&&r.photos[0]?el(`<img class="t-thumb" src="${r.photos[0].src}" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:8px">`):null;
+    c.append(row({thumb:th,title:r.title+(r.hidden?" · 비공개":""),sub:`${e?`「${e.title}」 · ${e.venue}`:"전시 없음"} · 사진 ${(r.photos||[]).length}장 · 작품 ${(r.works||[]).length}점${r.date?` · ${r.date}`:""}`,onClick:()=>reviewSheet(r)}))})}
+function reviewSheet(r){
+  const isNew=!r,f=el(`<div class="t-form"></div>`);
+  if(!EXHIBITIONS.length){toast("전시를 먼저 등록해 주세요");return}
+  const exSel=document.createElement("select");exSel.id="rEx";
+  exSel.innerHTML=EXHIBITIONS.slice().sort((a,b)=>b.start.localeCompare(a.start)).map(e=>`<option value="${e.id}">「${esc(e.title)}」 ${e.start.slice(0,7).replace("-",".")} · ${esc(e.venue)}${exPeople(e).length?` · ${esc(exPeople(e).slice(0,2).join(", "))}`:""}</option>`).join("");
+  exSel.value=r?.exhibition||EXHIBITIONS.filter(e=>status(e).k==="end").sort((a,b)=>b.end.localeCompare(a.end))[0]?.id||exSel.options[0].value;
+  const title=inp("rTitle","text",r?.title||"","예: 오후의 빛이 머무는 방 — 전시 스케치");
+  const date=inp("rDate","date",r?.date||""),author=inp("rAuthor","text",r?.author||"arttan 편집부","글쓴이");
+  const two=el(`<div class="t-two"></div>`);two.append(fieldL("방문한 날",date),fieldL("글쓴이",author));
+  const body=inp("rBody","textarea",r?.body||"","전시장 분위기, 인상 깊은 작품, 오프닝 이야기 등을 적어 주세요. 문단은 빈 줄로 나눠요.");body.rows=10;
+  /* 현장 사진: {show, path, data, caption} */
+  let photos=(r?.photos||[]).map(p=>({show:p.src,path:p.path??p.src,caption:p.caption||""}));
+  const phBox=el(`<div class="t-phlist"></div>`);
+  const drawPh=()=>{phBox.innerHTML="";photos.forEach((p,i)=>{const w=el(`<div class="t-phrow"><img src="${p.data||p.show}" alt=""><input type="text" placeholder="사진 설명 (예: 오프닝 날 전시장)" value="${esc(p.caption)}"><span class="t-phbtn"><button type="button" aria-label="앞으로">↑</button><button type="button" aria-label="지우기">×</button></span></div>`);
+    w.querySelector("input").oninput=e=>{p.caption=e.target.value};
+    const [up,del]=w.querySelectorAll("button");up.onclick=()=>{if(i>0){[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawPh()}};del.onclick=()=>{photos.splice(i,1);drawPh()};phBox.append(w)})};
+  const phFile=inp("rPhotos","file");phFile.accept="image/*";phFile.multiple=true;
+  phFile.onchange=async()=>{for(const fl of [...phFile.files]){if(photos.length>=40){toast("사진은 40장까지 올릴 수 있어요");break}const u=await shrink(fl,1800);if(u)photos.push({data:u,caption:""})}phFile.value="";drawPh()};drawPh();
+  const ok=el(`<label class="t-check"><input type="checkbox" id="rOk"> 현장 사진은 직접 찍었거나 사용 허락을 받았어요 (작품이 나온 사진은 작가 허락 포함)</label>`);
+  /* 전시에 걸린 작품: 참여 작가의 작품에서 골라요 */
+  const wkWrap=el(`<div></div>`);let wk=null;
+  const drawWorks=keep=>{const e=EXHIBITIONS.find(x=>x.id===exSel.value);wkWrap.innerHTML="";
+    const opts=(e?e.artists:[]).filter(id=>byId[id]).flatMap(id=>byId[id].works.map((w,i)=>`${id}|${i}`));
+    if(!opts.length){wkWrap.append(el(`<p class="t-desc">이 전시의 참여 작가 중 arttan에 등록된 작품이 없어요.</p>`));wk=null;return}
+    const sel=keep?(r?.works||[]).map(([a,i])=>`${a}|${i}`).filter(k=>opts.includes(k)):[];
+    wk=chipsField(opts,sel,opts.length,k=>{const [a,i]=k.split("|");return `${byId[a].name} · ${String(+i+1).padStart(2,"0")} ${byId[a].works[i][0]}`});wkWrap.append(wk)};
+  exSel.onchange=()=>drawWorks(false);drawWorks(true);
+  let hidden=!!r?.hidden;const sw=switchEl(!hidden,v=>{hidden=!v},"사이트에 공개");
+  f.append(fieldL("전시",exSel),fieldL("제목",title),two,fieldL("리뷰",body),fieldL("현장 사진",phFile,"여러 장을 한꺼번에 고를 수 있어요. 첫 번째 사진이 대표 사진이에요."),phBox,ok,
+    fieldD("전시에 걸린 작품",wkWrap,"고른 작품이 리뷰 페이지에 나오고 작품 페이지로 이어져요."),fieldD("사이트에 공개",sw));
+  const save=tBtn(isNew?"올리기":"저장하기","primary",async()=>{
+    const v={exhibition:exSel.value,title:title.value.trim(),date:date.value||"",author:author.value.trim(),body:body.value.trim(),hidden,
+      works:wk?wk.value().map(k=>{const [a,i]=k.split("|");return [a,+i]}):[]};
+    if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
+    if(!v.body&&!photos.length){toast("리뷰 글이나 현장 사진을 넣어 주세요");return}
+    if(photos.some(p=>p.data)&&!$("#rOk").checked){toast("사진 사용 허락을 확인해 주세요");return}
+    if(SBM()){const rid=isNew?newId("r"):r.id;
+      dbDo(async()=>{const ph=[];
+        for(let i=0;i<photos.length;i++){const p=photos[i];let path=p.path;
+          if(p.data){const blob=await (await fetch(p.data)).blob();path=`reviews/${rid}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
+          ph.push({src:path,caption:p.caption||""})}
+        const row={exhibition_id:v.exhibition,title:v.title,visit_date:v.date||null,author:v.author||null,body:v.body||null,photos:ph,works:v.works,hidden:v.hidden};
+        return isNew?ARTTAN_DB.from("reviews").insert({id:rid,...row}):ARTTAN_DB.from("reviews").update(row).eq("id",r.id)},isNew?"전시리뷰를 올렸어요":"저장했어요",true);return}
+    const ph=photos.map(p=>({src:p.data||p.show,caption:p.caption||""}));
+    if(isNew){const o={...v,photos:ph,id:"r"+Date.now().toString(36)};AD.reviews=AD.reviews||[];AD.reviews.push(o);if(!adSave()){AD.reviews.pop();return}REVIEWS.push({...o,added:true});toast("전시리뷰를 올렸어요")}
+    else{const patch={...v,photos:ph};if(r.added)Object.assign(AD.reviews.find(x=>x.id===r.id),patch);else{AD.reviewEdits=AD.reviewEdits||{};AD.reviewEdits[r.id]=patch}if(!adSave())return;Object.assign(r,patch);toast("저장했어요")}
+    closeSheet();renderAdmin()});
+  const foot=[];
+  if(!isNew){foot.push(tBtn("사이트에서 보기","ghost",()=>window.open(reviewPath(r),"_blank")));
+    foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${r.title}」 리뷰를 삭제할까요?`,"리뷰 글과 사진 연결이 사라지고 되돌릴 수 없어요.","삭제하기",()=>{
+      if(SBM()){dbDo(()=>ARTTAN_DB.from("reviews").delete().eq("id",r.id),"삭제했어요");return}
+      if(r.added)AD.reviews=AD.reviews.filter(x=>x.id!==r.id);else{AD.reviewDel=AD.reviewDel||{};AD.reviewDel[r.id]=true}
+      adSave();REVIEWS.splice(REVIEWS.indexOf(r),1);renderAdmin();toast("삭제했어요")})))}
+  foot.push(save);openSheet(isNew?"전시리뷰 쓰기":"전시리뷰 수정",f,foot)}
 
 /* ================= 수집한 전시 → 게시 여부 확인 ================= */
 let crawlTab="pending";

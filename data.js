@@ -28,11 +28,11 @@ async function loadFromSupabase() {
   const get = (t, order) => { let r = sb.from(t).select("*"); if (order) r = r.order(order[0], { ascending: order[1] !== false }); return r; };
   const res = await Promise.all([
     get("artists", ["sort"]), get("works", ["sort"]), get("interviews", ["date", false]), get("videos"), get("books", ["year", false]),
-    get("galleries", ["sort"]), get("exhibitions", ["start_date"]), get("notices", ["created_at", false])
+    get("galleries", ["sort"]), get("exhibitions", ["start_date"]), get("notices", ["created_at", false]), get("reviews", ["visit_date", false])
   ]);
   const bad = res.find(r => r.error);
   if (bad) { console.warn("Supabase 읽기 실패 — 예시 데이터로 보여요:", bad.error.message); return false; }
-  const [ar, wk, iv, vd, bk, gl, ex, nt] = res.map(r => r.data || []);
+  const [ar, wk, iv, vd, bk, gl, ex, nt, rv] = res.map(r => r.data || []);
 
   /* 예시 데이터를 비우고 DB 데이터로 다시 채워요 */
   ARTISTS.length = 0; Object.keys(byId).forEach(k => delete byId[k]);
@@ -65,6 +65,10 @@ async function loadFromSupabase() {
   ex.forEach(e => EXHIBITIONS.push({ id: e.id, g: e.gallery_id, title: e.title, kind: e.kind || "", start: e.start_date, end: e.end_date,
     artists: (e.artists || []).filter(id => byId[id]), desc: e.description || "", poster: e.poster_path ? workImageUrl(e.poster_path) : undefined,
     artistsText: e.artists_text || "", sourceUrl: e.source_url || "", venue: galById[e.gallery_id]?.name || "", region: galById[e.gallery_id]?.area || "" }));
+  /* 전시리뷰: 사진 경로는 사이트 파일(artists/…) 또는 Storage 경로 */
+  REVIEWS.length = 0;
+  rv.forEach(r => REVIEWS.push({ id: r.id, exhibition: r.exhibition_id, title: r.title, date: r.visit_date || "", author: r.author || "", body: r.body || "",
+    photos: (r.photos || []).map(f => ({ src: workImageUrl(f.src), path: f.src, caption: f.caption || "" })), works: r.works || [], hidden: r.hidden }));
   NOTICES.length = 0;
   nt.forEach(x => NOTICES.push({ id: x.id, tag: x.tag, title: x.title, body: x.body || "", date: x.date || (x.created_at || "").slice(0, 10).replaceAll("-", ".") }));
   return true;

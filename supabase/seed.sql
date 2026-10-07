@@ -1,7 +1,7 @@
 -- arttan 초기 데이터 (scripts/make-seed.mjs 로 생성). schema.sql 다음에 실행하세요.
 begin;
 delete from public.works; delete from public.interviews; delete from public.videos; delete from public.books;
-delete from public.exhibitions; delete from public.artists; delete from public.galleries; delete from public.notices;
+delete from public.reviews; delete from public.exhibitions; delete from public.artists; delete from public.galleries; delete from public.notices;
 insert into public.artists (id,name,en,tier,genre,more,tags,born,birthplace,city,quote,line,bio,cv,history,collections,pubs,source,sources,aka,portraits,portrait_focus,works_total,style,pal,is_real,hidden,sort) values ('eloi','엘로이','Eloi · 테스트용 가상 작가','청년작가','서양화',array['드로잉·일러스트']::text[],array['테스트용 샘플','색면','빛']::text[],1992,null,'서울',null,'[테스트용 가상 작가] 빛과 색이 머무는 자리를 그려요','엘로이는 arttan의 작품·전시·도록 기능을 시험하려고 만든 가상의 작가예요. 실제 인물이 아니며, 작품 이미지와 포스터, 도록 표지와 펼침면은 모두 arttan이 코드로 직접 그린 샘플이에요. 겹쳐진 원과 색면, 부드러운 곡선으로 빛이 머무는 순간을 표현한다는 설정이에요.','[["2026","개인전 「빛이 머무는 자리」 (샘플)"],["2025","첫 개인전 「정원의 오후」 (샘플)"]]'::jsonb,'[]'::jsonb,null,'{}'::text[],null,'[]'::jsonb,'{}'::text[],'{}'::text[],null,null,'bands',array['#F3EEE4','#2E2A5A','#7C3AED','#E8B4A0','#14112B']::text[],false,false,10);
 insert into public.works (artist_id,sort,title,year,material,size,description,image_path) values ('eloi',0,'빛이 머무는 자리','2026','캔버스에 아크릴','130×97cm','전시 「빛이 머무는 자리」 대표작 (샘플)','artists/eloi/works/01.jpg');
 insert into public.works (artist_id,sort,title,year,material,size,description,image_path) values ('eloi',1,'정원의 오후','2025','캔버스에 아크릴','91×117cm','첫 개인전 대표작 (샘플)','artists/eloi/works/02.jpg');
@@ -162,6 +162,20 @@ insert into public.books (artist_id,slug,kind,title,year,pages,size,writer,price
 insert into public.books (artist_id,slug,kind,title,year,pages,size,writer,price,publisher,isbn,description,cover_path,spreads,full_view,work_refs,exhibition_id,toc,links) values ('jmh','jmh-forest','작가 저서','아침이 숲을 깨운다',null,null,null,null,null,null,null,'시집.',null,'{}'::text[],false,'{}'::int[],null,'[]'::jsonb,'[]'::jsonb);
 insert into public.books (artist_id,slug,kind,title,year,pages,size,writer,price,publisher,isbn,description,cover_path,spreads,full_view,work_refs,exhibition_id,toc,links) values ('jmh','jmh-america','작가 저서','아메리카를 포기한다',null,null,null,null,null,null,null,'시집.',null,'{}'::text[],false,'{}'::int[],null,'[]'::jsonb,'[]'::jsonb);
 insert into public.books (artist_id,slug,kind,title,year,pages,size,writer,price,publisher,isbn,description,cover_path,spreads,full_view,work_refs,exhibition_id,toc,links) values ('jmh','jmh-geumgang','작가 저서','금강사랑 – 고백 혹은 변명',null,null,null,null,null,null,null,'시집.',null,'{}'::text[],false,'{}'::int[],null,'[]'::jsonb,'[]'::jsonb);
+insert into public.reviews (id,exhibition_id,title,visit_date,author,body,photos,works) values ('eloi-garden','eloi-2025','오후의 빛이 머무는 방 — 「정원의 오후」 스케치','2025-05-10','arttan 편집부','[테스트용 샘플 리뷰예요. 전시리뷰 기능을 시험하려고 만든 글이고, 실제 전시가 아니에요.]
+
+인사동 골목 안쪽, 흰 벽의 전시장에 들어서면 가장 먼저 「정원의 오후」라는 커다란 글자가 맞아요. 엘로이의 첫 개인전은 오후의 정원을 색면과 곡선으로 옮긴 작업들로 채워졌어요.
+
+세 점이 나란히 걸린 첫 번째 벽은 같은 정원을 시간대만 바꿔 그린 연작처럼 읽혀요. 겹쳐진 원들이 해와 나무, 그늘이 되고, 가로로 흐르는 선들이 바람이 돼요.
+
+대표작 「정원의 오후」 앞에는 오래 머무는 관람객이 많았어요. 가까이 다가가면 붓자국처럼 남은 곡선과 색이 겹친 경계가 보여요. 오프닝 날에는 작가와 관람객이 그림 앞에서 이야기를 나눴어요.','[{"src":"artists/eloi/reviews/garden-01.jpg","caption":"전시장 입구 — 전시 제목과 첫 작품"},{"src":"artists/eloi/reviews/garden-02.jpg","caption":"첫 번째 벽, 나란히 걸린 세 점"},{"src":"artists/eloi/reviews/garden-03.jpg","caption":"대표작 「정원의 오후」 앞의 관람객"},{"src":"artists/eloi/reviews/garden-04.jpg","caption":"오프닝 날 전시장 풍경"},{"src":"artists/eloi/reviews/garden-05.jpg","caption":"가까이에서 본 「정원의 오후」"}]'::jsonb,'[["eloi",1],["eloi",3],["eloi",2]]'::jsonb);
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','작품을 사고 싶어요.','작가 공간의 ''문의''에서 유형을 ''작품 구매''로 골라 남겨 주세요. arttan이 작가님께 전달해 드려요.','2026.10.07');
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','작품 촬영이나 도록 제작도 맡길 수 있나요?','네. 홈 화면의 ''촬영·제작 문의''에서 작품 사진 촬영, 전시회 촬영, 영상 촬영·제작, 도록 제작, 전시 기획을 문의할 수 있어요.','2026.10.07');
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','전시 소식을 알리고 싶어요.','작가 공간의 ''문의''(유형: 전시 제안)로 전시명, 기간, 장소, 포스터를 보내 주세요. 확인한 뒤 전시 일정과 소식에 올려요. 전시가 끝난 뒤에는 현장 사진과 함께 전시리뷰로 남길 수 있어요.','2026.10.07');
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','정보를 고치거나 작품을 더 올리고 싶어요.','작가 공간 맨 아래의 ''문의''에 남겨 주세요. arttan이 확인해서 반영해요. 작품 제목·연도·재료·크기를 함께 보내 주시면 더 빨라요.','2026.10.07');
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','작품 사진의 저작권은 어떻게 되나요?','작가님이 직접 주시거나 사용을 허락한 사진만 올려요. 다른 사이트의 이미지는 가져오지 않아요. 원하시면 언제든 내리거나 바꿀 수 있고, 저작권은 작가님께 있어요.','2026.10.07');
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','등록하면 무엇이 만들어지나요?','작가 이름으로 된 개인 공간(www.arttan.co.kr/artist/…)이 생겨요. 작가 소개, 작품, 인터뷰, 도록·저서, 전시 이력, 문의 창이 한 페이지에 정리되고 네이버·구글 검색에도 노출되도록 만들어요.','2026.10.07');
+insert into public.notices (tag,title,body,date) values ('자주하는 질문','작가 등록은 정말 무료인가요?','네. 작가 공간 개설, 작품 아카이브, 전시 이력 정리까지 모두 무료예요. 위쪽의 ''작가 등록'' 버튼으로 신청하면 arttan이 확인한 뒤 연락드려요.','2026.10.07');
 insert into public.notices (tag,title,body,date) values ('안내','arttan 주소는 www.arttan.co.kr 이에요','art(미술)와 灘(여울 탄)을 합친 이름이에요.','2026.09.28');
 insert into public.notices (tag,title,body,date) values ('안내','작가 등록 신청은 이렇게 해요','위쪽의 ''작가 등록'' 버튼으로 신청하면 운영팀이 확인한 뒤 승인해요. 작가 공간 개설과 작품 아카이브는 모두 무료예요.','2026.09.29');
 insert into public.notices (tag,title,body,date) values ('공지','세 작가의 공간으로 새로 시작해요','작품 이미지 사용을 허락받은 기산 정명희, 이민구, 이홍원 작가의 공간을 먼저 열었어요. 시안에 넣었던 예시 작가와 예시 전시는 모두 지웠어요. 작가 소개는 공개된 기사와 자료를 바탕으로 arttan이 정리했고, 출처를 작가 공간에 함께 적어 두었어요.','2026.10.06');

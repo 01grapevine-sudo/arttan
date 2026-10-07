@@ -73,6 +73,21 @@ const EXHIBITIONS = [
   {id:"ex05", g:"dmma", title:"금강홍 열두가지 변주", artists:["jmh"], kind:"초대전", start:"2016-06-14", end:"2016-06-19", desc:"대전시립미술관 초대전."},
 ].map((e,i)=>({id:"ex"+String(i+1).padStart(2,"0"),...e,venue:galById[e.g].name,region:galById[e.g].area}));
 
+/* 전시리뷰 (전시장 스케치): 전시 하나에 리뷰 하나 이상. 현장 사진·리뷰 글·전시에 걸린 작품을 담아요.
+   photos: [{src, caption}] — 직접 찍었거나 사용을 허락받은 사진만. works: [[작가id, 작품번호(0부터)], …]
+   id 가 eloi- 로 시작하는 것은 테스트용 샘플이에요. */
+const REVIEWS = [
+  {id:"eloi-garden", exhibition:"eloi-2025", title:"오후의 빛이 머무는 방 — 「정원의 오후」 스케치", date:"2025-05-10", author:"arttan 편집부",
+   body:"[테스트용 샘플 리뷰예요. 전시리뷰 기능을 시험하려고 만든 글이고, 실제 전시가 아니에요.]\n\n인사동 골목 안쪽, 흰 벽의 전시장에 들어서면 가장 먼저 「정원의 오후」라는 커다란 글자가 맞아요. 엘로이의 첫 개인전은 오후의 정원을 색면과 곡선으로 옮긴 작업들로 채워졌어요.\n\n세 점이 나란히 걸린 첫 번째 벽은 같은 정원을 시간대만 바꿔 그린 연작처럼 읽혀요. 겹쳐진 원들이 해와 나무, 그늘이 되고, 가로로 흐르는 선들이 바람이 돼요.\n\n대표작 「정원의 오후」 앞에는 오래 머무는 관람객이 많았어요. 가까이 다가가면 붓자국처럼 남은 곡선과 색이 겹친 경계가 보여요. 오프닝 날에는 작가와 관람객이 그림 앞에서 이야기를 나눴어요.",
+   photos:[
+     {src:"artists/eloi/reviews/garden-01.jpg", caption:"전시장 입구 — 전시 제목과 첫 작품"},
+     {src:"artists/eloi/reviews/garden-02.jpg", caption:"첫 번째 벽, 나란히 걸린 세 점"},
+     {src:"artists/eloi/reviews/garden-03.jpg", caption:"대표작 「정원의 오후」 앞의 관람객"},
+     {src:"artists/eloi/reviews/garden-04.jpg", caption:"오프닝 날 전시장 풍경"},
+     {src:"artists/eloi/reviews/garden-05.jpg", caption:"가까이에서 본 「정원의 오후」"}],
+   works:[["eloi",1],["eloi",3],["eloi",2]]},
+];
+
 /* ---------- generative artwork ---------- */
 function rng(seed){let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
 function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
@@ -221,6 +236,18 @@ const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.
 const artistHeadline=a=>`${a.name} 작가${a.born?` (${a.born}~)`:""} · ${a.genre} ${a.tier}`;
 /* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
 const optImg=(src,small)=>/^\/?(artists|galleries)\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
+/* ---------- 전시리뷰 ---------- */
+const reviewPath=r=>`/review/${encodeURIComponent(r.id)}`;
+const reviewsOfEx=exId=>REVIEWS.filter(r=>r.exhibition===exId&&!r.hidden);
+const reviewIndexable=r=>!!r&&!r.hidden&&exIndexable(EXHIBITIONS.find(e=>e.id===r.exhibition));
+/* 리뷰에 나오는 작가: 전시 참여 작가 + 실린 작품의 작가 */
+function reviewArtists(r){const e=EXHIBITIONS.find(x=>x.id===r.exhibition);return [...new Set([...(e?e.artists:[]),...(r.works||[]).map(w=>w[0])])].filter(id=>byId[id])}
+/* 소식: 자주하는 질문은 '공지사항'에 구분 "자주하는 질문"으로 넣어요 */
+const FAQ_TAG="자주하는 질문";
+const isFaq=n=>n.tag===FAQ_TAG;
+const newsNotices=()=>noticeList().filter(n=>!isFaq(n));
+const faqList=()=>noticeList().filter(isFaq);
+
 /* ---------- 도록 · 화집 · 작가 저서 ----------
    도록 데이터: {id, kind, title, year, pages, size, publisher, isbn, writer, desc,
      cover(표지 사진), spreads[펼침면 사진], full(전체 공개 여부), works[이 작가 작품 번호(0부터)],
@@ -258,6 +285,7 @@ function seoPages(){const m={"/":"home"};
     if(a.photos)a.works.forEach((w,i)=>m[workPath(a.id,i)]=JSON.stringify([a.name,w,a.photos[i%a.photos.length]]))});
   EXHIBITIONS.filter(exIndexable).forEach(e=>m[exPath(e)]=JSON.stringify([e.title,e.kind,e.start,e.end,e.g,e.artists,e.desc]));
   BOOKS.filter(bookIndexable).forEach(b=>m[bookPath(b)]=JSON.stringify(b));
+  REVIEWS.filter(reviewIndexable).forEach(r=>m[reviewPath(r)]=JSON.stringify(r));
   GALLERIES.filter(galIndexable).forEach(g=>m[galPath(g.id)]=JSON.stringify([g,EXHIBITIONS.filter(e=>e.g===g.id&&exIndexable(e)).map(e=>e.id)]));
   return m}
 const exOfGal=gid=>EXHIBITIONS.filter(e=>e.g===gid).map(e=>({...e,st:status(e)}));
@@ -267,12 +295,19 @@ function weekStart(d){const k=(d.getDay()+6)%7;return new Date(d.getFullYear(),d
 const NOTICES=[
   {date:"2026.10.06",tag:"공지",title:"세 작가의 공간으로 새로 시작해요",body:"작품 이미지 사용을 허락받은 기산 정명희, 이민구, 이홍원 작가의 공간을 먼저 열었어요. 시안에 넣었던 예시 작가와 예시 전시는 모두 지웠어요. 작가 소개는 공개된 기사와 자료를 바탕으로 arttan이 정리했고, 출처를 작가 공간에 함께 적어 두었어요."},
   {date:"2026.09.29",tag:"안내",title:"작가 등록 신청은 이렇게 해요",body:"위쪽의 '작가 등록' 버튼으로 신청하면 운영팀이 확인한 뒤 승인해요. 작가 공간 개설과 작품 아카이브는 모두 무료예요."},
-  {date:"2026.09.28",tag:"안내",title:"arttan 주소는 www.arttan.co.kr 이에요",body:"art(미술)와 灘(여울 탄)을 합친 이름이에요."}];
+  {date:"2026.09.28",tag:"안내",title:"arttan 주소는 www.arttan.co.kr 이에요",body:"art(미술)와 灘(여울 탄)을 합친 이름이에요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"작가 등록은 정말 무료인가요?",body:"네. 작가 공간 개설, 작품 아카이브, 전시 이력 정리까지 모두 무료예요. 위쪽의 '작가 등록' 버튼으로 신청하면 arttan이 확인한 뒤 연락드려요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"등록하면 무엇이 만들어지나요?",body:"작가 이름으로 된 개인 공간(www.arttan.co.kr/artist/…)이 생겨요. 작가 소개, 작품, 인터뷰, 도록·저서, 전시 이력, 문의 창이 한 페이지에 정리되고 네이버·구글 검색에도 노출되도록 만들어요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"작품 사진의 저작권은 어떻게 되나요?",body:"작가님이 직접 주시거나 사용을 허락한 사진만 올려요. 다른 사이트의 이미지는 가져오지 않아요. 원하시면 언제든 내리거나 바꿀 수 있고, 저작권은 작가님께 있어요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"정보를 고치거나 작품을 더 올리고 싶어요.",body:"작가 공간 맨 아래의 '문의'에 남겨 주세요. arttan이 확인해서 반영해요. 작품 제목·연도·재료·크기를 함께 보내 주시면 더 빨라요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"전시 소식을 알리고 싶어요.",body:"작가 공간의 '문의'(유형: 전시 제안)로 전시명, 기간, 장소, 포스터를 보내 주세요. 확인한 뒤 전시 일정과 소식에 올려요. 전시가 끝난 뒤에는 현장 사진과 함께 전시리뷰로 남길 수 있어요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"작품 촬영이나 도록 제작도 맡길 수 있나요?",body:"네. 홈 화면의 '촬영·제작 문의'에서 작품 사진 촬영, 전시회 촬영, 영상 촬영·제작, 도록 제작, 전시 기획을 문의할 수 있어요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"작품을 사고 싶어요.",body:"작가 공간의 '문의'에서 유형을 '작품 구매'로 골라 남겨 주세요. arttan이 작가님께 전달해 드려요."}];
 
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */
 const AD_KEY="arttan.admin.v1";
-const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[]});
+const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[],reviews:[],reviewEdits:{},reviewDel:{}});
 let AD=AD_DEF();
 try{const j=JSON.parse(localStorage.getItem(AD_KEY)||"null");if(j)AD=Object.assign(AD_DEF(),j)}catch(e){}
 function adSave(){try{localStorage.setItem(AD_KEY,JSON.stringify(AD));return true}catch(e){toast("브라우저 저장 공간이 부족해서 저장하지 못했어요");return false}}
@@ -290,6 +325,10 @@ function adApply(){
   (AD.galleries||[]).forEach(g=>{if(!galById[g.id]){const o={...g,added:true};GALLERIES.push(o);galById[o.id]=o}});
   Object.entries(AD.galEdits||{}).forEach(([id,e])=>{if(galById[id])Object.assign(galById[id],e)});
   Object.keys(AD.galDel||{}).forEach(id=>{const i=GALLERIES.findIndex(g=>g.id===id);if(i>=0){GALLERIES.splice(i,1);delete galById[id]}});
+  /* 관리자에서 추가·수정·삭제한 전시리뷰 (Supabase 없이 이 브라우저에만 저장할 때) */
+  (AD.reviews||[]).forEach(r=>{if(!REVIEWS.some(x=>x.id===r.id))REVIEWS.push({...r,added:true})});
+  Object.entries(AD.reviewEdits||{}).forEach(([id,e])=>{const r=REVIEWS.find(x=>x.id===id);if(r)Object.assign(r,e)});
+  for(let i=REVIEWS.length-1;i>=0;i--)if((AD.reviewDel||{})[REVIEWS[i].id])REVIEWS.splice(i,1);
   /* 관리자에서 추가·수정·삭제한 책 (Supabase 없이 이 브라우저에만 저장할 때) */
   (AD.books||[]).forEach(b=>{if(!BOOKS.some(x=>x.id===b.id)&&byId[b.artist])BOOKS.push({...b,added:true})});
   Object.entries(AD.bookEdits||{}).forEach(([id,e])=>{const b=BOOKS.find(x=>x.id===id);if(b)Object.assign(b,e)});

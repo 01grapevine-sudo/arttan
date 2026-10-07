@@ -277,3 +277,23 @@ drop policy if exists "crawled: admin all" on public.crawled_exhibitions;
 create policy "crawled: admin all" on public.crawled_exhibitions for all using (public.is_admin()) with check (public.is_admin());
 alter table public.galleries add column if not exists photo_path text;   -- 전시장 대표 사진 (전시장이 허락한 것만)
 alter table public.galleries add column if not exists video_url text;    -- 유튜브·비메오 영상 주소
+
+-- ─────────────────────────────────────────────
+-- 전시리뷰 (전시장 스케치): 현장 사진 [{src,caption}] · 전시에 걸린 작품 [[작가id, 작품번호]]
+create table if not exists public.reviews (
+  id text primary key,
+  exhibition_id text references public.exhibitions(id) on delete set null,
+  title text not null,
+  visit_date date,
+  author text,
+  body text,
+  photos jsonb not null default '[]',
+  works jsonb not null default '[]',
+  hidden boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.reviews enable row level security;
+drop policy if exists "reviews: public read" on public.reviews;
+create policy "reviews: public read" on public.reviews for select using (hidden = false or public.is_admin());
+drop policy if exists "reviews: admin write" on public.reviews;
+create policy "reviews: admin write" on public.reviews for all using (public.is_admin()) with check (public.is_admin());

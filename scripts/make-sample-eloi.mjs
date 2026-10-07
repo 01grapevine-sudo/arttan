@@ -84,6 +84,34 @@ async function main() {
   const comps = [];
   for (const [wi, x, y, w, h] of frames) comps.push({ input: await sharp(Buffer.from(artwork(wi, w, h))).png().toBuffer(), left: x, top: y });
   await sharp(Buffer.from(room)).composite(comps).jpeg({ quality: 85 }).toFile(path.join(root, "galleries/testgal.jpg"));
+  /* 전시리뷰 샘플: 「정원의 오후」(2025) 현장 사진 5장 (1600×1066) */
+  const RW = 1600, RH = 1066;
+  const wall = (floorY = 800) => `<defs><linearGradient id="w2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8F6F2"/><stop offset="1" stop-color="#EAE5DD"/></linearGradient>
+    <linearGradient id="f2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFB2A0"/><stop offset="1" stop-color="#9C8C76"/></linearGradient></defs>
+    <rect width="${RW}" height="${RH}" fill="url(#w2)"/><rect y="${floorY}" width="${RW}" height="${RH - floorY}" fill="url(#f2)"/><rect y="${floorY - 6}" width="${RW}" height="8" fill="#D9D1C5"/>`;
+  const person = (x, y, s = 1, c = "#2E2A3A") => `<g transform="translate(${x} ${y}) scale(${s})" fill="${c}"><circle cx="0" cy="-262" r="30"/><path d="M -46 -226 Q 0 -244 46 -226 L 58 -60 L 34 -60 L 30 0 L 6 0 L 0 -90 L -6 0 L -30 0 L -34 -60 L -58 -60 Z"/></g>`;
+  const frame = (x, y, w, h) => `<rect x="${x - 5}" y="${y + 12}" width="${w + 10}" height="${h + 10}" fill="#000" opacity=".12"/><rect x="${x - 5}" y="${y - 5}" width="${w + 10}" height="${h + 10}" fill="#2B2620"/>`;
+  const label = (x, y) => `<rect x="${x}" y="${y}" width="90" height="56" fill="#FFFFFF"/><rect x="${x + 10}" y="${y + 12}" width="60" height="6" fill="#8A8496"/><rect x="${x + 10}" y="${y + 26}" width="44" height="5" fill="#B7B2C2"/><rect x="${x + 10}" y="${y + 38}" width="52" height="5" fill="#B7B2C2"/>`;
+  const shot = async (file, svg, arts) => {
+    const comps = [];
+    for (const [wi, x, y, w, h] of arts) comps.push({ input: await sharp(Buffer.from(artwork(wi, w, h))).png().toBuffer(), left: x, top: y });
+    const over = svg.after ? [{ input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${RW}" height="${RH}">${svg.after}</svg>`), left: 0, top: 0 }] : [];
+    await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${RW}" height="${RH}">${svg.base}</svg>`)).composite([...comps, ...over]).jpeg({ quality: 84 }).toFile(out(`reviews/${file}`));
+  };
+  const tag = `<text x="${RW - 30}" y="${RH - 24}" ${FONT} font-size="22" fill="#5E5244" text-anchor="end">테스트용 샘플 사진 · arttan</text>`;
+  /* 1) 입구: 전시 제목 글자 */
+  await shot("garden-01.jpg", { base: `${wall(840)}<text x="200" y="360" ${FONT} font-size="120" fill="#2E2A5A" font-weight="800">정원의 오후</text>
+    <text x="206" y="440" ${FONT} font-size="44" fill="#6B5FA0">엘로이 개인전 · 2025.05.03 – 05.25</text>${frame(1080, 230, 330, 248)}${tag}`, after: person(560, 990, 1.05, "#3A3346") }, [[1, 1080, 230, 330, 248]]);
+  /* 2) 전경: 세 점 */
+  await shot("garden-02.jpg", { base: `${wall()}${frame(150, 260, 360, 270)}${frame(620, 220, 400, 300)}${frame(1130, 270, 320, 240)}${label(530, 470)}${label(1040, 470)}${tag}` },
+    [[1, 150, 260, 360, 270], [3, 620, 220, 400, 300], [2, 1130, 270, 320, 240]]);
+  /* 3) 한 점 앞의 관람객 */
+  await shot("garden-03.jpg", { base: `${wall(860)}${frame(420, 150, 760, 570)}${label(1220, 640)}${tag}`, after: person(640, 1040, 1.25) + person(960, 1050, 1.15, "#4A4258") }, [[1, 420, 150, 760, 570]]);
+  /* 4) 오프닝 */
+  await shot("garden-04.jpg", { base: `${wall()}${frame(200, 230, 330, 248)}${frame(1060, 230, 330, 248)}${tag}`,
+    after: [[300, 1000, 1, "#3B3448"], [460, 990, .95, "#5A4E6E"], [700, 1010, 1.05, "#2E2A3A"], [880, 995, .95, "#6A5C80"], [1120, 1005, 1, "#3B3448"], [1300, 990, .9, "#4A4258"]].map(a => person(...a)).join("") }, [[3, 200, 230, 330, 248], [2, 1060, 230, 330, 248]]);
+  /* 5) 작품 가까이 */
+  await shot("garden-05.jpg", { base: `<rect width="${RW}" height="${RH}" fill="#2B2620"/>${tag}` }, [[1, 30, 30, RW - 60, RH - 60]]);
   console.log("엘로이 샘플 이미지를 만들었어요.");
 }
 main();
