@@ -276,6 +276,16 @@ const faqList=()=>noticeList().filter(isFaq);
      exhibition(전시 id), toc[목차], links[{name,url}]}
    표지 사진이 없으면 글자로 만든 표지를 보여줘요 (다른 곳의 이미지를 가져오지 않아요). */
 const BOOK_KINDS=["전시 도록","화집","작가 저서"];
+/* 서점 구매 버튼: 예스24 · 교보문고. ISBN이 있으면 ISBN으로, 없으면 「제목 + 작가」로 서점 검색에 연결해요.
+   관리자 '구매·열람처'에 서점 상품 주소를 직접 넣으면 그 주소를 써요. 판매하지 않는 전시 도록은 ISBN이 없으면 숨겨요 (bk.buy 로 직접 켜고 끌 수 있어요) */
+const BUY_SHOPS=[["yes24","예스24",/예스24|yes24/i,q=>`https://www.yes24.com/Product/Search?domain=BOOK&query=${q}`],
+  ["kyobo","교보문고",/교보|kyobo/i,q=>`https://search.kyobobook.co.kr/search?keyword=${q}&gbCode=TOT&target=total`]];
+function bookBuyable(bk,a){if(bk.buy===false)return false;if(bk.buy===true)return true;if(a&&a.real===false)return false;return !!bk.isbn||bk.kind!=="전시 도록"}
+function buyLinks(bk,a){if(!bookBuyable(bk,a))return [];
+  const q=encodeURIComponent(bk.isbn?bk.isbn.replace(/[^0-9Xx]/g,""):`${bk.title} ${a?a.name:""}`.trim());
+  return BUY_SHOPS.map(([k,name,re,f])=>{const m=(bk.links||[]).find(x=>re.test(x.name+" "+x.url));return {k,name,url:m?m.url:f(q),direct:!!m}})}
+/* 구매 버튼과 겹치는 서점 링크는 일반 링크 목록에서 빼요 */
+const otherLinks=bk=>(bk.links||[]).filter(x=>!BUY_SHOPS.some(([,,re])=>re.test(x.name+" "+x.url)));
 const bookPath=b=>`/book/${encodeURIComponent(b.id)}`;
 const bookAccess=b=>b.spreads&&b.spreads.length?(b.full?"e북 열람":"미리보기"):"정보만";
 const bookIndexable=b=>!!b&&artistIndexable(byId[b.artist])&&!!(b.cover||(b.desc&&b.desc.length>=40)||(b.spreads&&b.spreads.length)||(b.works&&b.works.length));

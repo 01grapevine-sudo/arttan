@@ -1382,6 +1382,13 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .bkp-by{margin:0 0 18px;font-size:16px}.bkp-by a{color:var(--ink);font-weight:800}.bkp-by span{color:var(--muted);font-size:14px}
 .bkp-info dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0 0 22px;font-size:15px}.bkp-info dt{color:var(--muted)}.bkp-info dd{margin:0}
 .bkp-acts{display:flex;flex-wrap:wrap;gap:8px}
+.bkp-buy{margin:4px 0 14px;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.bkp-buy>b{display:block;font-size:13px;margin-bottom:8px}
+.bkp-buy>div{display:flex;flex-wrap:wrap;gap:8px}
+.bkp-buy a{text-decoration:none}
+.bkp-buy small{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
+.bkp-buy .buy-yes24{background:#1F5BD6;border-color:#1F5BD6;color:#fff}
+.bkp-buy .buy-kyobo{background:#3D7D4A;border-color:#3D7D4A;color:#fff}
 .bkp-sec{margin-top:48px}.bkp-sec h2{font-size:22px;margin:0 0 16px}.bkp-sec h2 small{font-size:14px;color:var(--muted);font-weight:500}
 .bkp-desc{font-size:17px;line-height:1.8;max-width:760px;margin:0}
 .bkp-spreads{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
@@ -1449,7 +1456,7 @@ body.is-site .biz{margin-bottom:28px}
       <a href="#home">홈</a>
       <a href="#artists">작가</a>
       <a href="#interviews">인터뷰</a>
-      <a href="#catalogue">도록</a>
+      <a href="#catalogue">책·도록</a>
       <a href="#shows">전시</a>
       <a href="#reviews">전시리뷰</a>
       <a href="#galleries">갤러리</a>
@@ -1542,7 +1549,7 @@ body.is-site .biz{margin-bottom:28px}
       <div class="artists arch" id="archGrid"></div>
     </div>
     <div class="hb">
-      <div class="hh"><h2>도록 아카이브</h2><a href="#catalogue" class="more">전체 도록 ›</a></div>
+      <div class="hh"><h2>책·도록 아카이브</h2><a href="#catalogue" class="more">전체 보기 ›</a></div>
       <div class="rail" id="homeBooks"></div>
     </div>
     <div class="hb">
@@ -1612,7 +1619,7 @@ body.is-site .biz{margin-bottom:28px}
   </section>
 
   <section class="block" id="catalog" data-view="catalogue">
-    <div class="shead"><h2>도록</h2><span class="en">Catalogue</span></div>
+    <div class="shead"><h2>책·도록</h2><span class="en">Books</span></div>
     <p class="bk-intro">작가의 전시 도록, 화집, 저서를 모았어요. 책을 누르면 정보와 실린 작품, 허락된 펼침면을 볼 수 있어요.</p>
     <div class="tabs" id="bookTabs" role="group" aria-label="책 종류"></div>
     <div class="bk-shelf" id="books"></div>
@@ -1765,16 +1772,16 @@ body.is-site .biz{margin-bottom:28px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=47"></script>
+<script src="core.js?v=48"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=47"></script>
-<script src="artists/jmh/artist.js?v=47"></script>
-<script src="artists/lmg/artist.js?v=47"></script>
-<script src="artists/lhw/artist.js?v=47"></script>
+<script src="artists/eloi/artist.js?v=48"></script>
+<script src="artists/jmh/artist.js?v=48"></script>
+<script src="artists/lmg/artist.js?v=48"></script>
+<script src="artists/lhw/artist.js?v=48"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=47"></script>
-<script src="data.js?v=47"></script>
+<script src="config.js?v=48"></script>
+<script src="data.js?v=48"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1832,7 +1839,7 @@ function exCard(e,opt){
     const b=document.createElement("button");b.type="button";b.className="inl";b.textContent=byId[aid].name;b.onclick=()=>openPortfolio(aid);ar.append(b)});
   row.append(pw,d);return row}
 
-const AP_SECS=[["ap-artist","작가"],["ap-intro","작가소개"],["ap-video","인터뷰영상"],["ap-works","작품"],["ap-books","도록"],["ap-ex","전시일정"]];
+const AP_SECS=[["ap-artist","작가"],["ap-intro","작가소개"],["ap-video","인터뷰영상"],["ap-works","작품"],["ap-books","책·도록"],["ap-ex","전시일정"]];
 function secHead(title,en,cnt){return `<div class="ap-h"><h3>${title}</h3><span class="en">${en}</span>${cnt!=null?`<span class="cnt">${cnt}</span>`:""}</div>`}
 function openPortfolio(id){location.href=artistPath(id)}
 function openPortfolioModal(id){
@@ -1875,7 +1882,7 @@ function openPortfolioModal(id){
 
   /* 5. 도록 */
   const bks=BOOKS.map((b,i)=>[b,i]).filter(([b])=>b.artist===id);
-  const s5=mk("ap-books");s5.innerHTML=secHead("도록","Catalogue",`${bks.length}권`);
+  const s5=mk("ap-books");s5.innerHTML=secHead("책·도록","Books",`${bks.length}권`);
   if(!bks.length)s5.insertAdjacentHTML("beforeend",`<div class="none">아직 등록된 도록이 없어요.</div>`);
   if(bks.length){const g=document.createElement("div");g.className="bk-shelf";bks.forEach(([bk])=>g.append(bookCard(bk)));s5.append(g)}
 
@@ -2071,7 +2078,7 @@ function renderBookPage(id){
   const bk=BOOKS.find(b=>b.id===id),a=byId[bk.artist],root=$("#artistSite");siteId=null;root.innerHTML="";
   const sp=document.createElement("section");sp.className="bkp";
   const row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
-  sp.innerHTML=`<nav class="bkp-bc" aria-label="위치"><a href="/#catalogue">도록</a> › <a href="${artistPath(a.id)}">${esc(a.name)}</a></nav>
+  sp.innerHTML=`<nav class="bkp-bc" aria-label="위치"><a href="/#catalogue">책·도록</a> › <a href="${artistPath(a.id)}">${esc(a.name)}</a></nav>
     <div class="bkp-top"><div class="bkp-cv"></div><div class="bkp-info">
       <span class="bkp-kind">${esc(bk.kind||"도록")} · ${bookAccess(bk)}</span>
       <h1>『${esc(bk.title)}』</h1>
@@ -2081,7 +2088,9 @@ function renderBookPage(id){
   sp.querySelector(".bkp-cv").append(bookCover(bk));
   const acts=sp.querySelector(".bkp-acts");
   if(bk.spreads&&bk.spreads.length){const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=bk.full?"e북으로 읽기":"미리보기 펼치기";b.onclick=()=>openSpreads(bk);acts.append(b)}
-  (bk.links||[]).forEach(x=>acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`));
+  const BL=buyLinks(bk,a);
+  if(BL.length)acts.insertAdjacentHTML("beforebegin",`<div class="bkp-buy"><b>구매하기</b><div>${BL.map(x=>`<a class="btn buy-${x.k}" href="${esc(x.url)}" target="_blank" rel="noopener nofollow">${x.name}에서 사기 ↗</a>`).join("")}</div>${BL.some(x=>!x.direct)?`<small>서점 검색 결과로 연결돼요. 절판된 책은 중고·도서관에서 찾아보세요.</small>`:""}</div>`);
+  otherLinks(bk).forEach(x=>acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`));
   if(a.real)acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${libSearch(bk)}" target="_blank" rel="noopener">도서관에서 찾기 ↗</a>`);
   const sec=(t,html)=>{const s=document.createElement("div");s.className="bkp-sec";s.innerHTML=`<h2>${t}</h2>`;if(html)s.insertAdjacentHTML("beforeend",html);sp.append(s);return s};
   if(bk.desc)sec("소개",`<p class="bkp-desc">${esc(bk.desc)}</p>`);
@@ -2302,7 +2311,7 @@ function megaGroups(){
     ["작가",[["전체 작가",()=>goArtists()],["원로작가",()=>goArtists("원로작가")],["중견작가",()=>goArtists("중견작가")],["청년작가",()=>goArtists("청년작가")],["작가 등록 신청 (무료)",()=>$("#joinBtn").click()]]],
     ["작가 · 장르",GENRES.map(g=>[g,()=>goArtists(null,g)]),"two"],
     ["인터뷰",[["전체 인터뷰",go("interviews")],...IV.map(v=>[v.title,()=>{location.href=interviewPath(v)}])]],
-    ["도록",[["전체 도록",()=>{bookKind=null;renderBooks();go("catalogue")()}],...BOOK_KINDS.map(k=>[k,()=>{bookKind=k;renderBooks();go("catalogue")()}])]],
+    ["책·도록",[["전체 보기",()=>{bookKind=null;renderBooks();go("catalogue")()}],...BOOK_KINDS.map(k=>[k,()=>{bookKind=k;renderBooks();go("catalogue")()}])]],
     ["전시",[["전체 전시",()=>goEx("all")],["진행 중 전시",()=>goEx("live")],["예정 전시",()=>goEx("soon")],["지난 전시",()=>goEx("end")],["전시일정 (캘린더)",()=>goEx("cal")]]],
     ["전시리뷰",[["전체 전시리뷰",go("reviews")],...RV.map(r=>[r.title,()=>{location.href=reviewPath(r)}])]],
     ["갤러리",[["전체 갤러리",go("galleries")],...[...new Set(GALLERIES.filter(g=>!g.test).map(g=>g.area).filter(Boolean))].slice(0,6).map(ar=>[`${ar} 갤러리`,()=>{curArea=ar;renderGalleries();go("galleries")()}])]],
@@ -2453,7 +2462,7 @@ function renderPicks(){
   const artist=(a,lab,key)=>{if(!a||a.hidden)return;const r=archiveOf(a);card(artCanvas(a,key,360,480,`${a.name} 대표작`),lab,a.name,`${esc(a.tier)} · ${esc(genresOf(a).join(", "))}<br>작품 ${r.works} · 전시 ${r.ex} · 도록 ${r.books}`,()=>openPortfolio(a.id))};
   pub().forEach((a,k)=>artist(a,k===0?"이달의 작가":`${a.tier.replace("작가","")}작가 아카이브`,a.photos?"c"+((hash(a.id)+3)%a.photos.length):"c1"));
   const bk=BOOKS[0];
-  if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(bookCover(bk,true),"추천 도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${esc(bk.kind||"도록")}${bk.year?` · ${bk.year}`:""}`,()=>{location.href=bookPath(bk)});
+  if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(bookCover(bk,true),"추천 책·도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${esc(bk.kind||"도록")}${bk.year?` · ${bk.year}`:""}`,()=>{location.href=bookPath(bk)});
   const v=INTERVIEWS[0];
   if(v&&byId[v.artist]&&!byId[v.artist].hidden)card((()=>{const cs=ivCoverSrc(v,true);if(cs){const im=document.createElement("img");im.src=cs;im.alt="";im.style.cssText="width:100%;height:100%;object-fit:cover";return im}return artCanvas(byId[v.artist],"iv",360,480,"")})(),"추천 인터뷰",v.title,`${esc(byId[v.artist].name)}<br>${esc(v.date)}`,()=>{location.href=interviewPath(v)});
   const live=EXHIBITIONS.map(e=>({...e,st:status(e)})).filter(e=>e.st.k==="live").sort((a,b)=>parse(a.end)-parse(b.end))[0];
@@ -2510,7 +2519,7 @@ function siteColor(a){
   const c=a.pal.filter(h=>{const l=lum(h);return l>.18&&l<.62}).sort((x,y)=>sat(y)-sat(x))[0];return c||"var(--accent)"}
 function lum(h){const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255}
 let siteId=null,lbI=0,siteSpy=null;
-const SITE_SECS=[["as-about","소개"],["as-works","작품"],["as-iv","인터뷰"],["as-books","도록"],["as-ex","전시"],["as-rev","전시리뷰"],["as-contact","문의"]];
+const SITE_SECS=[["as-about","소개"],["as-works","작품"],["as-iv","인터뷰"],["as-books","책·도록"],["as-ex","전시"],["as-rev","전시리뷰"],["as-contact","문의"]];
 function workImg(a,i,w,h,label){
   if(a.photos){const im=document.createElement("img");im.src=optImg(a.photos[i%a.photos.length],w>0&&w<=480);im.alt=label||"";im.loading="lazy";im.decoding="async";return im}
   return artCanvas(a,"w"+i,w,h,label)}
@@ -2579,7 +2588,7 @@ function renderArtistSite(id){
   }
   /* 도록 */
   const bks=BOOKS.map((b,i)=>[b,i]).filter(([b])=>b.artist===id);
-  if(bks.length||a.books){const bs=sec("as-books","Catalogue","도록 · 저서");
+  if(bks.length||a.books){const bs=sec("as-books","Books","책·도록");
   if(bks.length){const g=document.createElement("div");g.className="bk-shelf";bks.forEach(([bk])=>g.append(bookCard(bk,{noArtist:true})));bs.append(g)}
   if(a.books)bs.insertAdjacentHTML("beforeend",`<ul class="as-pubs">${a.books.map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`);}
   /* 전시 */

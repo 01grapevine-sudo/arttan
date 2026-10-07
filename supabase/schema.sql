@@ -316,3 +316,6 @@ drop policy if exists "site_settings: public read" on public.site_settings;
 create policy "site_settings: public read" on public.site_settings for select using (true);
 drop policy if exists "site_settings: admin write" on public.site_settings;
 create policy "site_settings: admin write" on public.site_settings for all using (public.is_admin()) with check (public.is_admin());
+
+-- 서점 구매 버튼 (예스24·교보문고): null = 자동, true = 보이기, false = 숨기기
+alter table public.books add column if not exists buy boolean;
