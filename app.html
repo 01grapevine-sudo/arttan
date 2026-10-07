@@ -1438,6 +1438,7 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .bkp-buy>div{display:flex;flex-wrap:wrap;gap:8px}
 .bkp-buy a{text-decoration:none}
 .bkp-buy small{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
+.bkp-buy .aff-note{color:var(--ink);font-weight:600}
 .bkp-buy .buy-yes24{background:#1F5BD6;border-color:#1F5BD6;color:#fff}
 .bkp-buy .buy-kyobo{background:#3D7D4A;border-color:#3D7D4A;color:#fff}
 .bkp-buy .buy-coupang{background:#E5322D;border-color:#E5322D;color:#fff}
@@ -1837,16 +1838,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=53"></script>
+<script src="core.js?v=54"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=53"></script>
-<script src="artists/jmh/artist.js?v=53"></script>
-<script src="artists/lmg/artist.js?v=53"></script>
-<script src="artists/lhw/artist.js?v=53"></script>
+<script src="artists/eloi/artist.js?v=54"></script>
+<script src="artists/jmh/artist.js?v=54"></script>
+<script src="artists/lmg/artist.js?v=54"></script>
+<script src="artists/lhw/artist.js?v=54"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=53"></script>
-<script src="data.js?v=53"></script>
+<script src="config.js?v=54"></script>
+<script src="data.js?v=54"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2166,7 +2167,7 @@ function renderBookPage(id){
   const acts=sp.querySelector(".bkp-acts");
   if(bk.spreads&&bk.spreads.length){const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=bk.full?"e북으로 읽기":"미리보기 펼치기";b.onclick=()=>openSpreads(bk);acts.append(b)}
   const BL=buyLinks(bk,a);
-  if(BL.length)acts.insertAdjacentHTML("beforebegin",`<div class="bkp-buy"><b>구매하기</b><div>${BL.map(x=>`<a class="btn buy-${x.k}" href="${esc(x.url)}" target="_blank" rel="noopener nofollow">${x.name}에서 사기 ↗</a>`).join("")}</div>${BL.some(x=>!x.direct)?`<small>서점 검색 결과로 연결돼요. 절판된 책은 중고·도서관에서 찾아보세요.</small>`:""}</div>`);
+  if(BL.length)acts.insertAdjacentHTML("beforebegin",`<div class="bkp-buy"><b>구매하기</b><div>${BL.map(x=>`<a class="btn buy-${x.k}" href="${esc(x.url)}" target="_blank" rel="noopener nofollow${isAffiliate(x.url)?" sponsored":""}">${x.name}에서 사기 ↗</a>`).join("")}</div>${BL.some(x=>!x.direct)?`<small>서점 검색 결과로 연결돼요. 절판된 책은 중고·도서관에서 찾아보세요.</small>`:""}${BL.some(x=>isAffiliate(x.url))?`<small class="aff-note">${AFF_NOTE}</small>`:""}</div>`);
   otherLinks(bk).forEach(x=>acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`));
   if(a.real)acts.insertAdjacentHTML("beforeend",`<a class="btn ghost" href="${libSearch(bk)}" target="_blank" rel="noopener">도서관에서 찾기 ↗</a>`);
   const sec=(t,html)=>{const s=document.createElement("div");s.className="bkp-sec";s.innerHTML=`<h2>${t}</h2>`;if(html)s.insertAdjacentHTML("beforeend",html);sp.append(s);return s};

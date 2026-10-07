@@ -288,6 +288,9 @@ function bookBuyable(bk,a){if(bk.buy===false)return false;if(bk.buy===true)retur
 function buyLinks(bk,a){if(!bookBuyable(bk,a))return [];
   const q=encodeURIComponent(bk.isbn?bk.isbn.replace(/[^0-9Xx]/g,""):`${bk.title} ${a?a.name:""}`.trim());
   return BUY_SHOPS.map(([k,name,re,f])=>{const m=(bk.links||[]).find(x=>re.test(x.name+" "+x.url));return {k,name,url:m?m.url:f(q),direct:!!m}})}
+/* 수수료(제휴) 링크인지: 쿠팡 파트너스 등. 제휴 링크가 있으면 대가성 안내 문구를 꼭 함께 보여줘요 (공정위 표시광고 지침) */
+const isAffiliate=u=>/link\.coupang\.com|coupa\.ng|[?&](ttbkey|partner|affiliate)=/i.test(u||"");
+const AFF_NOTE="이 링크로 구매하시면 arttan이 판매처로부터 일정액의 수수료를 받을 수 있어요. (쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.)";
 /* 구매 버튼과 겹치는 서점 링크는 일반 링크 목록에서 빼요 */
 const otherLinks=bk=>(bk.links||[]).filter(x=>!BUY_SHOPS.some(([,,re])=>re.test(x.name+" "+x.url)));
 const bookPath=b=>`/book/${encodeURIComponent(b.id)}`;
