@@ -170,16 +170,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=52"></script>
+<script src="core.js?v=53"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=52"></script>
-<script src="artists/jmh/artist.js?v=52"></script>
-<script src="artists/lmg/artist.js?v=52"></script>
-<script src="artists/lhw/artist.js?v=52"></script>
+<script src="artists/eloi/artist.js?v=53"></script>
+<script src="artists/jmh/artist.js?v=53"></script>
+<script src="artists/lmg/artist.js?v=53"></script>
+<script src="artists/lhw/artist.js?v=53"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=52"></script>
-<script src="data.js?v=52"></script>
+<script src="config.js?v=53"></script>
+<script src="data.js?v=53"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -603,8 +603,8 @@ function bookSheet(bk){
     fieldL("소개",desc),fieldL("표지 사진",cvFile,"없으면 작가 색으로 만든 글자 표지가 나와요."),cvBox,
     fieldL("펼침면 사진",spFile,"펼친 두 쪽을 한 장으로 찍은 사진이 좋아요. 긴 변 1800px로 줄여서 저장해요."),spBox,fieldD("공개 범위",access,"미리보기: 몇 장만 공개 · 전체 공개: 책 전체를 e북으로"),ok,
     fieldD("이 책에 실린 작품",wkWrap,"고른 작품이 책 페이지에 나오고 작품 페이지로 이어져요."),fieldL("연결된 전시",exSel),fieldL("목차",toc),
-    fieldD("서점 구매 버튼",buy,"예스24·교보문고 버튼이에요. 자동: 작가 저서·화집은 보이고, 전시 도록은 ISBN이 있을 때만 보여요. ISBN을 넣으면 그 책으로 정확히 연결돼요."),
-    fieldL("구매·열람처",links,"서점 상품 주소를 넣으면(예: 예스24 | https://www.yes24.com/…) 검색 대신 그 주소로 연결돼요. 국립중앙도서관 찾기 링크는 자동으로 붙어요."));
+    fieldD("서점 구매 버튼",buy,"예스24·교보문고·쿠팡 버튼이에요. 자동: 작가 저서·화집은 보이고, 전시 도록은 ISBN이 있을 때만 보여요. ISBN을 넣으면 그 책으로 정확히 연결돼요."),
+    fieldL("구매·열람처",links,"서점 상품 주소를 넣으면(예: 예스24 | https://www.yes24.com/…, 쿠팡 | https://link.coupang.com/…) 검색 대신 그 주소로 연결돼요. 국립중앙도서관 찾기 링크는 자동으로 붙어요."));
   const save=tBtn(isNew?"추가하기":"저장하기","primary",async()=>{
     const v={artist:who.value,kind:kind.dataset.value,title:title.value.trim(),year:year.value?+year.value:null,pages:pages.value?+pages.value:null,size:size.value.trim(),publisher:pubr.value.trim(),
       isbn:isbn.value.trim(),writer:writer.value.trim(),desc:desc.value.trim(),full:access.dataset.value!=="미리보기",works:wk?wk.value().slice().sort((a,b)=>a-b):[],exhibition:exSel.value||undefined,
