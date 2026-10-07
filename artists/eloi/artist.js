@@ -3,8 +3,8 @@
    real:false 라서 검색에 노출되지 않아요(noindex, 사이트맵 제외). 실제 오픈 전에 이 파일과 script 태그를 지우세요. */
 registerArtist({
    id:"eloi", real:false, test:true, tier:"청년작가", name:"엘로이", en:"Eloi · 테스트용 가상 작가", genre:"드로잉·일러스트", more:["서양화"], tags:["테스트용 샘플","여성 신진작가","일러스트","과슈","빛"], born:1999, gender:"여성", city:"서울", style:"bands", pal:["#F3EEE4","#2E2A5A","#7C3AED","#E8B4A0","#14112B"],
-   portraits:["artists/eloi/photos/portrait.jpg"], portraitFocus:[.5,.3],
-   photos:["01","02","03","04","05","06","07","08"].map(n=>`artists/eloi/works/${n}.jpg`),
+   portraits:["artists/eloi/photos/portrait-2.jpg"], portraitFocus:[.5,.3],
+   photos:["01","02","03","04","05","06","07","08"].map(n=>`artists/eloi/works/${n}-2.jpg`),
    line:"[테스트용 가상 작가] 방 안으로 들어온 오후의 빛을 그리는 20대 일러스트 작가",
    quote:"",
    bio:"엘로이는 arttan의 작품·전시·도록·인터뷰 기능을 시험하려고 만든 가상의 작가예요. 실제 인물이 아니며, 작가 사진과 작업실·전시장 사진, 작품 이미지, 인터뷰 영상은 모두 AI로 생성한 샘플이에요. 서울에서 활동하는 1999년생 여성 일러스트 작가로, 과슈와 색연필로 일상의 방과 정원에 머무는 오후의 빛을 그린다는 설정이에요. 2025년 첫 개인전 「정원의 오후」로 데뷔한 신진작가예요.",
@@ -24,11 +24,11 @@ registerArtist({
    interviews:[
      {id:"eloi-studio", title:"오후의 빛을 붙잡는 법 — 엘로이 작업실에서", date:"2025.05.12", exhibition:"eloi-2025",
       lead:"[테스트용 샘플 인터뷰] 첫 개인전 「정원의 오후」를 마친 엘로이의 작업실을 찾아가 작업 이야기를 들었어요.",
-      video:{src:"artists/eloi/interviews/studio.mp4", poster:"artists/eloi/interviews/studio-poster.jpg", title:"엘로이의 작업실에서 (AI 생성 테스트 영상, 15초)"},
+      video:{src:"artists/eloi/interviews/studio-2.mp4", poster:"artists/eloi/interviews/studio-poster-2.jpg", title:"엘로이의 작업실에서 (AI 생성 테스트 영상, 15초)"},
       photos:[
-        {src:"artists/eloi/interviews/studio-01.jpg", caption:"작업 책상에서 「보랏빛 숨」을 그리는 작가"},
-        {src:"artists/eloi/interviews/studio-02.jpg", caption:"벽에 기대어 둔 「느린 바람」과 「물결 위의 원」"},
-        {src:"artists/eloi/interviews/studio-03.jpg", caption:"과슈 팔레트와 색 견본"}],
+        {src:"artists/eloi/interviews/studio-01-2.jpg", caption:"작업 책상에서 「보랏빛 숨」을 그리는 작가"},
+        {src:"artists/eloi/interviews/studio-02-2.jpg", caption:"벽에 기대어 둔 「느린 바람」과 「물결 위의 원」"},
+        {src:"artists/eloi/interviews/studio-03-2.jpg", caption:"과슈 팔레트와 색 견본"}],
       body:"작업실은 서울의 한 오래된 건물 3층에 있어요. 남쪽으로 난 큰 창 덕분에 오후가 되면 방 전체가 따뜻한 색으로 물들어요. 엘로이는 이 시간을 '그림이 가장 잘 보이는 때'라고 불러요.\n\n책상 옆에는 색을 시험한 종이가 수십 장 쌓여 있었어요. 그림 한 장을 시작하기 전에 빛이 닿는 자리의 색을 작은 견본으로 여러 번 바꿔 본다고 해요.",
       qa:[["왜 '오후의 정원'이었나요?","하루 중 빛이 가장 오래 머무는 시간이 오후라고 생각했어요. 같은 정원도 오후에는 나뭇잎 사이로 빛이 동그랗게 떨어져요. 그 빛의 자리를 그림 속에 그대로 남기고 싶었어요."],
           ["왜 과슈를 쓰나요?","과슈는 마르면 색이 조금 가라앉는데, 그게 오후 빛이 바래 가는 느낌과 비슷해요. 그 위에 색연필로 빛의 결을 한 번 더 얹어요."],
@@ -37,8 +37,8 @@ registerArtist({
    books:[
      {id:"eloi-light", kind:"전시 도록", title:"빛이 머무는 자리", year:2026, pages:48, size:"210×280mm", publisher:"arttan (샘플)", writer:"arttan 편집부",
       desc:"[테스트용 샘플 도록] 엘로이 개인전 「빛이 머무는 자리」에 맞춰 만든 가상의 전시 도록이에요. 도록 페이지의 표지, 미리보기, 실린 작품, 목차, 연결 전시 기능을 시험해요.",
-      cover:"artists/eloi/books/light-cover.jpg",
-      spreads:["artists/eloi/books/light-01.jpg","artists/eloi/books/light-02.jpg","artists/eloi/books/light-03.jpg","artists/eloi/books/light-04.jpg"],
+      cover:"artists/eloi/books/light-cover-2.jpg",
+      spreads:["artists/eloi/books/light-01-2.jpg","artists/eloi/books/light-02-2.jpg","artists/eloi/books/light-03-2.jpg","artists/eloi/books/light-04-2.jpg"],
       full:false, works:[0,2,5,6,7], exhibition:"eloi-2026",
       toc:["인사말","빛이 머무는 자리 — 작품 8점","작가 노트","약력"]}]
 });
