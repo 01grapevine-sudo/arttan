@@ -319,3 +319,41 @@ create policy "site_settings: admin write" on public.site_settings for all using
 
 -- 서점 구매 버튼 (예스24·교보문고): null = 자동, true = 보이기, false = 숨기기
 alter table public.books add column if not exists buy boolean;
+
+-- 관심 작가 전시 알림 (웹 푸시) ------------------------------------------------
+-- 구독 정보: 브라우저 푸시 주소 + 관심 작가 id 만 저장 (이메일·전화번호 없음). 일반 방문자는 읽을 수 없고 아래 함수로만 넣고 빼요.
+create table if not exists public.push_subs (
+  endpoint text primary key, p256dh text not null, auth text not null, artists text[] not null default '{}',
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+alter table public.push_subs enable row level security;
+drop policy if exists "push_subs: admin read" on public.push_subs;
+create policy "push_subs: admin read" on public.push_subs for select using (public.is_admin());
+drop policy if exists "push_subs: admin delete" on public.push_subs;
+create policy "push_subs: admin delete" on public.push_subs for delete using (public.is_admin());
+create index if not exists push_subs_artists_idx on public.push_subs using gin (artists);
+-- 보낸 알림 기록: 같은 전시·같은 종류(new · open-1 · end-3)는 한 번만
+create table if not exists public.push_log (
+  id bigserial primary key, exhibition_id text not null, kind text not null, sent int not null default 0, failed int not null default 0,
+  created_at timestamptz not null default now(), unique (exhibition_id, kind));
+alter table public.push_log enable row level security;
+drop policy if exists "push_log: admin all" on public.push_log;
+create policy "push_log: admin all" on public.push_log for all using (public.is_admin()) with check (public.is_admin());
+create or replace function public.push_subscribe(p_endpoint text, p_p256dh text, p_auth text, p_artists text[])
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if p_endpoint is null or length(p_endpoint) > 1000
+     or p_endpoint !~ '^https://(fcm\.googleapis\.com|updates\.push\.services\.mozilla\.com|web\.push\.apple\.com|[a-z0-9.-]+\.notify\.windows\.com|[a-z0-9.-]+\.push\.apple\.com)/' then
+    raise exception 'invalid endpoint';
+  end if;
+  if p_p256dh is null or length(p_p256dh) > 200 or p_auth is null or length(p_auth) > 100 then raise exception 'invalid keys'; end if;
+  if coalesce(array_length(p_artists,1),0) > 200 then raise exception 'too many artists'; end if;
+  insert into public.push_subs(endpoint,p256dh,auth,artists,updated_at)
+  values (p_endpoint,p_p256dh,p_auth,(select coalesce(array_agg(a),'{}') from (select distinct left(x,40) a from unnest(coalesce(p_artists,'{}')) x where x ~ '^[a-z0-9_-]{1,40}$') t),now())
+  on conflict (endpoint) do update set p256dh=excluded.p256dh, auth=excluded.auth, artists=excluded.artists, updated_at=now();
+end $$;
+create or replace function public.push_unsubscribe(p_endpoint text)
+returns void language sql security definer set search_path = public as $$ delete from public.push_subs where endpoint = p_endpoint; $$;
+revoke all on function public.push_subscribe(text,text,text,text[]) from public;
+revoke all on function public.push_unsubscribe(text) from public;
+grant execute on function public.push_subscribe(text,text,text,text[]) to anon, authenticated;
+grant execute on function public.push_unsubscribe(text) to anon, authenticated;

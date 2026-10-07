@@ -14,6 +14,11 @@
 <meta property="og:url" content="https://www.arttan.co.kr/">
 <link rel="alternate" type="application/rss+xml" title="arttan 새 소식" href="https://www.arttan.co.kr/rss.xml">
 <!--/seo-->
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="arttan">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
@@ -190,6 +195,36 @@ dialog.lb:modal{inset-block:0;max-height:100dvh}
 .colophon{aspect-ratio:3/4;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;font-size:12px;color:var(--muted)}
 .colophon b{font-family:var(--serif);font-size:20px;color:var(--ink);font-weight:500;margin-bottom:12px}
 
+/* 관심 작가 */
+.fav-top{position:relative}
+.fav-top .fav-n{position:absolute;top:2px;right:0;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--accent,#7C3AED);color:#fff;font-size:10px;line-height:17px;font-weight:800;text-align:center}
+.fav-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.6);background:rgba(0,0,0,.25);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px)}
+.fav-btn svg{width:18px;height:18px}
+.fav-btn[aria-pressed="true"]{background:#fff;color:#E0245E;border-color:#fff}
+.fav-btn.light{border-color:var(--line);background:var(--surface);color:var(--ink);backdrop-filter:none}
+.fav-btn.light[aria-pressed="true"]{color:#E0245E;background:#FFF0F4;border-color:#FFD0DD}
+.as-hero-in .fav-btn{margin-top:16px;width:auto;align-self:flex-start;justify-self:start}
+.fav-pop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;width:min(380px,calc(100vw - 32px));background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.35);padding:18px 18px 14px}
+.fav-pop h3{margin:0 0 4px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px}
+.fav-pop h3 svg{color:#E0245E;width:18px;height:18px;flex-shrink:0}
+.fav-pop p{margin:0 0 10px;font-size:13px;color:var(--muted);line-height:1.5}
+.fav-pop ul{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.fav-pop li button{width:100%;text-align:left;border:0;background:var(--surface);border-radius:12px;padding:10px 12px;font:inherit;color:inherit;cursor:pointer}
+.fav-pop li b{display:block;font-size:14px}.fav-pop li span{font-size:12px;color:var(--muted)}
+.fav-pop .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.fav-pop .acts .btn{padding:8px 14px;font-size:13px}
+#favDlg{width:min(640px,calc(100vw - 32px))}
+.fav-sec{margin:0 0 24px}.fav-sec h3{font-size:15px;font-weight:800;margin:0 0 10px}
+.fav-push{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);margin-bottom:24px}
+.fav-push p{margin:0 0 10px;font-size:14px;line-height:1.6;color:var(--muted)}.fav-push p b{color:var(--ink)}
+.fav-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fav-list li{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line)}
+.fav-list li a{flex:1;min-width:0;color:inherit;text-decoration:none}.fav-list li a b{display:block}.fav-list li a span{font-size:12px;color:var(--muted)}
+.fav-list li button{border:0;background:none;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;padding:6px}
+.fav-ex{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fav-ex button{width:100%;text-align:left;border:0;background:var(--surface);border-radius:12px;padding:10px 12px;font:inherit;color:inherit;cursor:pointer}
+.fav-ex b{display:block;font-size:14px}.fav-ex span{font-size:12px;color:var(--muted)}
+.fav-empty{color:var(--muted);font-size:14px;line-height:1.7}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:13px;z-index:50;max-width:calc(100vw - 32px)}
 
 /* artist page */
@@ -1464,6 +1499,7 @@ body.is-site .biz{margin-bottom:28px}
       <a href="#news">공지</a>
     </nav>
     <div class="util">
+      <button type="button" class="icon-btn fav-top" id="favTop" aria-label="관심 작가" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.3 1.1 4 2.3h3.2C14.3 6.1 15.6 5 17.6 5 21 5 22.7 8.5 21.2 11.4 19 15.6 12 20 12 20z"/></svg><b class="fav-n" id="favCount" hidden>0</b></button>
       <button type="button" class="icon-btn" id="searchBtn" aria-label="검색" aria-expanded="false" aria-controls="searchBar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg></button>
       <button type="button" class="menu-btn" id="allCat" aria-expanded="false" aria-controls="mega"><span class="burger" aria-hidden="true"></span><span class="lbl">전체 메뉴</span></button>
       <button class="btn" id="joinBtn" type="button">작가 등록 <span class="free-tag">무료</span></button>
@@ -1772,16 +1808,25 @@ body.is-site .biz{margin-bottom:28px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=48"></script>
+<!-- 관심 작가 전시 소식 (사이트에 들어오면 한 번 보여줘요) -->
+<aside class="fav-pop" id="favPop" hidden aria-live="polite" aria-label="관심 작가 전시 소식"></aside>
+
+<!-- 관심 작가 모음 · 알림 설정 -->
+<dialog id="favDlg" aria-labelledby="favTitle">
+  <div class="dlg-head"><span class="eyebrow" id="favTitle">관심 작가</span><button class="x" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="dlg-body" id="favBody"></div>
+</dialog>
+
+<script src="core.js?v=49"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=48"></script>
-<script src="artists/jmh/artist.js?v=48"></script>
-<script src="artists/lmg/artist.js?v=48"></script>
-<script src="artists/lhw/artist.js?v=48"></script>
+<script src="artists/eloi/artist.js?v=49"></script>
+<script src="artists/jmh/artist.js?v=49"></script>
+<script src="artists/lmg/artist.js?v=49"></script>
+<script src="artists/lhw/artist.js?v=49"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=48"></script>
-<script src="data.js?v=48"></script>
+<script src="config.js?v=49"></script>
+<script src="data.js?v=49"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2544,6 +2589,7 @@ function renderArtistSite(id){
     <h1>${esc(a.name)}${a.en?`<span>${esc(a.en)}</span>`:""}</h1>
     <p class="as-line">${esc(a.quote?`“${a.quote}”`:a.line||"")}</p>
     <p class="as-meta">${[a.born?`${a.born}년생`:"",a.from?`${esc(a.from)} 출생`:"",a.city?`${esc(a.city)} 활동`:""].filter(Boolean).join(" · ")}</p></div>`);
+  hero.querySelector(".as-hero-in").append(favBtn(a));
   root.append(hero);
   const sec=(sid,en,title,extra="")=>{const s=document.createElement("section");s.className="as-sec";s.id=sid;s.innerHTML=`<div class="as-h"><span class="en">${en}</span><h2>${title}</h2>${extra}</div>`;root.append(s);return s};
   /* 소개 */
@@ -2839,10 +2885,102 @@ function renderFootDir(){const box=$("#footDir");if(!box)return;
   box.innerHTML=row("작가 아카이브",ARTISTS.filter(artistIndexable).map(a=>`<a href="${artistPath(a.id)}">${esc(a.name)} <small>${esc(a.genre)}</small></a>`))+
     row("갤러리",GALLERIES.filter(galIndexable).map(g=>`<a href="${galPath(g.id)}">${esc(g.name)}</a>`))+
     row("전시",EXHIBITIONS.filter(exIndexable).sort((x,y)=>y.start.localeCompare(x.start)).slice(0,12).map(x=>`<a href="${exPath(x)}">「${esc(x.title)}」 <small>${esc(x.venue)}</small></a>`))}
+/* ===== 관심 작가(즐겨찾기) · 전시 알림 =====
+   즐겨찾기는 이 브라우저에만 저장해요(로그인·개인정보 없음). '알림 받기'를 켜면 브라우저 푸시 주소와 관심 작가 id만 서버에 저장해요. */
+const FAV_KEY="arttan.fav",SEEN_KEY="arttan.favSeen",PUSH_KEY="arttan.push";
+const lsGet=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||"null");return v??d}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let FAV=(lsGet(FAV_KEY,[])||[]).filter(x=>typeof x==="string");
+const isFav=id=>FAV.includes(id);
+const favArtists=()=>FAV.map(id=>byId[id]).filter(a=>a&&!a.hidden);
+const HEART=on=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.3 1.1 4 2.3h3.2C14.3 6.1 15.6 5 17.6 5 21 5 22.7 8.5 21.2 11.4 19 15.6 12 20 12 20z" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
+function setFav(a,on){FAV=FAV.filter(x=>x!==a.id);if(on)FAV.unshift(a.id);lsSet(FAV_KEY,FAV);updateFavUI();pushSync()}
+function favBtn(a,cls=""){const b=document.createElement("button");b.type="button";b.className=("fav-btn "+cls).trim();
+  b._draw=()=>{const on=isFav(a.id);b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",`${a.name} 작가 ${on?"관심 작가에서 빼기":"관심 작가로 담기"}`);b.innerHTML=`${HEART(on)}<span>${on?"관심 작가":"관심 작가 담기"}</span>`};b._draw();
+  b.onclick=e=>{e.stopPropagation();const on=!isFav(a.id);setFav(a,on);if(on){toast(`${a.name} 작가를 관심 작가로 담았어요`);setTimeout(()=>offerPush(a),600)}else toast("관심 작가에서 뺐어요")};return b}
+function updateFavUI(){document.querySelectorAll(".fav-btn").forEach(b=>b._draw&&b._draw());const n=favArtists().length,c=$("#favCount");if(c){c.textContent=n;c.hidden=!n}
+  if($("#favDlg")?.open)renderFavDlg()}
+/* 관심 작가의 진행 중·다가오는 전시 (가까운 순) */
+function favExhibitions(days=3650){const lim=new Date(today.getTime()+days*864e5);
+  return EXHIBITIONS.filter(e=>(e.artists||[]).some(id=>isFav(id)&&byId[id]&&!byId[id].hidden)).map(e=>({...e,st:status(e)}))
+    .filter(e=>e.st.k==="live"||(e.st.k==="soon"&&parse(e.start)<=lim)).sort((x,y)=>(x.st.k==="live"?0:1)-(y.st.k==="live"?0:1)||x.start.localeCompare(y.start))}
+const favExLine=e=>{const s=parse(e.start),en=parse(e.end);return e.st.k==="live"?`진행 중 · ${en.getMonth()+1}.${en.getDate()}(${DOW[en.getDay()]})까지`:`${s.getMonth()+1}.${s.getDate()}(${DOW[s.getDay()]}) 개막 · ${e.st.label.replace("예정 · ","")}`};
+const favExBtn=e=>{const b=document.createElement("button");b.type="button";b.innerHTML=`<b>「${esc(e.title)}」</b><span>${esc(exPeople(e).join(", "))} · ${esc(e.venue||"")} · ${favExLine(e)}</span>`;b.onclick=()=>{$("#favDlg").open&&$("#favDlg").close();hideFavPop(true);openExOrReview(e)};return b};
+
+/* ---- 웹 푸시 ---- */
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const pushConfigured=()=>!!(window.ARTTAN_CONFIG&&ARTTAN_CONFIG.vapidPublicKey&&typeof sbClient==="function"&&sbClient());
+function pushState(){
+  if(!pushConfigured())return "unavailable";
+  if(isIOS&&!isStandalone())return "ios-home";
+  if(!("serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window))return "unsupported";
+  if(Notification.permission==="denied")return "denied";
+  return lsGet(PUSH_KEY,false)&&Notification.permission==="granted"?"on":"off"}
+const b64u=s=>{const r=atob((s+"=".repeat((4-s.length%4)%4)).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0))};
+async function pushSave(sub){const j=sub.toJSON();const {error}=await sbClient().rpc("push_subscribe",{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_artists:FAV.slice(0,200)});if(error)throw error}
+async function pushEnable(){
+  try{const reg=await navigator.serviceWorker.register("/sw.js",{scope:"/"});await navigator.serviceWorker.ready;
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted"){toast("알림이 허용되지 않았어요. 브라우저 설정에서 arttan 알림을 허용해 주세요");updateFavUI();return false}
+    const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(ARTTAN_CONFIG.vapidPublicKey)});
+    await pushSave(sub);lsSet(PUSH_KEY,true);toast("관심 작가의 새 전시 알림을 켰어요");updateFavUI();return true}
+  catch(err){console.warn("알림 켜기 실패",err);toast("알림을 켜지 못했어요. 잠시 뒤 다시 해 주세요");return false}}
+async function pushDisable(){try{const reg=await navigator.serviceWorker.getRegistration("/");const sub=reg&&await reg.pushManager.getSubscription();
+    if(sub){await sbClient().rpc("push_unsubscribe",{p_endpoint:sub.endpoint});await sub.unsubscribe()}}catch(e){console.warn(e)}
+  lsSet(PUSH_KEY,false);toast("알림을 껐어요");updateFavUI()}
+/* 관심 작가가 바뀌면 서버의 구독 정보도 맞춰요 */
+async function pushSync(){if(pushState()!=="on")return;try{const reg=await navigator.serviceWorker.getRegistration("/");const sub=reg&&await reg.pushManager.getSubscription();if(sub)await pushSave(sub);else lsSet(PUSH_KEY,false)}catch(e){console.warn("알림 정보 갱신 실패",e)}}
+function pushBlock(){const st=pushState(),d=document.createElement("div");d.className="fav-push";
+  const msg={on:"<b>새 전시 알림이 켜져 있어요.</b> 관심 작가의 새 전시가 등록되면, 그리고 개막 하루 전·마감 3일 전에 알려 드려요.",
+    off:"<b>새 전시 알림 받기</b> — 관심 작가의 새 전시가 등록되면 이 기기로 알려 드려요. 이메일·전화번호는 받지 않아요.",
+    "ios-home":"<b>아이폰에서 알림을 받으려면</b> Safari 아래쪽 공유 버튼(□↑) → <b>홈 화면에 추가</b>를 누른 뒤, 홈 화면의 arttan 아이콘으로 열어서 '알림 받기'를 눌러 주세요.",
+    denied:"<b>이 브라우저에서 arttan 알림이 차단돼 있어요.</b> 브라우저 설정 → 사이트 설정 → 알림에서 arttan을 허용하면 다시 켤 수 있어요.",
+    unsupported:"이 브라우저는 알림을 지원하지 않아요. 크롬·사파리·엣지 최신 버전에서 열어 주세요. 관심 작가 전시는 사이트에 들어올 때 알려 드려요.",
+    unavailable:"알림 기능을 준비하고 있어요. 지금은 사이트에 들어올 때 관심 작가 전시를 알려 드려요."}[st];
+  d.innerHTML=`<p>${msg}</p>`;
+  if(st==="off"){const b=document.createElement("button");b.type="button";b.className="btn";b.textContent="알림 받기";b.onclick=async()=>{b.disabled=true;await pushEnable();b.disabled=false};d.append(b)}
+  if(st==="on"){const b=document.createElement("button");b.type="button";b.className="btn ghost";b.textContent="알림 끄기";b.onclick=pushDisable;d.append(b)}
+  return d}
+/* 관심 작가를 처음 담을 때 알림도 받을지 물어봐요 (한 번만) */
+function offerPush(a){const st=pushState();if(st!=="off"&&st!=="ios-home")return;if(lsGet("arttan.pushAsked",false))return;lsSet("arttan.pushAsked",true);
+  const p=$("#favPop");p.innerHTML=`<h3>${HEART(true)} ${esc(a.name)} 작가의 새 전시 소식</h3><p>${st==="ios-home"?"아이폰은 Safari 공유 버튼 → '홈 화면에 추가' 후 홈 화면 아이콘으로 열면 알림을 받을 수 있어요.":"새 전시가 등록되면 이 기기로 알려 드릴까요? 이메일·전화번호는 받지 않아요."}</p><div class="acts"></div>`;
+  const acts=p.querySelector(".acts");const later=document.createElement("button");later.type="button";later.className="btn ghost";later.textContent=st==="ios-home"?"알겠어요":"나중에";later.onclick=()=>hideFavPop();acts.append(later);
+  if(st==="off"){const ok=document.createElement("button");ok.type="button";ok.className="btn";ok.textContent="알림 받기";ok.onclick=async()=>{hideFavPop();await pushEnable()};acts.append(ok)}
+  p.hidden=false}
+
+/* ---- 관심 작가 창 ---- */
+function renderFavDlg(){const body=$("#favBody");body.innerHTML="";const A=favArtists();
+  body.append(pushBlock());
+  if(!A.length){body.insertAdjacentHTML("beforeend",`<p class="fav-empty">아직 담은 작가가 없어요. 작가 페이지에서 <b>♡ 관심 작가 담기</b>를 누르면 여기에 모이고, 그 작가의 전시가 열릴 때 알려 드려요.</p>`);return}
+  const E=favExhibitions();
+  const s1=document.createElement("section");s1.className="fav-sec";s1.innerHTML=`<h3>다가오는 전시 <small>${E.length}건</small></h3>`;
+  if(E.length){const ul=document.createElement("ul");ul.className="fav-ex";E.forEach(e=>{const li=document.createElement("li");li.append(favExBtn(e));ul.append(li)});s1.append(ul)}
+  else s1.insertAdjacentHTML("beforeend",`<p class="fav-empty">지금은 예정된 전시가 없어요. 새 전시가 등록되면 알려 드릴게요.</p>`);
+  body.append(s1);
+  const s2=document.createElement("section");s2.className="fav-sec";s2.innerHTML=`<h3>관심 작가 <small>${A.length}명</small></h3>`;const ul=document.createElement("ul");ul.className="fav-list";
+  A.forEach(a=>{const li=document.createElement("li");li.innerHTML=`<a href="${artistPath(a.id)}"><b>${esc(a.name)}</b><span>${esc(a.tier)} · ${esc(genresOf(a).join(", "))}</span></a>`;
+    const x=document.createElement("button");x.type="button";x.textContent="빼기";x.setAttribute("aria-label",`${a.name} 관심 작가에서 빼기`);x.onclick=()=>{setFav(a,false);toast("관심 작가에서 뺐어요")};li.append(x);ul.append(li)});
+  s2.append(ul);body.append(s2)}
+function openFavDlg(){hideFavPop();renderFavDlg();const d=$("#favDlg");if(!d.open)d.showModal();d.scrollTop=0}
+$("#favTop").onclick=openFavDlg;
+
+/* ---- 사이트에 들어오면: 관심 작가의 새 소식(진행 중·30일 안 개막)을 한 번씩 보여줘요 ---- */
+function hideFavPop(markSeen){const p=$("#favPop");if(markSeen&&p._keys){const S=lsGet(SEEN_KEY,[]);lsSet(SEEN_KEY,[...new Set([...p._keys,...S])].slice(0,300))}p.hidden=true;p._keys=null}
+function favPopup(){if(!favArtists().length||$("#favPop").hidden===false)return;
+  const S=new Set(lsGet(SEEN_KEY,[])),E=favExhibitions(30).filter(e=>!S.has(`${e.id}:${e.st.k}`));if(!E.length)return;
+  const p=$("#favPop");p._keys=E.map(e=>`${e.id}:${e.st.k}`);
+  p.innerHTML=`<h3>${HEART(true)} 관심 작가 전시 소식</h3><p>담아 두신 작가의 전시가 ${E.some(e=>e.st.k==="live")?"열리고 있어요":"곧 열려요"}.</p><ul></ul><div class="acts"></div>`;
+  const ul=p.querySelector("ul");E.slice(0,3).forEach(e=>{const li=document.createElement("li");li.append(favExBtn(e));ul.append(li)});
+  const acts=p.querySelector(".acts");
+  const all=document.createElement("button");all.type="button";all.className="btn ghost";all.textContent=E.length>3?`전체 ${E.length}건 보기`:"관심 작가 보기";all.onclick=()=>{hideFavPop(true);openFavDlg()};
+  const close=document.createElement("button");close.type="button";close.className="btn";close.textContent="확인";close.onclick=()=>hideFavPop(true);
+  acts.append(all,close);p.hidden=false}
 /* 서버가 검색엔진용으로 미리 넣은 본문은, 화면을 그리면 걷어내요 */
 document.getElementById("ssr")?.remove();document.getElementById("ssrCss")?.remove();
 renderFootDir();renderSnsFoot();
 renderPortfolio();renderNews();renderReviews();renderInterview();renderBooks();renderGalleries();renderCalendar();renderStatFilter();renderSchedule();renderHome();buildMega();hxBuild();route();
+updateFavUI();setTimeout(favPopup,1500);pushSync();
 /* redraw covers once web fonts arrive so titles use Hahmlet */
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderBooks();renderGalleries();renderCalendar();renderHome();hxBuild()});
 

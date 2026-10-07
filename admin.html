@@ -170,16 +170,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=48"></script>
+<script src="core.js?v=49"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=48"></script>
-<script src="artists/jmh/artist.js?v=48"></script>
-<script src="artists/lmg/artist.js?v=48"></script>
-<script src="artists/lhw/artist.js?v=48"></script>
+<script src="artists/eloi/artist.js?v=49"></script>
+<script src="artists/jmh/artist.js?v=49"></script>
+<script src="artists/lmg/artist.js?v=49"></script>
+<script src="artists/lhw/artist.js?v=49"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=48"></script>
-<script src="data.js?v=48"></script>
+<script src="config.js?v=49"></script>
+<script src="data.js?v=49"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -261,6 +261,13 @@ async function dbDo(fn,msg,closeAfter){
   const before=seoPages();
   try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg);pingSearch(before,seoPages())}
   catch(err){console.error(err);toast("저장하지 못했어요: "+(err.message||err))}}
+/* 관심 작가 알림: 이 전시의 작가를 관심 작가로 담고 '알림 받기'를 켠 사람들에게 보내요 (같은 전시는 한 번만) */
+async function pushNotify(id,{force=false,quiet=false}={}){
+  try{const {data:{session}}=await ARTTAN_DB.auth.getSession();if(!session)return null;
+    const r=await fetch("/api/push-send",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token},body:JSON.stringify({exhibitionId:id,force})});
+    const j=await r.json().catch(()=>({}));
+    if(!quiet||j.sent)setTimeout(()=>toast(j.sent?`관심 작가 알림을 ${j.sent}명에게 보냈어요`:j.error?`알림: ${j.error}`:j.skipped?`알림: ${j.skipped}`:"알림을 받을 구독자가 아직 없어요"),quiet?1800:0);
+    return j}catch(err){console.warn("알림 발송 실패",err);return null}}
 /* 저장으로 새로 생기거나 바뀌거나 사라진 페이지 주소를 네이버·빙에 바로 알려요 (IndexNow) */
 async function pingSearch(before,after){
   const urls=[...new Set([...Object.keys(before),...Object.keys(after)])].filter(u=>before[u]!==after[u]);
@@ -410,13 +417,16 @@ function exSheet(e){
     if(!v.start||!v.end||v.end<v.start){toast("종료일이 시작일보다 빠를 수 없어요");en.focus();return}
     if(SBM()){const row={title:v.title,kind:v.kind,artists:v.artists,gallery_id:v.g,start_date:v.start,end_date:v.end,description:v.desc};
       if(isNew)adExSt=status({start:v.start,end:v.end}).k;
-      dbDo(()=>isNew?ARTTAN_DB.from("exhibitions").insert({id:newId("e"),...row}):ARTTAN_DB.from("exhibitions").update(row).eq("id",e.id),isNew?"전시를 추가했어요":"저장했어요",true);return}
+      const eid=isNew?newId("e"):e.id;
+      dbDo(async()=>{const r=isNew?await ARTTAN_DB.from("exhibitions").insert({id:eid,...row}):await ARTTAN_DB.from("exhibitions").update(row).eq("id",e.id);
+        if(!r.error&&isNew)pushNotify(eid,{quiet:true});return r},isNew?"전시를 추가했어요":"저장했어요",true);return}
     const ext={venue:galById[v.g].name,region:galById[v.g].area};
     if(isNew){const o={...v,id:"e"+Date.now().toString(36)};AD.exhibitions.push(o);if(!adSave()){AD.exhibitions.pop();return}EXHIBITIONS.push({...o,...ext,added:true});toast("전시를 추가했어요")}
     else{Object.assign(AD.exhibitions.find(x=>x.id===e.id),v);Object.assign(e,v,ext);adSave();toast("저장했어요")}
     if(isNew)adExSt=status({start:v.start,end:v.end}).k;
     closeSheet();refreshPublic();renderAdmin()});
   const foot=[];
+  if(!isNew&&SBM()&&status(e).k!=="end")foot.push(tBtn("관심 작가 알림","ghost",()=>confirmSheet(`「${e.title}」 알림을 보낼까요?`,"이 전시의 작가를 관심 작가로 담고 알림을 켠 사람들에게 지금 알림을 보내요. 이미 보낸 적이 있어도 다시 보내요.","알림 보내기",()=>pushNotify(e.id,{force:true}))));
   if(!isNew)foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${e.title}」 전시를 삭제할까요?`,"삭제하면 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("exhibitions").delete().eq("id",e.id),"삭제했어요");return}AD.exhibitions=AD.exhibitions.filter(x=>x.id!==e.id);adSave();EXHIBITIONS.splice(EXHIBITIONS.indexOf(e),1);refreshPublic();renderAdmin();toast("삭제했어요")})));
   foot.push(save);openSheet(isNew?"전시 추가":"전시 수정",f,foot);
 }
@@ -848,6 +858,7 @@ function publishSheet(x){
     const eid=newId("e");
     if(SBM()){dbDo(async()=>{
         const r=await ARTTAN_DB.from("exhibitions").insert({id:eid,gallery_id:v.g,title:v.title,kind:v.kind,artists:v.artists,artists_text:v.artistsText||null,start_date:v.start,end_date:v.end,description:v.desc||null,source_url:v.sourceUrl||null});if(r.error)return r;
+        if(v.artists.length)pushNotify(eid,{quiet:true});
         return ARTTAN_DB.from("crawled_exhibitions").update({status:"approved",exhibition_id:eid,reviewed_at:new Date().toISOString()}).eq("id",x.id)},"사이트에 게시했어요",true);return}
     const o={...v,id:eid};AD.exhibitions.push(o);EXHIBITIONS.push({...o,venue:g.name,region:g.area,added:true});
     Object.assign(AD.crawled.find(y=>y.id===x.id),{status:"approved",exhibition_id:eid});if(!adSave())return;CRAWLED=AD.crawled;closeSheet();renderAdmin();toast("사이트에 게시했어요")});
