@@ -18,7 +18,7 @@ function sbClient() {
 /* Storage 경로 → 이미지 주소 (사이트에 함께 올린 파일은 그대로) */
 function workImageUrl(p) {
   if (!p) return null;
-  if (/^(https?:)?\/\//.test(p) || p.startsWith("artists/") || p.startsWith("data:")) return p;
+  if (/^(https?:)?\/\//.test(p) || p.startsWith("artists/") || p.startsWith("galleries/") || p.startsWith("data:")) return p;
   return `${window.ARTTAN_CONFIG.supabaseUrl}/storage/v1/object/public/works/${p}`;
 }
 const FALLBACK_PAL = ["#EEEAF6", "#3B2A6B", "#8B7BB8", "#D9CFEF", "#1E1636"];
@@ -28,11 +28,12 @@ async function loadFromSupabase() {
   const get = (t, order) => { let r = sb.from(t).select("*"); if (order) r = r.order(order[0], { ascending: order[1] !== false }); return r; };
   const res = await Promise.all([
     get("artists", ["sort"]), get("works", ["sort"]), get("interviews", ["date", false]), get("videos"), get("books", ["year", false]),
-    get("galleries", ["sort"]), get("exhibitions", ["start_date"]), get("notices", ["created_at", false]), get("reviews", ["visit_date", false])
+    get("galleries", ["sort"]), get("exhibitions", ["start_date"]), get("notices", ["created_at", false]), get("reviews", ["visit_date", false]), get("site_settings")
   ]);
-  const bad = res.find(r => r.error);
+  const bad = res.slice(0, 9).find(r => r.error);  /* site_settings 는 없어도 돼요 */
   if (bad) { console.warn("Supabase 읽기 실패 — 예시 데이터로 보여요:", bad.error.message); return false; }
-  const [ar, wk, iv, vd, bk, gl, ex, nt, rv] = res.map(r => r.data || []);
+  const [ar, wk, iv, vd, bk, gl, ex, nt, rv, st] = res.map(r => r.data || []);
+  const sns = (st || []).find(x => x.key === "sns"); if (sns && sns.value) Object.assign(SNS, sns.value);
 
   /* 예시 데이터를 비우고 DB 데이터로 다시 채워요 */
   ARTISTS.length = 0; Object.keys(byId).forEach(k => delete byId[k]);
@@ -62,7 +63,7 @@ async function loadFromSupabase() {
   });
   GALLERIES.length = 0; Object.keys(galById).forEach(k => delete galById[k]);
   gl.forEach(g => { const o = { id: g.id, name: g.name, area: g.area || "", addr: g.addr, hours: g.hours, tel: g.tel, site: g.site, intro: g.intro,
-    photo: g.photo_path ? workImageUrl(g.photo_path) : undefined, photoPath: g.photo_path || null, video: g.video_url || "",
+    photo: g.photo_path ? workImageUrl(g.photo_path) : undefined, photoPath: g.photo_path || null, video: g.video_url ? (/^https?:/.test(g.video_url) ? g.video_url : workImageUrl(g.video_url)) : "", videoPath: g.video_url || "",
     crawlUrl: g.crawl_url || "", crawlOn: g.crawl_on !== false, lastCrawledAt: g.last_crawled_at || null, lastCrawlNote: g.last_crawl_note || "" }; GALLERIES.push(o); galById[o.id] = o; });
   EXHIBITIONS.length = 0;
   ex.forEach(e => EXHIBITIONS.push({ id: e.id, g: e.gallery_id, title: e.title, kind: e.kind || "", start: e.start_date, end: e.end_date,
@@ -71,7 +72,7 @@ async function loadFromSupabase() {
   /* 전시리뷰: 사진 경로는 사이트 파일(artists/…) 또는 Storage 경로 */
   REVIEWS.length = 0;
   rv.forEach(r => REVIEWS.push({ id: r.id, exhibition: r.exhibition_id, title: r.title, date: r.visit_date || "", author: r.author || "", body: r.body || "",
-    photos: (r.photos || []).map(f => ({ src: workImageUrl(f.src), path: f.src, caption: f.caption || "" })), works: r.works || [], videos: r.videos || [], interview: r.interview || null, hidden: r.hidden }));
+    photos: (r.photos || []).map(f => ({ src: workImageUrl(f.src), path: f.src, caption: f.caption || "" })), works: r.works || [], videos: (r.videos || []).map(v => v && v.src ? { ...v, src: workImageUrl(v.src), srcPath: v.src } : v), interview: r.interview || null, hidden: r.hidden }));
   NOTICES.length = 0;
   nt.forEach(x => NOTICES.push({ id: x.id, tag: x.tag, title: x.title, body: x.body || "", date: x.date || (x.created_at || "").slice(0, 10).replaceAll("-", ".") }));
   return true;

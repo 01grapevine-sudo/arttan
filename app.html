@@ -1337,7 +1337,18 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .gs-home{display:inline-block;margin-top:16px;color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:8px 16px;text-decoration:none;font-size:14px}
 .gs-home:hover{background:rgba(255,255,255,.14)}
 .gs-video{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;max-width:960px}
-.gs-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.gs-video iframe,.gs-video video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.hs-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gs-video.tall{aspect-ratio:9/16;max-width:400px}
+/* arttan SNS 버튼 */
+.sns{display:flex;flex-wrap:wrap;gap:8px}
+.sns a{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:700;text-decoration:none}
+.sns a:hover{border-color:var(--ink)}
+.sns-foot{margin:24px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.sns-foot>b{font-size:14px}
+.sns-cta{margin:28px 0 0;padding:18px 20px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.sns-cta p{margin:0;font-size:14px;color:var(--muted)}
+.sns-cta p b{color:var(--ink)}
 .gs-artists a{display:flex;gap:10px;align-items:center;color:inherit;text-decoration:none}
 #gs-arttan .gs-artists{display:flex;flex-wrap:wrap;gap:12px 20px;margin-bottom:20px}
 #gs-arttan .gs-artists canvas{width:52px;height:52px;border-radius:50%;object-fit:cover}
@@ -1659,6 +1670,9 @@ body.is-site .biz{margin-bottom:28px}
     <p>이미지를 쓰고 싶다면 작가 공간의 <b>문의</b>로 먼저 요청해 주세요. arttan이 작가에게 전달해요.</p>
   </aside>
 
+  <!-- arttan SNS: 관리자 → 설정에서 주소를 넣으면 보여요 -->
+  <section class="sns-foot" id="snsFoot" hidden aria-label="arttan SNS"></section>
+
   <!-- 사업자 정보: 모든 페이지 맨 아래 (작가·갤러리 공간 포함) -->
   <address class="biz" aria-label="사업자 정보">
     <b>arttan 아트탄</b>
@@ -1752,16 +1766,16 @@ body.is-site .biz{margin-bottom:28px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=46"></script>
+<script src="core.js?v=47"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=46"></script>
-<script src="artists/jmh/artist.js?v=46"></script>
-<script src="artists/lmg/artist.js?v=46"></script>
-<script src="artists/lhw/artist.js?v=46"></script>
+<script src="artists/eloi/artist.js?v=47"></script>
+<script src="artists/jmh/artist.js?v=47"></script>
+<script src="artists/lmg/artist.js?v=47"></script>
+<script src="artists/lhw/artist.js?v=47"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=46"></script>
-<script src="data.js?v=46"></script>
+<script src="config.js?v=47"></script>
+<script src="data.js?v=47"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1896,10 +1910,12 @@ function ivCard(v){const a=byId[v.artist]||{},p=ivParts(v),e=v.exhibition&&EXHIB
   l.append(im);
   l.insertAdjacentHTML("beforeend",`<span class="rv-eb">${esc(a.name||"")}${e?` · 「${esc(e.title)}」`:""}</span><b>${esc(v.title)}</b><span class="rv-m">${esc(v.date||"")}</span><span class="iv-parts">${[p.video&&"영상",p.photos&&"사진",p.text&&"글"].filter(Boolean).map(x=>`<i>${x}</i>`).join("")}</span>`);
   return l}
+const SNS_CTA=()=>{const h=snsHtml();return h?`<div class="sns-cta"><p><b>arttan 채널</b>에서 더 많은 작가 영상을 볼 수 있어요.</p>${h}</div>`:""};
 function renderInterview(){const m=$("#ivMain");m.innerHTML="";
   const L=INTERVIEWS.filter(v=>byId[v.artist]&&!byId[v.artist].hidden).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
   if(!L.length){m.innerHTML=`<p class="empty">아직 올라온 인터뷰가 없어요.</p>`;return}
-  L.forEach(v=>m.append(ivCard(v)))}
+  L.forEach(v=>m.append(ivCard(v)));
+  $("#ivSns")?.remove();const c=SNS_CTA();if(c)m.insertAdjacentHTML("afterend",`<div id="ivSns">${c}</div>`)}
 /* 인터뷰 한 편의 페이지: /interview/<id> — 영상·소개·본문·문답·사진·연결 전시 중 있는 것만 */
 function renderInterviewPage(id){
   const v=INTERVIEWS.find(x=>x.id===id),a=byId[v.artist],e=v.exhibition&&EXHIBITIONS.find(x=>x.id===v.exhibition),root=$("#artistSite");siteId=null;root.innerHTML="";
@@ -1912,7 +1928,7 @@ function renderInterviewPage(id){
   sp.insertAdjacentHTML("beforeend",`<nav class="bkp-bc" aria-label="위치"><a href="/#interviews">작가 인터뷰</a> › <a href="${artistPath(a.id)}">${esc(a.name)}</a></nav>`);
   const sec=(t,html,sid)=>{const x=document.createElement("div");x.className="bkp-sec";if(sid)x.id=sid;x.innerHTML=`<h2>${t}</h2>`;if(html)x.insertAdjacentHTML("beforeend",html);sp.append(x);return x};
   if(v.lead)sp.insertAdjacentHTML("beforeend",`<p class="iv-lead">${esc(v.lead)}</p>`);
-  if(ivParts(v).video)sec("영상",`<div class="rv-videos"><figure>${videoHtml(v.video,v.title)}${v.video.title?`<figcaption>${esc(v.video.title)}</figcaption>`:""}</figure></div>`);
+  if(ivParts(v).video)sec("영상",`<div class="rv-videos"><figure>${videoHtml(v.video,v.title)}${v.video.title?`<figcaption>${esc(v.video.title)}</figcaption>`:""}</figure></div>${SNS_CTA()}`);
   if(v.body)sec("이야기",`<div class="rv-body">${String(v.body).split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join("")}</div>`);
   if((v.qa||[]).length)sec("대담",`<dl class="qa iv-qa">${v.qa.map(([q,ans])=>`<div><dt>${esc(q)}</dt><dd>${esc(ans).replace(/\n/g,"<br>")}</dd></div>`).join("")}</dl>`);
   if((v.photos||[]).length){const x=sec("사진");const g=document.createElement("div");g.className="rv-photos";
@@ -1970,18 +1986,17 @@ function renderReviewPage(id){
     const view={title:r.title,spreads:r.photos.map(p=>p.src),captions:r.photos.map(p=>p.caption||""),full:true};
     r.photos.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",`${p.caption||"현장 사진"} 크게 보기`);
       b.innerHTML=`<img src="${optImg(p.src,true)}" alt="${esc(p.caption||"")}" loading="lazy">${p.caption?`<span>${esc(p.caption)}</span>`:""}`;b.onclick=()=>openSpreads(view,i);g.append(b)});x.append(g)}
-  /* 영상 (유튜브·비메오): 있을 때만 */
-  const V=(r.videos||[]).filter(x=>x&&x.url);
+  /* 영상 (유튜브·비메오·인스타그램·페이스북 주소 또는 올린 영상 파일): 있을 때만 */
+  const V=(r.videos||[]).filter(x=>x&&(x.url||x.src));
   if(V.length){const x=sec("영상");const g=document.createElement("div");g.className="rv-videos";
-    V.forEach(vd=>{const emb=videoEmbed(vd.url);g.insertAdjacentHTML("beforeend",emb?`<figure><div class="gs-video"><iframe src="${emb}" title="${esc(vd.title||r.title)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>${vd.title?`<figcaption>${esc(vd.title)}</figcaption>`:""}</figure>`:`<p><a class="btn ghost" href="${esc(vd.url)}" target="_blank" rel="noopener">${esc(vd.title||"영상 보기")} ↗</a></p>`)});x.append(g)}
+    V.forEach(vd=>g.insertAdjacentHTML("beforeend",`<figure>${videoHtml(vd,vd.title||r.title)}${vd.title?`<figcaption>${esc(vd.title)}</figcaption>`:""}</figure>`));x.append(g)}
   /* 이 전시에서 나눈 작가 인터뷰 (인터뷰 메뉴에서 이 전시를 연결한 것) */
   const LIV=INTERVIEWS.filter(x=>x.exhibition&&x.exhibition===r.exhibition&&byId[x.artist]&&!byId[x.artist].hidden);
   if(LIV.length){const x=sec("작가 인터뷰");x.id="rv-iv";const g=document.createElement("div");g.className="rv-grid";LIV.forEach(m=>g.append(ivCard(m)));x.append(g)}
   /* (예전 방식) 리뷰 안에 직접 적은 인터뷰 */
   const IV=r.interview;
   if(IV&&(IV.qa||[]).length){const ia=byId[IV.artist];const x=sec(`작가 인터뷰${ia?` <small>${esc(ia.name)}</small>`:""}`);x.id="rv-iv";
-    const emb=videoEmbed(IV.video);
-    x.insertAdjacentHTML("beforeend",`<div class="rv-iv">${emb?`<div class="gs-video"><iframe src="${emb}" title="${esc(ia?ia.name:"작가")} 인터뷰 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`:""}
+    x.insertAdjacentHTML("beforeend",`<div class="rv-iv">${IV.video?videoHtml(IV.video,`${ia?ia.name:"작가"} 인터뷰 영상`):""}
       ${IV.lead?`<p class="as-lead">${esc(IV.lead)}</p>`:""}<dl class="qa">${IV.qa.map(([q,ans])=>`<div><dt>${esc(q)}</dt><dd>${esc(ans)}</dd></div>`).join("")}</dl></div>`);}
   /* 전시에 걸린 작품 */
   const W=(r.works||[]).map(([aid,i])=>[byId[aid],i]).filter(([a,i])=>a&&!a.hidden&&a.works[i]);
@@ -2241,7 +2256,10 @@ function buildSlides(){
   pub().filter(a=>a.hero!==false).forEach((a,k)=>{const r=archiveOf(a);
     L.push({eb:k===0?`이달의 작가 · ${today.getMonth()+1}월`:`작가 아카이브 · ${a.tier} · ${a.genre}`,title:a.name,sub:a.quote?`“${a.quote}”`:a.line||"",
       meta:`${a.tier} · ${a.genre} · 작품 ${r.works}점 · 전시 이력 ${r.ex}건`,
-      bg:el=>el.append(artCanvas(a,a.photos?"c"+(hash(a.id)%a.photos.length):"c0",1400,1000,a.photos?`${a.name}의 작품`:`${a.name} 작가`)),go:()=>openPortfolio(a.id)})});
+      /* 작가 사진이 있으면 작가 사진을, 없으면 작품을 배경으로 */
+      bg:el=>{if(a.photos&&a.portraits){const im=document.createElement("img");im.src=optImg(a.portraits[0]);im.alt=`${a.name} 작가`;im.className="hs-photo";
+          im.style.objectPosition=(a.portraitFocus||[.5,.3]).map(v=>v*100+"%").join(" ");el.append(im)}
+        else el.append(artCanvas(a,a.photos?"c"+(hash(a.id)%a.photos.length):"c0",1400,1000,a.photos?`${a.name}의 작품`:`${a.name} 작가`))},go:()=>openPortfolio(a.id)})});
   const P=pub(),tot=P.reduce((n,a)=>n+archiveOf(a).works,0);
   L.push({eb:"arttan 작가 아카이브",title:"원로부터 청년까지\n작가를 기록합니다",sub:`작가 ${P.length}명 · 기록된 작품 ${tot}점`,meta:"www.arttan.co.kr",fill:true,
     bg:el=>{const f=document.createElement("div");f.className="hs-fan";P.slice(0,3).forEach(a=>f.append(artCanvas(a,"w0",300,400,"")));el.append(f)},go:()=>goArtists()});
@@ -2700,9 +2718,8 @@ function renderGallerySite(gid){
   grid("gs-soon","Upcoming","예정된 전시",soon,"예정된 전시가 아직 없어요.");
   grid("gs-past","Past","지나간 전시",past,"지나간 전시 기록이 아직 없어요.");
   /* 영상 */
-  const vs=sec("gs-video","Video","영상"),emb=videoEmbed(g.video);
-  if(emb)vs.insertAdjacentHTML("beforeend",`<div class="gs-video"><iframe src="${emb}" title="${esc(g.name)} 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`);
-  else if(g.video)vs.insertAdjacentHTML("beforeend",`<p><a class="btn ghost" href="${esc(g.video)}" target="_blank" rel="noopener">영상 보기 ↗</a></p>`);
+  const vs=sec("gs-video","Video","영상");
+  if(g.video)vs.insertAdjacentHTML("beforeend",videoHtml(g.video,`${g.name} 영상`));
   else vs.insertAdjacentHTML("beforeend",`<div class="none">아직 등록된 영상이 없어요. 전시 전경이나 갤러리 소개 영상을 받으면 이 자리에 올라와요.</div>`);
   /* arttan 작가 전시 (등록 작가의 전시 기록 아카이브) */
   const ar=sec("gs-arttan","arttan archive","arttan 작가 전시",`<span class="as-cnt">${mine.length+hist.length}건</span>`);
@@ -2810,6 +2827,7 @@ addEventListener("hashchange",route);
 addEventListener("storage",e=>{if(e.key===AD_KEY)location.reload()});
 
 /* 사이트 아래 바로가기 (서버가 넣은 것과 같은 내용) */
+function renderSnsFoot(){const box=$("#snsFoot");if(!box)return;const h=snsHtml();box.hidden=!h;box.innerHTML=h?`<b>arttan 채널</b>${h}`:""}
 function renderFootDir(){const box=$("#footDir");if(!box)return;
   const row=(lab,items)=>items.length?`<div><b>${lab}</b>${items.join("")}</div>`:"";
   box.innerHTML=row("작가 아카이브",ARTISTS.filter(artistIndexable).map(a=>`<a href="${artistPath(a.id)}">${esc(a.name)} <small>${esc(a.genre)}</small></a>`))+
@@ -2817,7 +2835,7 @@ function renderFootDir(){const box=$("#footDir");if(!box)return;
     row("전시",EXHIBITIONS.filter(exIndexable).sort((x,y)=>y.start.localeCompare(x.start)).slice(0,12).map(x=>`<a href="${exPath(x)}">「${esc(x.title)}」 <small>${esc(x.venue)}</small></a>`))}
 /* 서버가 검색엔진용으로 미리 넣은 본문은, 화면을 그리면 걷어내요 */
 document.getElementById("ssr")?.remove();document.getElementById("ssrCss")?.remove();
-renderFootDir();
+renderFootDir();renderSnsFoot();
 renderPortfolio();renderNews();renderReviews();renderInterview();renderBooks();renderGalleries();renderCalendar();renderStatFilter();renderSchedule();renderHome();buildMega();hxBuild();route();
 /* redraw covers once web fonts arrive so titles use Hahmlet */
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderBooks();renderGalleries();renderCalendar();renderHome();hxBuild()});

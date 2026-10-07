@@ -170,16 +170,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=46"></script>
+<script src="core.js?v=47"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=46"></script>
-<script src="artists/jmh/artist.js?v=46"></script>
-<script src="artists/lmg/artist.js?v=46"></script>
-<script src="artists/lhw/artist.js?v=46"></script>
+<script src="artists/eloi/artist.js?v=47"></script>
+<script src="artists/jmh/artist.js?v=47"></script>
+<script src="artists/lmg/artist.js?v=47"></script>
+<script src="artists/lhw/artist.js?v=47"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=46"></script>
-<script src="data.js?v=46"></script>
+<script src="config.js?v=47"></script>
+<script src="data.js?v=47"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -224,6 +224,14 @@ function chipsField(opts,sel,max,label=x=>x){const w=el(`<div class="t-chips" ro
   draw();w.value=()=>cur;return w}
 function inp(id,type,val,ph){const i=document.createElement(type==="textarea"?"textarea":"input");if(type!=="textarea")i.type=type;i.id=id;if(val!=null&&type!=="file")i.value=val;if(ph)i.placeholder=ph;return i}
 function fieldL(label,ctrl,hint){const f=el(`<label class="t-field"><span></span></label>`);f.firstChild.textContent=label;f.append(ctrl);if(hint)f.append(el(`<small>${esc(hint)}</small>`));return f}
+/* 영상 파일 올리기 (mp4·webm·mov, 한 개 50MB 이하). 유튜브 주소가 기본이고, 파일은 필요할 때만 */
+function vidFiles(id,init,multi){let L=[...init];const box=el(`<div class="t-desc"></div>`);const fi=inp(id,"file");fi.accept="video/mp4,video/webm,video/quicktime";fi.multiple=!!multi;
+  const draw=()=>{box.innerHTML="";L.forEach((x,i)=>{const r=el(`<div>영상 파일: ${esc(String(x.name||x.path||"").split("/").pop())} <button type="button" class="t-btn ghost sm">빼기</button></div>`);r.querySelector("button").onclick=()=>{L.splice(i,1);draw()};box.append(r)})};
+  fi.onchange=()=>{for(const fl of [...fi.files]){if(fl.size>50*1024*1024){toast(`${fl.name}: 영상 파일은 50MB 이하로 올려 주세요. 큰 영상은 유튜브에 올리고 주소를 넣어 주세요`);continue}if(!multi)L=[];L.push({file:fl,name:fl.name,title:""})}fi.value="";draw()};draw();
+  return {input:fi,box,list:()=>L,hasNew:()=>L.some(x=>x.file)}}
+async function uploadVids(L,dir){const out=[];for(let i=0;i<L.length;i++){const x=L[i];let path=x.path;
+  if(x.file){path=`${dir}/${Date.now()}-${i}-${x.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTTAN_DB.storage.from("works").upload(path,x.file,{contentType:x.file.type||"video/mp4"});if(up.error)throw up.error}
+  out.push({title:x.title||"",src:path})}return out}
 function fieldD(label,ctrl,hint){const f=el(`<div class="t-field"><span></span></div>`);f.firstChild.textContent=label;f.append(ctrl);if(hint)f.append(el(`<small>${esc(hint)}</small>`));return f}
 function openSheet(title,body,foot){$("#sheetTitle").textContent=title;const b=$("#sheetBody");b.innerHTML="";b.append(body);b.scrollTop=0;
   const f=$("#sheetFoot");f.innerHTML="";foot.forEach(x=>f.append(x));const d=$("#sheet");if(!d.open)d.showModal()}
@@ -667,7 +675,9 @@ function venueSheet(g){
   const curl=inp("gCrawl","url",g?.crawlUrl||"","전시 목록이 보이는 페이지 주소");
   let auto=g?.crawlOn!==false;const on=switchEl(auto,v=>{auto=v},"자동 수집");
   const intro=inp("gIntro","textarea",g?.intro||"","전시장 소개를 직접 써 주세요 (다른 사이트 글을 그대로 옮기지 않아요)");
-  const video=inp("gVideo","url",g?.video||"","유튜브·비메오 주소 (전시장 소개·전시 전경 영상)");
+  const gvIsFile=!!(g?.videoPath&&!/^https?:/.test(g.videoPath));
+  const video=inp("gVideo","url",gvIsFile?"":(g?.video||""),"유튜브 주소 (전시장 소개·전시 전경 영상)");
+  const gvf=vidFiles("gVideoFile",gvIsFile?[{path:g.videoPath}]:[],false);
   /* 대표 사진: {show, path, data} */
   let photo=g?.photo?{show:g.photo,path:g.photoPath??g.photo}:null;
   const phBox=el(`<div class="t-prev"></div>`),drawPh=()=>{phBox.innerHTML="";if(photo){const w=el(`<span class="t-pi"><img src="${photo.data||photo.show}" alt="대표 사진" style="width:160px;height:100px"><button type="button" aria-label="사진 지우기">×</button></span>`);w.querySelector("button").onclick=()=>{photo=null;drawPh()};phBox.append(w)}};
@@ -685,15 +695,18 @@ function venueSheet(g){
   const two=(x,y)=>{const t=el(`<div class="t-two"></div>`);t.append(x,y);return t};
   f.append(two(fieldL("전시장 이름",name),fieldL("지역(동네)",area)),fieldL("주소",addr),two(fieldL("관람시간",hours),fieldL("전화",tel)),fieldL("홈페이지",site),
     fieldL("전시 목록 주소",curl,"전시명과 기간이 나오는 페이지(예: 현재·예정 전시 목록). 이 주소에서 전시를 모아요."),test,prev,fieldD("매일 자동 수집",on),fieldL("소개",intro),
-    fieldL("대표 사진",phFile,"홈 화면 갤러리 카드와 전시장 페이지 맨 위에 나와요. 전시장 홈페이지 사진을 허락 없이 가져오지 마세요."),phBox,phOk,fieldL("영상",video));
+    fieldL("대표 사진",phFile,"홈 화면 갤러리 카드와 전시장 페이지 맨 위에 나와요. 전시장 홈페이지 사진을 허락 없이 가져오지 마세요."),phBox,phOk,
+    fieldL("영상 주소",video,"유튜브(추천)·인스타그램·페이스북·비메오 주소. 주소를 넣으면 아래 파일보다 먼저 보여요."),fieldL("영상 파일",gvf.input,"유튜브에 올리지 않은 영상만 직접 올려요 (mp4, 50MB 이하)."),gvf.box);
   const save=tBtn(isNew?"추가하기":"저장하기","primary",()=>{
     const v={name:name.value.trim(),area:area.value.trim(),addr:addr.value.trim(),hours:hours.value.trim(),tel:tel.value.trim(),site:site.value.trim(),crawlUrl:curl.value.trim(),crawlOn:auto,intro:intro.value.trim(),video:video.value.trim()};
     if(photo&&photo.data&&!$("#gPhOk").checked){toast("사진 사용 허락을 받았는지 확인해 주세요");return}
     if(v.video&&!/^https?:\/\//.test(v.video)){toast("영상 주소는 https:// 로 시작해야 해요");video.focus();return}
     if(!v.name){toast("전시장 이름을 입력해 주세요");name.focus();return}
     if(v.crawlUrl&&!/^https?:\/\//.test(v.crawlUrl)){toast("전시 목록 주소는 https:// 로 시작해야 해요");curl.focus();return}
+    if(!SBM()&&gvf.hasNew()){toast("Supabase 연결 전에는 영상 파일 대신 유튜브 주소를 넣어 주세요");return}
     if(SBM()){const gid=isNew?newId("g"):g.id;
       dbDo(async()=>{let pp=photo?photo.path||null:null;
+        if(!v.video&&gvf.list().length)v.video=(await uploadVids(gvf.list(),`galleries/${gid}`))[0].src;
         if(photo&&photo.data){const blob=await (await fetch(photo.data)).blob();pp=`galleries/${gid}/${Date.now()}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(pp,blob,{contentType:"image/jpeg"});if(up.error)return up}
         const row={name:v.name,area:v.area||null,addr:v.addr||null,hours:v.hours||null,tel:v.tel||null,site:v.site||null,intro:v.intro||null,crawl_url:v.crawlUrl||null,crawl_on:v.crawlOn,video_url:v.video||null,photo_path:pp};
         return isNew?ARTTAN_DB.from("galleries").insert({id:gid,...row,sort:1000}):ARTTAN_DB.from("galleries").update(row).eq("id",g.id)},isNew?"전시장을 추가했어요":"저장했어요",true);return}
@@ -746,11 +759,13 @@ function reviewSheet(r){
     wk=chipsField(opts,sel,opts.length,k=>{const [a,i]=k.split("|");return `${byId[a].name} · ${String(+i+1).padStart(2,"0")} ${byId[a].works[i][0]}`});wkWrap.append(wk)};
   exSel.onchange=()=>drawWorks(false);drawWorks(true);
   /* 영상: 한 줄에 하나 "제목 | 주소" (제목은 빼도 돼요) */
-  const vids=inp("rVideos","textarea",(r?.videos||[]).map(x=>x.title?`${x.title} | ${x.url}`:x.url).join("\n"),"예: 전시 전경 | https://youtu.be/…");vids.rows=3;
+  const vids=inp("rVideos","textarea",(r?.videos||[]).filter(x=>x.url).map(x=>x.title?`${x.title} | ${x.url}`:x.url).join("\n"),"예: 전시 전경 | https://youtu.be/…");vids.rows=3;
+  const rvf=vidFiles("rVideoFiles",(r?.videos||[]).filter(x=>x.src&&!x.url).map(x=>({path:x.srcPath||x.src,title:x.title||""})),true);
   let hidden=!!r?.hidden;const sw=switchEl(!hidden,v=>{hidden=!v},"사이트에 공개");
   f.append(fieldL("전시",exSel),fieldL("제목",title),two,fieldL("리뷰",body),fieldL("현장 사진",phFile,"장수·크기·비율에 제한이 없어요. 세로·가로·파노라마 모두 원래 모양대로 보여요. 첫 번째 사진이 대표 사진이에요."),phBox,ok,
     fieldD("전시에 걸린 작품",wkWrap,"고른 작품이 리뷰 페이지에 나오고 작품 페이지로 이어져요."),
-    fieldL("영상",vids,"유튜브·비메오 주소를 한 줄에 하나씩. 비워 두면 리뷰에 영상 칸이 안 보여요."),
+    fieldL("영상 주소",vids,"유튜브(추천)·인스타그램·페이스북·비메오 주소를 한 줄에 하나씩. 비워 두면 리뷰에 영상 칸이 안 보여요."),
+    fieldL("영상 파일",rvf.input,"유튜브에 올리지 않은 영상만 직접 올려요 (mp4, 한 개 50MB 이하)."),rvf.box,
     el(`<p class="t-desc">이 전시에서 나눈 <b>작가 인터뷰</b>는 '인터뷰' 메뉴에서 쓰고 '연결된 전시'로 이 전시를 고르면 리뷰에 함께 나와요.</p>`),
     fieldD("사이트에 공개",sw));
   const save=tBtn(isNew?"올리기":"저장하기","primary",async()=>{
@@ -760,14 +775,16 @@ function reviewSheet(r){
       interview:r?.interview||null};
     if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
     if(!v.body&&!photos.length){toast("리뷰 글이나 현장 사진을 넣어 주세요");return}
-    if(photos.some(p=>p.data)&&!$("#rOk").checked){toast("사진 사용 허락을 확인해 주세요");return}
+    if((photos.some(p=>p.data)||rvf.hasNew())&&!$("#rOk").checked){toast("사진·영상 사용 허락을 확인해 주세요");return}
     if(SBM()){const rid=isNew?newId("r"):r.id;
-      dbDo(async()=>{const ph=[];
+      dbDo(async()=>{const ph=[];v.videos=[...v.videos,...await uploadVids(rvf.list(),`reviews/${rid}`)];
         for(let i=0;i<photos.length;i++){const p=photos[i];let path=p.path;
           if(p.data){const blob=await (await fetch(p.data)).blob();path=`reviews/${rid}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
           ph.push({src:path,caption:p.caption||""})}
         const row={exhibition_id:v.exhibition,title:v.title,visit_date:v.date||null,author:v.author||null,body:v.body||null,photos:ph,works:v.works,videos:v.videos,interview:v.interview,hidden:v.hidden};
         return isNew?ARTTAN_DB.from("reviews").insert({id:rid,...row}):ARTTAN_DB.from("reviews").update(row).eq("id",r.id)},isNew?"전시리뷰를 올렸어요":"저장했어요",true);return}
+    if(rvf.hasNew()){toast("Supabase 연결 전에는 영상 파일 대신 유튜브 주소를 넣어 주세요");return}
+    v.videos=[...v.videos,...rvf.list().map(x=>({title:x.title||"",src:x.path}))];
     const ph=photos.map(p=>({src:p.data||p.show,caption:p.caption||""}));
     if(isNew){const o={...v,photos:ph,id:"r"+Date.now().toString(36)};AD.reviews=AD.reviews||[];AD.reviews.push(o);if(!adSave()){AD.reviews.pop();return}REVIEWS.push({...o,added:true});toast("전시리뷰를 올렸어요")}
     else{const patch={...v,photos:ph};if(r.added)Object.assign(AD.reviews.find(x=>x.id===r.id),patch);else{AD.reviewEdits=AD.reviewEdits||{};AD.reviewEdits[r.id]=patch}if(!adSave())return;Object.assign(r,patch);toast("저장했어요")}
@@ -839,6 +856,15 @@ function unpublish(x){
 
 /* 설정 */
 function adSet(m){adHead(m,"설정");
+  /* arttan 공식 SNS: 주소를 넣은 것만 사이트 아래쪽·인터뷰 페이지에 버튼으로 보여요 */
+  {const c=card(m,"arttan SNS 채널");const f=el(`<div class="t-form" style="padding:8px 16px 16px"></div>`);
+    const ins=SNS_META.map(([k,label])=>[k,inp("sns_"+k,"url",SNS[k]||"",`https:// (${label} 채널 주소)`),label]);
+    ins.forEach(([k,i,label])=>f.append(fieldL(label,i)));
+    f.append(el(`<p class="t-desc">주소를 넣은 채널만 사이트 아래쪽과 인터뷰 페이지에 버튼으로 보여요. 비우면 버튼이 사라져요.</p>`));
+    f.append(tBtn("SNS 저장하기","primary",()=>{const val={};for(const [k,i,label] of ins){const u=i.value.trim();if(u&&!/^https:\/\//.test(u)){toast(`${label} 주소는 https:// 로 시작해야 해요`);i.focus();return}val[k]=u}
+      if(SBM()){dbDo(()=>ARTTAN_DB.from("site_settings").upsert({key:"sns",value:val,updated_at:new Date().toISOString()}),"SNS 주소를 저장했어요");return}
+      AD.sns=val;Object.assign(SNS,val);adSave();refreshPublic();toast("SNS 주소를 저장했어요")}));
+    c.append(f)}
   if(SBM()){const c=card(m,"계정");c.append(el(`<p class="t-info">Supabase에 연결돼 있어요. 저장한 내용은 모두 실제 DB에 기록돼요.</p>`));
     c.append(row({title:"로그아웃",sub:"이 브라우저에서 관리자 로그인을 끝내요",onClick:async()=>{await ARTTAN_DB.auth.signOut();location.reload()}}));return}
   const c=card(m,"초안 데이터");

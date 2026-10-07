@@ -10,7 +10,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = process.argv[2];
 if (!src) { console.error("생성 이미지 폴더를 알려 주세요."); process.exit(1); }
 const S = f => path.join(src, f + ".png");
-const out = f => path.join(root, "artists/eloi", f.replace(/\.jpg$/, "-2.jpg"));  /* 바꾼 이미지는 이름 끝에 -2 를 붙여 브라우저 캐시를 피해요 */
+const out = f => path.join(root, "artists/eloi", f.replace(/\.jpg$/, "-3.jpg"));  /* 바꾼 이미지는 이름 끝에 -3 처럼 번호를 붙여 브라우저 캐시를 피해요 */
 const FONT = `font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif"`;
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
@@ -36,7 +36,7 @@ async function main() {
   await photo("iv", out("interviews/studio-poster.jpg"), 1600);
   const garden = ["g07", "g01", "g02", "g03", "g04", "g05", "g06"];
   for (const [k, g] of garden.entries()) await photo(g, out(`reviews/garden-0${k + 1}.jpg`), 1600);
-  await photo("venue", path.join(root, "galleries/testgal-2.jpg"), 1800);
+  await photo("venue", path.join(root, "galleries/testgal-3.jpg"), 1800);
 
   /* 전시 포스터 (1200×1600) */
   const poster = async (file, wn, title, date) => {

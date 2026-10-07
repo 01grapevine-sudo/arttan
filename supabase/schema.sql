@@ -308,3 +308,11 @@ alter table public.interviews add column if not exists exhibition_id text;
 
 -- 홈 히어로(첫 화면 큰 배너) 노출 여부: 관리자 작가 목록의 '히어로' 버튼으로 바꿔요
 alter table public.artists add column if not exists hero boolean not null default true;
+
+-- 사이트 설정 (arttan SNS 채널 주소 등): 누구나 읽고 관리자만 바꿔요
+create table if not exists public.site_settings (key text primary key, value jsonb not null default '{}'::jsonb, updated_at timestamptz not null default now());
+alter table public.site_settings enable row level security;
+drop policy if exists "site_settings: public read" on public.site_settings;
+create policy "site_settings: public read" on public.site_settings for select using (true);
+drop policy if exists "site_settings: admin write" on public.site_settings;
+create policy "site_settings: admin write" on public.site_settings for all using (public.is_admin()) with check (public.is_admin());

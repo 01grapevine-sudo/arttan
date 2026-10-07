@@ -58,14 +58,14 @@ const GALLERIES = [
   {id:"jmhm", name:"정명희미술관", area:"대전", addr:"대전평생학습관 302호"},
   {id:"cbcc", name:"충북문화관 숲속갤러리", area:"청주"},
   /* 테스트용 가상 갤러리 (엘로이 샘플 전시용) */
-  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", photo:"galleries/testgal-2.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 AI로 생성한 샘플이에요."},
+  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", photo:"galleries/testgal-3.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 AI로 생성한 샘플이에요."},
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
 /* 전시 (주소가 바뀌지 않게 id 를 꼭 적어요. 출처로 확인한 실제 전시만 넣어요. 단, id가 eloi- 로 시작하는 것은 테스트용 가상 전시예요. g: 갤러리 id — 목록에 없는 곳은 GALLERIES에 먼저 추가) */
 const EXHIBITIONS = [
-  {id:"eloi-2026", g:"testgal", title:"빛이 머무는 자리", artists:["eloi"], kind:"개인전", start:"2026-11-01", end:"2026-11-07", poster:"artists/eloi/posters/2026-light-2.jpg", desc:"[테스트용 가상 전시] 방 안으로 들어온 오후의 빛을 과슈와 색연필로 그린 일러스트 신작 8점. 전시·포스터·도록 기능을 시험하려고 만든 샘플이에요."},
-  {id:"eloi-2025", g:"testgal", title:"정원의 오후", artists:["eloi"], kind:"개인전", start:"2025-05-03", end:"2025-05-25", poster:"artists/eloi/posters/2025-garden-2.jpg", desc:"[테스트용 가상 전시] 서울의 작은 정원과 오후 햇살을 그린 일러스트 작가 엘로이의 첫 개인전 (샘플)."},
+  {id:"eloi-2026", g:"testgal", title:"빛이 머무는 자리", artists:["eloi"], kind:"개인전", start:"2026-11-01", end:"2026-11-07", poster:"artists/eloi/posters/2026-light-3.jpg", desc:"[테스트용 가상 전시] 방 안으로 들어온 오후의 빛을 과슈와 색연필로 그린 일러스트 신작 8점. 전시·포스터·도록 기능을 시험하려고 만든 샘플이에요."},
+  {id:"eloi-2025", g:"testgal", title:"정원의 오후", artists:["eloi"], kind:"개인전", start:"2025-05-03", end:"2025-05-25", poster:"artists/eloi/posters/2025-garden-3.jpg", desc:"[테스트용 가상 전시] 서울의 작은 정원과 오후 햇살을 그린 일러스트 작가 엘로이의 첫 개인전 (샘플)."},
   {id:"ex01", g:"cbcc", title:"이홍원 작은 그림전 – 마동 30년 기념특별전", artists:["lhw"], kind:"특별전", start:"2025-03-11", end:"2025-03-16", desc:"청주 마동창작마을에서 작업한 30년을 기념해 충북문화관 숲속갤러리 전관에서 연 작은 그림전. 꽃 호랑이, 소나무, 싸움소, 질주, 연리지, 울림 등을 선보였다."},
   {id:"ex02", g:"insaplaza", title:"이홍원 전 – 달항아리 노래", artists:["lhw"], kind:"기획 초대전", start:"2023-03-22", end:"2023-03-27", desc:"서울 인사아트프라자갤러리 기획 초대전."},
   {id:"ex03", g:"jmhm", title:"물, 예술을 넘어", artists:["jmh"], kind:"소장전", start:"2023-02-06", end:"2023-06-30", desc:"대청댐 건설로 고향을 잃은 수몰민의 애환을 담은 작품들. 제4회 겸재미술상 수상기념전에 걸렸던 작품을 다시 소개했다."},
@@ -80,13 +80,13 @@ const REVIEWS = [
   {id:"eloi-garden", exhibition:"eloi-2025", title:"오후의 빛이 머무는 방 — 「정원의 오후」 스케치", date:"2025-05-10", author:"arttan 편집부",
    body:"[테스트용 샘플 리뷰예요. 전시리뷰 기능을 시험하려고 만든 글이고, 실제 전시가 아니에요. 사진은 AI로 생성했어요.]\n\n인사동 골목 안쪽, 유리창에 커다란 정원 그림 배너가 걸린 작은 전시장이 보여요. 20대 일러스트 작가 엘로이의 첫 개인전 「정원의 오후」는 과슈와 색연필로 그린 일상의 풍경으로 채워졌어요.\n\n흰 벽에는 액자 속 그림들이 눈높이에 나란히 걸려 있어요. 나무 그늘 아래 책을 읽는 사람, 물 위에 누워 떠 있는 사람, 새벽빛이 들어온 작은 방. 모두 하루 중 빛이 가장 오래 머무는 순간을 붙잡은 장면이에요.\n\n대표작 「정원의 오후」 앞에서 작가는 관람객과 한참 이야기를 나눴어요. 전시장 한쪽 진열대에는 스케치북과 색 견본이 놓여 있어, 그림 한 장이 완성되기까지의 과정을 엿볼 수 있었어요.",
    photos:[
-     {src:"artists/eloi/reviews/garden-01-2.jpg", caption:"인사동 골목의 전시장 입구 — 창에 걸린 전시 배너"},
-     {src:"artists/eloi/reviews/garden-02-2.jpg", caption:"전시장 전경"},
-     {src:"artists/eloi/reviews/garden-03-2.jpg", caption:"대표작 「정원의 오후」 옆에 선 작가"},
-     {src:"artists/eloi/reviews/garden-04-2.jpg", caption:"작품 앞에서 오래 머무는 관람객"},
-     {src:"artists/eloi/reviews/garden-05-2.jpg", caption:"가까이에서 본 「물결 위의 원」"},
-     {src:"artists/eloi/reviews/garden-06-2.jpg", caption:"오프닝 날, 관람객과 이야기를 나누는 작가"},
-     {src:"artists/eloi/reviews/garden-07-2.jpg", caption:"스케치북과 색 견본을 모은 진열대"}],
+     {src:"artists/eloi/reviews/garden-01-3.jpg", caption:"인사동 골목의 전시장 입구 — 창에 걸린 전시 배너"},
+     {src:"artists/eloi/reviews/garden-02-3.jpg", caption:"전시장 전경"},
+     {src:"artists/eloi/reviews/garden-03-3.jpg", caption:"대표작 「정원의 오후」 옆에 선 작가"},
+     {src:"artists/eloi/reviews/garden-04-3.jpg", caption:"작품 앞에서 오래 머무는 관람객"},
+     {src:"artists/eloi/reviews/garden-05-3.jpg", caption:"가까이에서 본 「물결 위의 원」"},
+     {src:"artists/eloi/reviews/garden-06-3.jpg", caption:"오프닝 날, 관람객과 이야기를 나누는 작가"},
+     {src:"artists/eloi/reviews/garden-07-3.jpg", caption:"스케치북과 색 견본을 모은 진열대"}],
    works:[["eloi",1],["eloi",2],["eloi",3]],
    /* 영상: [{url, title}] — 유튜브·비메오 주소. 없으면 칸이 안 보여요 */
    videos:[],
@@ -253,8 +253,8 @@ function ivCoverSrc(v,small){
   if(v.video){if(v.video.poster)return optImg(v.video.poster,small);const y=ytId(v.video.url||v.video.src);if(y)return `https://i.ytimg.com/vi/${y}/hqdefault.jpg`}
   if(v.photos&&v.photos[0])return optImg(v.photos[0].src,small);return null}
 /* 영상: 유튜브·비메오는 넣어서 재생, 영상 파일(mp4 등)은 사이트 플레이어로 (다운로드 메뉴는 숨겨요) */
-function videoHtml(vd,title){if(!vd)return "";const src=vd.src||vd.url||"";const emb=videoEmbed(src);
-  if(emb)return `<div class="gs-video"><iframe src="${emb}" title="${esc(title||vd.title||"영상")}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
+function videoHtml(vd,title){if(!vd)return "";if(typeof vd==="string")vd={url:vd};const src=vd.src||vd.url||"";const emb=videoEmbed(src);
+  if(emb)return `<div class="gs-video${videoTall(src)?" tall":""}"><iframe src="${emb}" title="${esc(title||vd.title||"영상")}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
   if(/\.(mp4|webm|mov|m4v)(\?|$)/i.test(src))return `<div class="gs-video"><video controls playsinline preload="metadata" controlslist="nodownload" disablepictureinpicture oncontextmenu="return false"${vd.poster?` poster="${esc(optImg(vd.poster))}"`:""}><source src="${esc(src)}" type="video/${/\.webm/i.test(src)?"webm":"mp4"}"></video></div>`;
   return src?`<p><a class="btn ghost" href="${esc(src)}" target="_blank" rel="noopener">${esc(vd.title||"영상 보기")} ↗</a></p>`:""}
 
@@ -296,9 +296,23 @@ function galCover(g,small){
   const d=document.createElement("div");d.className="g-typo";d.setAttribute("role","img");d.setAttribute("aria-label",`${g.name} (사진 준비 중)`);
   d.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18"/></svg><span>전시장 사진 준비 중</span>`;return d}
 /* 영상 주소 → 넣어서 볼 수 있는 주소 (유튜브·비메오) */
+/* 영상 주소 → 사이트 안에서 재생하는 주소. 유튜브(일반·쇼츠·라이브), 비메오, 인스타그램(게시물·릴스), 페이스북 영상 */
 function videoEmbed(u){if(!u)return null;let m;
-  if((m=/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(u)))return `https://www.youtube-nocookie.com/embed/${m[1]}`;
-  if((m=/vimeo\.com\/(?:video\/)?(\d+)/.exec(u)))return `https://player.vimeo.com/video/${m[1]}`;return null}
+  if((m=/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/.exec(u)))return `https://www.youtube-nocookie.com/embed/${m[1]}`;
+  if((m=/vimeo\.com\/(?:video\/)?(\d+)/.exec(u)))return `https://player.vimeo.com/video/${m[1]}`;
+  if((m=/instagram\.com\/(?:[\w.]+\/)?(p|reel|reels|tv)\/([\w-]+)/.exec(u)))return `https://www.instagram.com/${m[1]==="reels"?"reel":m[1]}/${m[2]}/embed/`;
+  if(/(?:facebook\.com\/.+\/videos\/|facebook\.com\/(?:watch|reel)|fb\.watch\/)/.test(u))return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(u)}&show_text=false`;
+  return null}
+/* 세로 영상(인스타그램·쇼츠·릴스)은 세로 틀로 보여줘요 */
+const videoTall=u=>/instagram\.com|youtube\.com\/shorts\/|facebook\.com\/reel/.test(u||"");
+/* arttan 공식 SNS (관리자 → 설정에서 주소를 넣어요. 비어 있으면 버튼이 안 보여요) */
+const SNS={instagram:"",facebook:"",youtube:""};
+const SNS_META=[["youtube","유튜브","M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15V9l5.2 3z"],
+  ["instagram","인스타그램","M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zM16.5 2h-9A5.5 5.5 0 0 0 2 7.5v9A5.5 5.5 0 0 0 7.5 22h9a5.5 5.5 0 0 0 5.5-5.5v-9A5.5 5.5 0 0 0 16.5 2zm3.7 14.5a3.7 3.7 0 0 1-3.7 3.7h-9a3.7 3.7 0 0 1-3.7-3.7v-9a3.7 3.7 0 0 1 3.7-3.7h9a3.7 3.7 0 0 1 3.7 3.7z"],
+  ["facebook","페이스북","M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2H7.5v3.4h2.8V22H14v-10.1h2.8l.4-3.4z"]];
+const snsList=()=>SNS_META.filter(([k])=>/^https:\/\//.test(SNS[k]||"")).map(([k,label,d])=>({k,label,d,url:SNS[k]}));
+function snsHtml(cls="sns"){const L=snsList();if(!L.length)return "";
+  return `<nav class="${cls}" aria-label="arttan SNS">${L.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener me" aria-label="arttan ${s.label}" title="arttan ${s.label}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="${s.d}" fill="currentColor"/></svg><span>${s.label}</span></a>`).join("")}</nav>`}
 /* 검색에 알릴 주소와 내용 요약. 관리자에서 저장한 뒤 바뀐 주소만 골라 네이버에 바로 알려요. */
 function seoPages(){const m={"/":"home"};
   ARTISTS.filter(artistIndexable).forEach(a=>{
@@ -330,7 +344,7 @@ const NOTICES=[
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */
 const AD_KEY="arttan.admin.v1";
-const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[],reviews:[],reviewEdits:{},reviewDel:{},heroOff:{}});
+const AD_DEF=()=>({artists:[],exhibitions:[],edits:{},hidden:{},done:{},apps:[],books:[],bookEdits:{},bookDel:{},galleries:[],galEdits:{},galDel:{},crawled:[],reviews:[],reviewEdits:{},reviewDel:{},heroOff:{},sns:null});
 let AD=AD_DEF();
 try{const j=JSON.parse(localStorage.getItem(AD_KEY)||"null");if(j)AD=Object.assign(AD_DEF(),j)}catch(e){}
 function adSave(){try{localStorage.setItem(AD_KEY,JSON.stringify(AD));return true}catch(e){toast("브라우저 저장 공간이 부족해서 저장하지 못했어요");return false}}
@@ -344,6 +358,7 @@ function adApply(){
   AD.artists.forEach(o=>{if(!byId[o.id]){const a=makeArtist(o);ARTISTS.push(a);byId[a.id]=a}});
   Object.entries(AD.edits).forEach(([id,e])=>{if(byId[id])Object.assign(byId[id],e)});
   ARTISTS.forEach(a=>{a.hidden=!!AD.hidden[a.id];if((AD.heroOff||{})[a.id])a.hero=false});
+  if(AD.sns)Object.assign(SNS,AD.sns);
   /* 관리자에서 추가·수정·삭제한 전시장 (Supabase 없이 이 브라우저에만 저장할 때) */
   (AD.galleries||[]).forEach(g=>{if(!galById[g.id]){const o={...g,added:true};GALLERIES.push(o);galById[o.id]=o}});
   Object.entries(AD.galEdits||{}).forEach(([id,e])=>{if(galById[id])Object.assign(galById[id],e)});
