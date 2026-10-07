@@ -16,7 +16,7 @@ const PALS = [
 export const TITLES = ["빛이 머무는 자리", "정원의 오후", "물결 위의 원", "새벽의 방", "느린 바람", "겹쳐진 시간", "보랏빛 숨", "작은 우주"];
 
 /* 작품: 색면 + 겹치는 원 + 붓자국 같은 곡선 */
-function artwork(i, W = 1600, H = 1200) {
+export function artwork(i, W = 1600, H = 1200) {
   const r = rng(1000 + i * 97), P = PALS[i % PALS.length];
   let s = `<rect width="${W}" height="${H}" fill="${P[0]}"/>`;
   s += `<rect x="0" y="${H * (0.55 + r() * 0.15)}" width="${W}" height="${H}" fill="${P[1]}" opacity=".55"/>`;
@@ -31,7 +31,7 @@ function artwork(i, W = 1600, H = 1200) {
   s += `<circle cx="${W * (0.6 + r() * 0.3)}" cy="${H * (0.15 + r() * 0.2)}" r="${40 + r() * 40}" fill="${P[4]}"/>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${s}</svg>`;
 }
-const FONT = `font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif"`;
+export const FONT = `font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif"`;
 const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 async function main() {
@@ -125,4 +125,5 @@ async function main() {
     .composite(pc).jpeg({ quality: 84 }).toFile(out("reviews/garden-07.jpg"));
   console.log("엘로이 샘플 이미지를 만들었어요.");
 }
-main();
+/* 다른 스크립트에서 그림 함수만 가져다 쓸 때는 실행하지 않아요 */
+if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split("/").pop())) main();

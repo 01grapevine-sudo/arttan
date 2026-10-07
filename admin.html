@@ -168,16 +168,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=39"></script>
+<script src="core.js?v=40"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=39"></script>
-<script src="artists/jmh/artist.js?v=39"></script>
-<script src="artists/lmg/artist.js?v=39"></script>
-<script src="artists/lhw/artist.js?v=39"></script>
+<script src="artists/eloi/artist.js?v=40"></script>
+<script src="artists/jmh/artist.js?v=40"></script>
+<script src="artists/lmg/artist.js?v=40"></script>
+<script src="artists/lhw/artist.js?v=40"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=39"></script>
-<script src="data.js?v=39"></script>
+<script src="config.js?v=40"></script>
+<script src="data.js?v=40"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -456,8 +456,78 @@ function adInq(m){
       onClick:()=>openSheet("작가 문의",el(`<div class="t-form"><p class="t-desc"><b>${esc(x.name)}</b> (${esc(x.email)})<br>${esc(a?a.name+" 작가":"")} · ${esc(x.type||"")}</p><p class="t-desc" style="white-space:pre-wrap">${esc(x.message)}</p></div>`),[tBtn("닫기","ghost",closeSheet)])}))})})}
 
 /* 인터뷰 · 도록 · 갤러리 */
-function adIv(m){adHead(m,"인터뷰",`${INTERVIEWS.length}편`,["인터뷰 추가",soon]);const c=card(m);
-  INTERVIEWS.forEach(v=>{const a=byId[v.artist];c.append(row({thumb:thumbOf(a),title:v.title,sub:`${a.name} · ${v.date} · 영상 ${VIDEOS[a.id]?.len||"없음"}`}))})}
+/* ================= 작가 인터뷰: 영상·사진·글 (넣은 것만 사이트에 보여요) ================= */
+function adIv(m){adHead(m,"인터뷰",`${INTERVIEWS.length}편 · 영상·사진·글 중 넣은 것만 보여요`,["인터뷰 쓰기",()=>ivSheet()]);const c=card(m);
+  if(!INTERVIEWS.length)c.append(el(`<p class="t-empty">아직 인터뷰가 없어요.</p>`));
+  INTERVIEWS.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(v=>{const a=byId[v.artist];if(!a)return;const p=ivParts(v);
+    const cs=ivCoverSrc(v,true),th=cs?el(`<img class="t-thumb" src="${cs}" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:8px">`):thumbOf(a);
+    c.append(row({thumb:th,title:v.title,sub:`${a.name}${v.date?` · ${v.date}`:""} · ${[p.video&&"영상",p.photos&&`사진 ${v.photos.length}`,p.text&&"글"].filter(Boolean).join(" · ")||"내용 없음"}`,onClick:()=>ivSheet(v)}))})}
+function ivSheet(v){
+  const isNew=!v,f=el(`<div class="t-form"></div>`);const A=pub();if(!A.length){toast("작가를 먼저 등록해 주세요");return}
+  const who=document.createElement("select");who.id="iWho";who.innerHTML=A.map(a=>`<option value="${a.id}">${esc(a.name)} · ${esc(a.genre)}</option>`).join("");who.value=v?.artist||A[0].id;
+  const title=inp("iTitle","text",v?.title||"","예: 오후의 빛을 붙잡는 법 — 작업실에서");
+  const date=inp("iDate","text",v?.date||`${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,"0")}.${String(today.getDate()).padStart(2,"0")}`,"예: 2026.10.07");
+  const exSel=document.createElement("select");exSel.id="iEx";
+  const drawEx=()=>{const xs=EXHIBITIONS.filter(e=>e.artists.includes(who.value)).sort((a,b)=>b.start.localeCompare(a.start));const cur=exSel.value||v?.exhibition||"";
+    exSel.innerHTML=`<option value="">연결하지 않음</option>`+xs.map(e=>`<option value="${e.id}">「${esc(e.title)}」 ${e.start.slice(0,7).replace("-",".")} · ${esc(e.venue)}</option>`).join("");exSel.value=xs.some(e=>e.id===cur)?cur:""};
+  who.onchange=drawEx;drawEx();
+  const two=el(`<div class="t-two"></div>`);two.append(fieldL("날짜",date),fieldL("연결된 전시",exSel));
+  const lead=inp("iLead","textarea",v?.lead||"","인터뷰를 한두 문장으로 소개해요 (선택)");lead.rows=2;
+  const body=inp("iBody","textarea",v?.body||"","작업실 풍경, 만난 날의 이야기 등 본문 (선택). 문단은 빈 줄로 나눠요.");body.rows=6;
+  const qa=inp("iQa","textarea",(v?.qa||[]).map(([q,a])=>`Q. ${q}\nA. ${a}`).join("\n\n"),"Q. 질문\nA. 답\n\nQ. 다음 질문\nA. 답");qa.rows=8;
+  /* 영상: 유튜브·비메오 주소 또는 영상 파일(mp4) */
+  const vUrl=inp("iVUrl","url",v?.video?.url||((v?.video?.srcPath||v?.video?.src||"").match(/^https?:/)?(v?.video?.src||""):""),"유튜브·비메오 주소");
+  const vTitle=inp("iVTitle","text",v?.video?.title||"","영상 설명 (선택)");
+  let vFile=v?.video&&!/^https?:/.test(v.video.srcPath??v.video.src??"")&&(v.video.src)?{show:v.video.src,path:v.video.srcPath??v.video.src,poster:v.video.posterPath??v.video.poster}:null;
+  const vBox=el(`<div class="t-desc"></div>`),drawV=()=>{vBox.innerHTML=vFile?`영상 파일: ${esc(String(vFile.name||vFile.path||"").split("/").pop())} <button type="button" class="t-btn ghost sm">빼기</button>`:"";const b=vBox.querySelector("button");if(b)b.onclick=()=>{vFile=null;drawV()}};drawV();
+  const vIn=inp("iVFile","file");vIn.accept="video/mp4,video/webm,video/quicktime";
+  vIn.onchange=()=>{const fl=vIn.files[0];if(!fl)return;if(fl.size>50*1024*1024){toast("영상 파일은 50MB 이하로 올려 주세요. 큰 영상은 유튜브에 올리고 주소를 넣어 주세요");vIn.value="";return}vFile={file:fl,name:fl.name};drawV()};
+  /* 사진 */
+  let photos=(v?.photos||[]).map(p=>({show:p.src,path:p.path??p.src,caption:p.caption||""}));
+  const phBox=el(`<div class="t-phlist"></div>`);
+  const drawPh=()=>{phBox.innerHTML="";photos.forEach((p,i)=>{const w=el(`<div class="t-phrow"><img src="${p.data||p.show}" alt=""><input type="text" placeholder="사진 설명" value="${esc(p.caption)}"><span class="t-phbtn"><button type="button" aria-label="앞으로">↑</button><button type="button" aria-label="지우기">×</button></span></div>`);
+    w.querySelector("input").oninput=e=>{p.caption=e.target.value};const [up,del]=w.querySelectorAll("button");
+    up.onclick=()=>{if(i>0){[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawPh()}};del.onclick=()=>{photos.splice(i,1);drawPh()};phBox.append(w)})};
+  const phIn=inp("iPhotos","file");phIn.accept="image/*";phIn.multiple=true;
+  phIn.onchange=async()=>{for(const fl of [...phIn.files]){const u=await shrink(fl,2000);if(u)photos.push({data:u,caption:""})}phIn.value="";drawPh()};drawPh();
+  const ok=el(`<label class="t-check"><input type="checkbox" id="iOk"> 사진·영상은 직접 촬영했거나 사용 허락을 받았어요</label>`);
+  f.append(fieldL("작가",who),fieldL("제목",title),two,
+    el(`<p class="t-desc" style="margin:8px 0 0"><b>영상 · 사진 · 글</b> 중 넣은 것만 인터뷰 페이지에 보여요.</p>`),
+    fieldL("영상 주소",vUrl,"유튜브·비메오 주소. 또는 아래에서 영상 파일(mp4, 50MB 이하)을 올려요."),fieldL("영상 파일",vIn),vBox,fieldL("영상 설명",vTitle),
+    fieldL("사진",phIn,"여러 장 · 크기와 비율 제한 없어요. 첫 장이 대표 이미지예요."),phBox,
+    fieldL("소개",lead),fieldL("본문",body),fieldL("대담 (질문과 답)",qa,"Q. 로 질문, A. 로 답을 시작하고 질문마다 빈 줄로 나눠요."),ok);
+  const parseQa=t=>{const out=[];let cur=null,mode=null;
+    String(t).split("\n").forEach(line=>{const m=/^\s*([QqAa])\s*[.:)]\s*(.*)$/.exec(line);
+      if(m&&/q/i.test(m[1])){cur=[m[2].trim(),""];out.push(cur);mode="q"}else if(m&&/a/i.test(m[1])&&cur){cur[1]=m[2].trim();mode="a"}
+      else if(cur&&line.trim()){if(mode==="a")cur[1]+=(cur[1]?"\n":"")+line.trim();else cur[0]+=" "+line.trim()}});
+    return out.filter(([q,a])=>q&&a)};
+  const save=tBtn(isNew?"올리기":"저장하기","primary",async()=>{
+    const Q=parseQa(qa.value);
+    const val={artist:who.value,title:title.value.trim(),date:date.value.trim(),exhibition:exSel.value||undefined,lead:lead.value.trim(),body:body.value.trim(),qa:Q};
+    if(!val.title){toast("제목을 입력해 주세요");title.focus();return}
+    if(qa.value.trim()&&!Q.length){toast("대담은 'Q.' 'A.' 로 시작해 적어 주세요");qa.focus();return}
+    const url=vUrl.value.trim();if(url&&!/^https?:\/\//.test(url)){toast("영상 주소는 https:// 로 시작해야 해요");vUrl.focus();return}
+    if(!url&&!vFile&&!photos.length&&!val.lead&&!val.body&&!Q.length){toast("영상·사진·글 중 하나는 넣어 주세요");return}
+    if(((vFile&&vFile.file)||photos.some(p=>p.data))&&!$("#iOk").checked){toast("사진·영상 사용 허락을 확인해 주세요");return}
+    if(SBM()){const slug=isNew?newId("i"):v.id;
+      dbDo(async()=>{const ph=[];
+        for(let i=0;i<photos.length;i++){const p=photos[i];let path=p.path;
+          if(p.data){const blob=await (await fetch(p.data)).blob();path=`interviews/${slug}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
+          ph.push({src:path,caption:p.caption||""})}
+        let video=null;
+        if(url)video={url,title:vTitle.value.trim()};
+        else if(vFile){let path=vFile.path;if(vFile.file){path=`interviews/${slug}/${Date.now()}-${vFile.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTTAN_DB.storage.from("works").upload(path,vFile.file,{contentType:vFile.file.type||"video/mp4"});if(up.error)return up}
+          video={src:path,title:vTitle.value.trim(),...(vFile.poster?{poster:vFile.poster}:{})}}
+        const row={artist_id:val.artist,slug,title:val.title,date:val.date||null,lead:val.lead||null,body:val.body||null,qa:val.qa,photos:ph,video,exhibition_id:val.exhibition||null};
+        return isNew?ARTTAN_DB.from("interviews").insert(row):ARTTAN_DB.from("interviews").update(row).eq("id",v.dbId)},isNew?"인터뷰를 올렸어요":"저장했어요",true);return}
+    /* Supabase 없이(이 브라우저): 영상은 주소만 저장돼요 */
+    if(vFile&&vFile.file&&!url){toast("Supabase 연결 전에는 영상 파일 대신 유튜브 주소를 넣어 주세요");return}
+    const rec={...val,id:isNew?"i"+Date.now().toString(36):v.id,photos:photos.map(p=>({src:p.data||p.show,caption:p.caption||""})),video:url?{url,title:vTitle.value.trim()}:(vFile?{src:vFile.show,poster:vFile.poster,title:vTitle.value.trim()}:null)};
+    if(isNew)INTERVIEWS.push(rec);else Object.assign(v,rec);toast("이 브라우저에서만 바뀌었어요 (Supabase 연결 시 저장돼요)");closeSheet();renderAdmin()});
+  const foot=[];
+  if(!isNew){foot.push(tBtn("사이트에서 보기","ghost",()=>window.open(interviewPath(v),"_blank")));
+    if(SBM())foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${v.title}」 인터뷰를 삭제할까요?`,"되돌릴 수 없어요.","삭제하기",()=>dbDo(()=>ARTTAN_DB.from("interviews").delete().eq("id",v.dbId),"삭제했어요"))))}
+  foot.push(save);openSheet(isNew?"인터뷰 쓰기":"인터뷰 수정",f,foot)}
 function adBooks(m){adHead(m,"도록",`${BOOKS.length}권`,["도록 추가",()=>bookSheet()]);const c=card(m);
   if(!BOOKS.length)c.append(el(`<p class="t-empty">등록된 책이 없어요. 오른쪽 위 '도록 추가'로 넣어 주세요.</p>`));
   const L=BOOKS.slice().sort((x,y)=>(byId[x.artist]?.name||"").localeCompare(byId[y.artist]?.name||"","ko")||(y.year||0)-(x.year||0));
@@ -667,34 +737,17 @@ function reviewSheet(r){
   exSel.onchange=()=>drawWorks(false);drawWorks(true);
   /* 영상: 한 줄에 하나 "제목 | 주소" (제목은 빼도 돼요) */
   const vids=inp("rVideos","textarea",(r?.videos||[]).map(x=>x.title?`${x.title} | ${x.url}`:x.url).join("\n"),"예: 전시 전경 | https://youtu.be/…");vids.rows=3;
-  /* 작가 인터뷰 (이 전시에서 나눈 이야기) — 비워 두면 리뷰에 칸이 안 보여요 */
-  const ivWho=document.createElement("select");ivWho.id="rIvWho";
-  const drawWho=()=>{const e=EXHIBITIONS.find(x=>x.id===exSel.value);const ids=(e?e.artists:[]).filter(id=>byId[id]);const cur=ivWho.value||r?.interview?.artist||"";
-    ivWho.innerHTML=`<option value="">인터뷰 없음</option>`+ids.map(id=>`<option value="${id}">${esc(byId[id].name)}</option>`).join("");ivWho.value=ids.includes(cur)?cur:""};
-  exSel.addEventListener("change",drawWho);drawWho();
-  const ivLead=inp("rIvLead","textarea",r?.interview?.lead||"","인터뷰 소개 한두 줄 (선택)");ivLead.rows=2;
-  const ivQa=inp("rIvQa","textarea",(r?.interview?.qa||[]).map(([q,a])=>`Q. ${q}\nA. ${a}`).join("\n\n"),"Q. 질문\nA. 답\n\nQ. 다음 질문\nA. 답");ivQa.rows=8;
-  const ivVid=inp("rIvVid","url",r?.interview?.video||"","인터뷰 영상 주소 (선택, 유튜브·비메오)");
-  const parseQa=t=>{const out=[];let cur=null,mode=null;
-    String(t).split("\n").forEach(line=>{const m=/^\s*([QqAa])\s*[.:)]\s*(.*)$/.exec(line);
-      if(m&&/q/i.test(m[1])){cur=[m[2].trim(),""];out.push(cur);mode="q"}
-      else if(m&&/a/i.test(m[1])&&cur){cur[1]=m[2].trim();mode="a"}
-      else if(cur&&line.trim()){if(mode==="a")cur[1]+=(cur[1]?"\n":"")+line.trim();else cur[0]+=" "+line.trim()}});
-    return out.filter(([q,a])=>q&&a)};
   let hidden=!!r?.hidden;const sw=switchEl(!hidden,v=>{hidden=!v},"사이트에 공개");
   f.append(fieldL("전시",exSel),fieldL("제목",title),two,fieldL("리뷰",body),fieldL("현장 사진",phFile,"장수·크기·비율에 제한이 없어요. 세로·가로·파노라마 모두 원래 모양대로 보여요. 첫 번째 사진이 대표 사진이에요."),phBox,ok,
     fieldD("전시에 걸린 작품",wkWrap,"고른 작품이 리뷰 페이지에 나오고 작품 페이지로 이어져요."),
     fieldL("영상",vids,"유튜브·비메오 주소를 한 줄에 하나씩. 비워 두면 리뷰에 영상 칸이 안 보여요."),
-    fieldL("작가 인터뷰",ivWho,"이 전시에서 나눈 인터뷰가 있으면 작가를 고르고 질문·답을 적어 주세요. 비워 두면 칸이 안 보여요."),fieldL("인터뷰 소개",ivLead),fieldL("질문과 답",ivQa,"Q. 로 질문, A. 로 답을 시작해요. 질문마다 빈 줄로 나눠요."),fieldL("인터뷰 영상",ivVid),
+    el(`<p class="t-desc">이 전시에서 나눈 <b>작가 인터뷰</b>는 '인터뷰' 메뉴에서 쓰고 '연결된 전시'로 이 전시를 고르면 리뷰에 함께 나와요.</p>`),
     fieldD("사이트에 공개",sw));
   const save=tBtn(isNew?"올리기":"저장하기","primary",async()=>{
     const v={exhibition:exSel.value,title:title.value.trim(),date:date.value||"",author:author.value.trim(),body:body.value.trim(),hidden,
       works:wk?wk.value().map(k=>{const [a,i]=k.split("|");return [a,+i]}):[],
       videos:vids.value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const k=l.lastIndexOf("|");return k>0?{title:l.slice(0,k).trim(),url:l.slice(k+1).trim()}:{title:"",url:l}}).filter(x=>/^https?:\/\//.test(x.url)),
-      interview:null};
-    const qa=parseQa(ivQa.value);
-    if(ivWho.value&&qa.length)v.interview={artist:ivWho.value,lead:ivLead.value.trim(),qa,video:/^https?:\/\//.test(ivVid.value.trim())?ivVid.value.trim():""};
-    if(ivWho.value&&!qa.length&&ivQa.value.trim()){toast("질문과 답을 'Q.' 'A.' 로 시작해 적어 주세요");ivQa.focus();return}
+      interview:r?.interview||null};
     if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
     if(!v.body&&!photos.length){toast("리뷰 글이나 현장 사진을 넣어 주세요");return}
     if(photos.some(p=>p.data)&&!$("#rOk").checked){toast("사진 사용 허락을 확인해 주세요");return}

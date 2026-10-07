@@ -1273,6 +1273,14 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .faq-list summary{grid-template-columns:auto 1fr!important}
 .news-it .nt.k-q{background:var(--accent);color:#fff;min-width:28px;text-align:center}
 .faq-list details p{margin-left:46px}
+/* 작가 인터뷰 */
+.iv-card .rv-img{position:relative}
+.iv-play{position:absolute;left:14px;bottom:14px;width:46px;height:46px;border-radius:50%;background:rgba(20,17,43,.75);color:#fff;display:grid;place-items:center}
+.iv-play svg{width:18px;height:18px}
+.iv-parts{display:flex;gap:6px}.iv-parts i{font-style:normal;font-size:12px;font-weight:700;color:#6D28D9;background:#EDE4FF;border-radius:999px;padding:2px 9px}
+.iv-lead{font-size:19px;line-height:1.7;max-width:760px;margin:28px 0 0;word-break:keep-all;color:var(--ink)}
+.iv-qa{max-width:820px;gap:22px}.iv-qa dt{font-size:16px}.iv-qa dd{font-size:16px;line-height:1.8;margin:6px 0 0}
+.gs-video video{position:absolute;inset:0;width:100%;height:100%;background:#000}
 /* 전시리뷰 */
 .rv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px 20px}
 .rv-card{display:flex;flex-direction:column;gap:6px;color:inherit;text-decoration:none}
@@ -1384,6 +1392,9 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .svc-sub{font-size:14px;color:#D9D0F5}
 .svc-cta{margin-top:8px;border:0;border-radius:999px;background:#fff;color:#2A1B4D;font-weight:800;font-size:14px;padding:11px 18px;cursor:pointer}
 .svc-cta:hover{background:#EDE4FF}
+.svc-acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:8px}.svc-acts .svc-cta{margin-top:0}
+.svc-tel{color:#fff;font-weight:800;font-size:15px;text-decoration:none;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:10px 16px;white-space:nowrap}
+.svc-tel:hover{background:rgba(255,255,255,.12)}
 .svc-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;position:relative}
 .svc-item{width:100%;height:100%;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.07);color:#fff;padding:16px 14px;cursor:pointer;transition:background .2s,transform .2s}
 .svc-item:hover{background:rgba(255,255,255,.14);transform:translateY(-2px)}
@@ -1404,6 +1415,10 @@ img,canvas{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none;-web
 .copy-note>b:first-child{display:block;font-size:14px;margin-bottom:4px}
 .copy-note p{margin:4px 0}.copy-note ul{margin:6px 0;padding-left:18px}
 body.is-site .copy-note{margin-top:24px}
+.biz{font-style:normal;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin:20px 0 0;padding:18px 2px 0;border-top:1px solid var(--line);font-size:12px;line-height:1.7;color:var(--muted)}
+.biz b{color:var(--ink);font-size:13px;margin-right:4px}.biz a{color:inherit}
+.biz small{flex-basis:100%;font-size:11px;opacity:.85}
+body.is-site .biz{margin-bottom:28px}
 /* 로봇 막기용 숨은 칸 */
 .hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
 /* 작가 등록: 검색 안내 */
@@ -1480,7 +1495,7 @@ body.is-site .copy-note{margin-top:24px}
       <span class="svc-eb">arttan 작가 서비스</span>
       <b>작가의 기록, arttan이 만들어 드려요</b>
       <span class="svc-sub">작품 사진부터 영상, 도록, 전시 기획까지 한 번에 맡겨 주세요.</span>
-      <button type="button" class="svc-cta" id="svcBtn">촬영·제작 문의하기 →</button>
+      <div class="svc-acts"><button type="button" class="svc-cta" id="svcBtn">촬영·제작 문의하기 →</button><a class="svc-tel" href="tel:02-532-5558" aria-label="전화 문의 02-532-5558">☎ 02-532-5558</a></div>
     </div>
     <ul class="svc-list"><li><button type="button" class="svc-item" data-svc="작품 사진 촬영"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><b>작품 사진 촬영</b><span>도록·아카이브용 고해상도 촬영</span></button></li><li><button type="button" class="svc-item" data-svc="전시회 촬영"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1"/><path d="M7 17l-2 3M17 17l2 3M8 9h8M8 13h5"/></svg><b>전시회 촬영</b><span>설치 전경·오프닝 기록</span></button></li><li><button type="button" class="svc-item" data-svc="영상 촬영 및 제작"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg><b>영상 촬영 및 제작</b><span>작가 인터뷰·작업 과정 영상</span></button></li><li><button type="button" class="svc-item" data-svc="도록 제작"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7"/></svg><b>도록 제작</b><span>기획·디자인·인쇄까지</span></button></li><li><button type="button" class="svc-item" data-svc="전시 기획"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg><b>전시 기획</b><span>공간 섭외부터 홍보까지</span></button></li></ul>
   </aside>
@@ -1577,10 +1592,8 @@ body.is-site .copy-note{margin-top:24px}
 
   <section class="block" id="interview" data-view="interviews">
     <div class="shead"><h2>작가 인터뷰</h2><span class="en">Interview</span></div>
-    <div class="iv">
-      <article class="iv-main" id="ivMain"></article>
-      <div class="iv-list" id="ivList"></div>
-    </div>
+    <p class="bk-intro">작가를 직접 만나 나눈 이야기예요. 영상, 작업실 사진, 대담을 함께 볼 수 있어요.</p>
+    <div class="rv-grid" id="ivMain"></div>
   </section>
 
   <section class="block" id="catalog" data-view="catalogue">
@@ -1641,10 +1654,18 @@ body.is-site .copy-note{margin-top:24px}
     <p>이미지를 쓰고 싶다면 작가 공간의 <b>문의</b>로 먼저 요청해 주세요. arttan이 작가에게 전달해요.</p>
   </aside>
 
+  <!-- 사업자 정보: 모든 페이지 맨 아래 (작가·갤러리 공간 포함) -->
+  <address class="biz" aria-label="사업자 정보">
+    <b>arttan 아트탄</b>
+    <span>상호 그레이프바인</span><span>대표 오준성</span><span>사업자등록번호 877-21-01573</span>
+    <span>주소 서울특별시 강남구 봉은사로34길 7, 6층 6127호(역삼동)</span><span>전화 <a href="tel:02-532-5558">02-532-5558</a></span>
+    <small>© 2026 그레이프바인. 작품 이미지의 저작권은 각 작가에게 있어요.</small>
+  </address>
+
   <footer>
     <span>arttan · 아트탄 灘</span>
     <span>www.arttan.co.kr</span>
-    <span>문의 contact@example.com</span>
+    <span>문의 <a href="tel:02-532-5558">02-532-5558</a></span>
     <a href="/admin" rel="nofollow">관리자</a>
   </footer>
 </main>
@@ -1686,7 +1707,7 @@ body.is-site .copy-note{margin-top:24px}
 <dialog id="svcDlg" class="join" aria-labelledby="svcTitle">
   <form id="svcForm" novalidate>
     <div class="join-head"><span class="free-tag">문의</span><h2 id="svcTitle">촬영·제작 문의</h2><button class="x" type="button" data-close aria-label="닫기">×</button></div>
-    <p class="join-lead">필요한 서비스를 골라 남겨 주세요. arttan이 확인한 뒤 일정과 견적을 안내해 드려요.</p>
+    <p class="join-lead">필요한 서비스를 골라 남겨 주세요. arttan이 확인한 뒤 일정과 견적을 안내해 드려요. 전화 문의 <a href="tel:02-532-5558">02-532-5558</a></p>
     <div class="svc-chks" role="group" aria-label="필요한 서비스"><label class="svc-chk"><input type="checkbox" name="svc" value="작품 사진 촬영"><span>작품 사진 촬영</span></label><label class="svc-chk"><input type="checkbox" name="svc" value="전시회 촬영"><span>전시회 촬영</span></label><label class="svc-chk"><input type="checkbox" name="svc" value="영상 촬영 및 제작"><span>영상 촬영 및 제작</span></label><label class="svc-chk"><input type="checkbox" name="svc" value="도록 제작"><span>도록 제작</span></label><label class="svc-chk"><input type="checkbox" name="svc" value="전시 기획"><span>전시 기획</span></label></div>
     <div class="join-grid">
       <label>이름<input id="svName" required autocomplete="name"></label>
@@ -1726,16 +1747,16 @@ body.is-site .copy-note{margin-top:24px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=39"></script>
+<script src="core.js?v=40"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=39"></script>
-<script src="artists/jmh/artist.js?v=39"></script>
-<script src="artists/lmg/artist.js?v=39"></script>
-<script src="artists/lhw/artist.js?v=39"></script>
+<script src="artists/eloi/artist.js?v=40"></script>
+<script src="artists/jmh/artist.js?v=40"></script>
+<script src="artists/lmg/artist.js?v=40"></script>
+<script src="artists/lhw/artist.js?v=40"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=39"></script>
-<script src="data.js?v=39"></script>
+<script src="config.js?v=40"></script>
+<script src="data.js?v=40"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1861,23 +1882,46 @@ function openPortfolioModal(id){
 
 /* ---------- interview ---------- */
 let curIv=0,ivOpen=false;
-function renderInterview(i){
-  curIv=i;const v=INTERVIEWS[i],a=v&&byId[v.artist];const m=$("#ivMain");m.innerHTML="";
-  if(!v||!a){m.innerHTML=`<p class="empty">아직 올라온 인터뷰가 없어요. 작가를 만나 촬영하면 이 자리에 영상과 대담이 올라와요.</p>`;const lst=$("#ivList");if(lst)lst.innerHTML="";return}
-  const l=document.createElement("div");l.append(artCanvas(a,"iv",480,600,`${a.name} 작업 이미지`));
-  const r=document.createElement("div");
-  const qa=ivOpen?v.qa:v.qa.slice(0,1);
-  r.innerHTML=`<div class="eyebrow">Interview · ${esc(v.date)}</div><h3>${esc(v.title)}</h3>
-   <p class="lead">${esc(a.name)} · ${esc(a.tier)} · ${esc(a.genre)}<br>${esc(v.lead)}</p>
-   <dl class="qa">${qa.map(([q,ans])=>`<div><dt>${esc(q)}</dt><dd>${esc(ans)}</dd></div>`).join("")}</dl>`;
-  if(v.qa.length>1){const b=document.createElement("button");b.type="button";b.className="linkbtn";b.style.marginTop="16px";b.textContent=ivOpen?"접기":`전문 읽기 (${v.qa.length}문항)`;b.onclick=()=>{ivOpen=!ivOpen;renderInterview(curIv)};r.append(b)}
-  m.append(l,r);
-  const list=$("#ivList");list.innerHTML="";
-  INTERVIEWS.forEach((x,j)=>{if(j===i)return;const xa=byId[x.artist];const b=document.createElement("button");b.type="button";b.className="iv-item";
-    const t=document.createElement("div");t.append(artCanvas(xa,"iv",176,220,`${xa.name} 작업 이미지`));
-    b.append(t);b.insertAdjacentHTML("beforeend",`<div><div class="sub">${esc(x.date)} · ${esc(xa.name)} · ${esc(xa.genre)}</div><h4>${esc(x.title)}</h4><div class="sub">${esc(x.lead.slice(0,44))}…</div></div>`);
-    b.onclick=()=>{ivOpen=false;renderInterview(j)};list.append(b)});
-  const more=document.createElement("button");more.type="button";more.className="linkbtn";more.style.marginTop="16px";more.style.alignSelf="flex-start";more.textContent="인터뷰 전체 목록";more.onclick=()=>toast(`시안에는 인터뷰 ${INTERVIEWS.length}편만 있어요`);list.append(more);
+/* 인터뷰 카드: 대표 이미지 + 들어 있는 것(영상·사진·글) 표시 */
+function ivCard(v){const a=byId[v.artist]||{},p=ivParts(v),e=v.exhibition&&EXHIBITIONS.find(x=>x.id===v.exhibition);
+  const l=document.createElement("a");l.className="rv-card iv-card";l.href=interviewPath(v);
+  const im=document.createElement("div");im.className="rv-img";const cs=ivCoverSrc(v,true);
+  if(cs){const i=document.createElement("img");i.src=cs;i.alt="";i.loading="lazy";im.append(i)}else if(a.id)im.append(artCanvas(a,"c0",480,320,""));
+  if(p.video)im.insertAdjacentHTML("beforeend",`<span class="iv-play" aria-hidden="true">${PLAYI}</span>`);
+  l.append(im);
+  l.insertAdjacentHTML("beforeend",`<span class="rv-eb">${esc(a.name||"")}${e?` · 「${esc(e.title)}」`:""}</span><b>${esc(v.title)}</b><span class="rv-m">${esc(v.date||"")}</span><span class="iv-parts">${[p.video&&"영상",p.photos&&"사진",p.text&&"글"].filter(Boolean).map(x=>`<i>${x}</i>`).join("")}</span>`);
+  return l}
+function renderInterview(){const m=$("#ivMain");m.innerHTML="";
+  const L=INTERVIEWS.filter(v=>byId[v.artist]&&!byId[v.artist].hidden).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  if(!L.length){m.innerHTML=`<p class="empty">아직 올라온 인터뷰가 없어요.</p>`;return}
+  L.forEach(v=>m.append(ivCard(v)))}
+/* 인터뷰 한 편의 페이지: /interview/<id> — 영상·소개·본문·문답·사진·연결 전시 중 있는 것만 */
+function renderInterviewPage(id){
+  const v=INTERVIEWS.find(x=>x.id===id),a=byId[v.artist],e=v.exhibition&&EXHIBITIONS.find(x=>x.id===v.exhibition),root=$("#artistSite");siteId=null;root.innerHTML="";
+  const hero=document.createElement("section");hero.className="as-hero rv-hero";const cs=ivCoverSrc(v);
+  if(cs){const i=document.createElement("img");i.src=cs;i.alt="";i.className="g-photo";hero.append(i)}else hero.append(artCanvas(a,"c0",1600,1000,a.name));
+  hero.insertAdjacentHTML("beforeend",`<div class="as-hero-shade"></div><div class="as-hero-in"><span class="as-eb">작가 인터뷰 · ${esc(a.name)}</span><h1>${esc(v.title)}</h1>
+    <p class="as-meta">${[a.name+` · ${a.tier} · ${a.genre}`,v.date,e?`「${e.title}」`:""].filter(Boolean).map(esc).join(" · ")}</p></div>`);
+  root.append(hero);
+  const sp=document.createElement("section");sp.className="bkp rv-page";root.append(sp);
+  sp.insertAdjacentHTML("beforeend",`<nav class="bkp-bc" aria-label="위치"><a href="/#interviews">작가 인터뷰</a> › <a href="${artistPath(a.id)}">${esc(a.name)}</a></nav>`);
+  const sec=(t,html,sid)=>{const x=document.createElement("div");x.className="bkp-sec";if(sid)x.id=sid;x.innerHTML=`<h2>${t}</h2>`;if(html)x.insertAdjacentHTML("beforeend",html);sp.append(x);return x};
+  if(v.lead)sp.insertAdjacentHTML("beforeend",`<p class="iv-lead">${esc(v.lead)}</p>`);
+  if(ivParts(v).video)sec("영상",`<div class="rv-videos"><figure>${videoHtml(v.video,v.title)}${v.video.title?`<figcaption>${esc(v.video.title)}</figcaption>`:""}</figure></div>`);
+  if(v.body)sec("이야기",`<div class="rv-body">${String(v.body).split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join("")}</div>`);
+  if((v.qa||[]).length)sec("대담",`<dl class="qa iv-qa">${v.qa.map(([q,ans])=>`<div><dt>${esc(q)}</dt><dd>${esc(ans).replace(/\n/g,"<br>")}</dd></div>`).join("")}</dl>`);
+  if((v.photos||[]).length){const x=sec("사진");const g=document.createElement("div");g.className="rv-photos";
+    const view={title:v.title,spreads:v.photos.map(p=>p.src),captions:v.photos.map(p=>p.caption||""),full:true};
+    v.photos.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",`${p.caption||"사진"} 크게 보기`);
+      b.innerHTML=`<img src="${optImg(p.src,true)}" alt="${esc(p.caption||"")}" loading="lazy">${p.caption?`<span>${esc(p.caption)}</span>`:""}`;b.onclick=()=>openSpreads(view,i);g.append(b)});x.append(g)}
+  if(e){const x=sec("연결된 전시");const g=document.createElement("div");g.className="exgrid";g.append(exListCard({...e,st:status(e)}));x.append(g);
+    reviewsOfEx(e.id).forEach(r=>x.insertAdjacentHTML("beforeend",`<p><a class="btn ghost" href="${reviewPath(r)}">이 전시의 리뷰·현장 사진 보기 →</a></p>`))}
+  {const x=sec("작가");const g=document.createElement("div");g.className="as-rel";const l=document.createElement("a");l.className="as-rel-c";l.href=artistPath(a.id);
+    const th=document.createElement("div");th.className="th";th.append(artCanvas(a,"c0",320,400,a.name));l.append(th);l.insertAdjacentHTML("beforeend",`<b>${esc(a.name)}</b><span>${esc(a.tier.replace("작가",""))} · ${esc(a.genre)}</span><em>작가 공간 보기 ›</em>`);g.append(l);x.append(g)}
+  const more=INTERVIEWS.filter(x=>x.id!==v.id&&byId[x.artist]&&!byId[x.artist].hidden).slice(0,6);
+  if(more.length){const x=sec("다른 인터뷰");const g=document.createElement("div");g.className="rv-grid";more.forEach(m=>g.append(ivCard(m)));x.append(g)}
+  if(ivParts(v).photos||ivParts(v).video)sp.insertAdjacentHTML("beforeend",`<p class="bkp-note">인터뷰 사진과 영상은 arttan이 직접 촬영했거나 사용을 허락받은 자료예요.</p>`);
+  document.title=`${v.title} | ${a.name} 작가 인터뷰 | arttan`;
 }
 
 /* 전시를 누르면: 전시리뷰가 있으면 리뷰 페이지로, 없으면 전시 정보 창 */
@@ -1925,7 +1969,10 @@ function renderReviewPage(id){
   const V=(r.videos||[]).filter(x=>x&&x.url);
   if(V.length){const x=sec("영상");const g=document.createElement("div");g.className="rv-videos";
     V.forEach(vd=>{const emb=videoEmbed(vd.url);g.insertAdjacentHTML("beforeend",emb?`<figure><div class="gs-video"><iframe src="${emb}" title="${esc(vd.title||r.title)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>${vd.title?`<figcaption>${esc(vd.title)}</figcaption>`:""}</figure>`:`<p><a class="btn ghost" href="${esc(vd.url)}" target="_blank" rel="noopener">${esc(vd.title||"영상 보기")} ↗</a></p>`)});x.append(g)}
-  /* 작가 인터뷰: 이 전시에서 나눈 이야기 (있을 때만) */
+  /* 이 전시에서 나눈 작가 인터뷰 (인터뷰 메뉴에서 이 전시를 연결한 것) */
+  const LIV=INTERVIEWS.filter(x=>x.exhibition&&x.exhibition===r.exhibition&&byId[x.artist]&&!byId[x.artist].hidden);
+  if(LIV.length){const x=sec("작가 인터뷰");x.id="rv-iv";const g=document.createElement("div");g.className="rv-grid";LIV.forEach(m=>g.append(ivCard(m)));x.append(g)}
+  /* (예전 방식) 리뷰 안에 직접 적은 인터뷰 */
   const IV=r.interview;
   if(IV&&(IV.qa||[]).length){const ia=byId[IV.artist];const x=sec(`작가 인터뷰${ia?` <small>${esc(ia.name)}</small>`:""}`);x.id="rv-iv";
     const emb=videoEmbed(IV.video);
@@ -2313,9 +2360,9 @@ function renderBento(){
   const W=$("#bxSoon");W.innerHTML=`<span class="k">기록된 작품</span><span class="big">${tot.toLocaleString()}점</span><span class="s">전시 이력 ${exn}건 · 도록·저서 ${bk}권</span><span class="stack"></span>`;
   P.slice(0,3).forEach(a=>W.querySelector(".stack").append(artCanvas(a,"w0",160,200,"")));W.onclick=()=>goArtists();
   const v0=INTERVIEWS[0],I=$("#bxIv");
-  if(v0){const a=byId[v0.artist],vd=videoOf(a);I.innerHTML="";I.append(artCanvas(a,"film",1200,500,""));
+  if(v0){const a=byId[v0.artist],vd=v0.video;I.innerHTML="";const cs=ivCoverSrc(v0);if(cs){const im=document.createElement("img");im.src=cs;im.alt="";im.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover";I.append(im)}else I.append(artCanvas(a,"film",1200,500,""));
     I.insertAdjacentHTML("beforeend",`<span class="shade"></span><span class="play" aria-hidden="true">${PLAYI}</span><span class="in"><span class="chip-w">작가 인터뷰${vd?` · ${esc(vd.len)}`:""}</span><span class="t">${esc(v0.title)}</span><span class="s">${esc(a.name)} · ${esc(a.tier)} · ${esc(a.genre)}</span></span>`);
-    I.onclick=()=>{ivOpen=false;renderInterview(0);location.hash="interviews"}}
+    I.onclick=()=>{location.href=interviewPath(v0)}}
   const G=$("#bxGenre");G.innerHTML=`<span class="k">장르로 작가 찾기</span><div class="gl"></div>`;
   GENRES.forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g;b.onclick=()=>goArtists(null,g);G.querySelector(".gl").append(b)});
   const X=$("#bxWeek");X.innerHTML=`<span class="k">가나다 색인</span><div class="chomini"></div>`;
@@ -2377,7 +2424,7 @@ function renderPicks(){
   const bk=BOOKS[0];
   if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden)card(bookCover(bk,true),"추천 도록",`『${bk.title}』`,`${esc(byId[bk.artist].name)} · ${esc(bk.kind||"도록")}${bk.year?` · ${bk.year}`:""}`,()=>{location.href=bookPath(bk)});
   const v=INTERVIEWS[0];
-  if(v&&byId[v.artist]&&!byId[v.artist].hidden)card(artCanvas(byId[v.artist],"iv",360,480,""),"추천 인터뷰",v.title,`${esc(byId[v.artist].name)}<br>${esc(v.date)}`,()=>{ivOpen=false;renderInterview(0);location.hash="interviews"});
+  if(v&&byId[v.artist]&&!byId[v.artist].hidden)card((()=>{const cs=ivCoverSrc(v,true);if(cs){const im=document.createElement("img");im.src=cs;im.alt="";im.style.cssText="width:100%;height:100%;object-fit:cover";return im}return artCanvas(byId[v.artist],"iv",360,480,"")})(),"추천 인터뷰",v.title,`${esc(byId[v.artist].name)}<br>${esc(v.date)}`,()=>{location.href=interviewPath(v)});
   const live=EXHIBITIONS.map(e=>({...e,st:status(e)})).filter(e=>e.st.k==="live").sort((a,b)=>parse(a.end)-parse(b.end))[0];
   if(live){const c=railCard(live);c.querySelector(".when").textContent="지금 볼 만한 전시";pk.append(c)}
 }
@@ -2401,10 +2448,9 @@ function renderHome(){
   renderPicks();renderWeek();renderArchTop();renderArch();renderIndex();renderDecades();
   /* 작가 인터뷰 */
   const hi=$("#homeIv");hi.innerHTML="";
-  INTERVIEWS.slice(0,3).forEach((v,k)=>{const a=byId[v.artist],vd=videoOf(a);const b=document.createElement("button");b.type="button";b.className="ivcard";
-    const vf=document.createElement("div");vf.className="vf";vf.append(artCanvas(a,"film",960,540,""));vf.insertAdjacentHTML("beforeend",`<span class="play" aria-hidden="true">${PLAYI}</span>${vd?`<span class="len">${esc(vd.len)}</span>`:""}`);b.append(vf);
-    const row=document.createElement("div");row.className="row";row.append(artCanvas(a,"iv",88,88,""));row.insertAdjacentHTML("beforeend",`<div><b>${esc(v.title)}</b><span>${esc(a.name)} · ${esc(a.genre)} · ${esc(v.date)}</span></div>`);b.append(row);
-    b.onclick=()=>{ivOpen=false;renderInterview(k);location.hash="interviews"};hi.append(b)});
+  const HI=INTERVIEWS.filter(v=>byId[v.artist]&&!byId[v.artist].hidden).slice(0,3);
+  hi.className="rv-grid";HI.forEach(v=>hi.append(ivCard(v)));
+  hi.closest(".hb").hidden=!HI.length;   /* 인터뷰가 없으면 홈에서 칸을 숨겨요 */
   /* 도록 아카이브 */
   const hb=$("#homeBooks");hb.innerHTML="";
   BOOKS.forEach(bk=>{const a=byId[bk.artist];if(!a||a.hidden)return;hb.append(bookCard(bk))});
@@ -2490,8 +2536,10 @@ function renderArtistSite(id){
   /* 인터뷰 */
   /* 인터뷰: 작가 인터뷰 + 전시리뷰에 실린 전시별 인터뷰. 내용이 있을 때만 칸을 만들어요 */
   const exIvs=REVIEWS.filter(x=>!x.hidden&&x.interview&&x.interview.artist===id&&(x.interview.qa||[]).length);
-  if(v||iv||exIvs.length){const ivs=sec("as-iv","Interview","인터뷰");
-  if(v||iv){ivs.insertAdjacentHTML("beforeend",`<div class="as-iv"><div class="video"><button class="play" type="button" aria-label="인터뷰 영상 재생"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg></button><div class="vt"><b>${esc(v?v.title:iv.title)}</b>${v?`<span>${esc(v.len)}</span>`:""}</div></div>
+  const myIvs=INTERVIEWS.filter(x=>x.artist===id);
+  if(v||myIvs.length||exIvs.length){const ivs=sec("as-iv","Interview","인터뷰");
+  if(myIvs.length){const g=document.createElement("div");g.className="rv-grid";myIvs.forEach(x=>g.append(ivCard(x)));ivs.append(g)}
+  if(v&&!myIvs.length){ivs.insertAdjacentHTML("beforeend",`<div class="as-iv"><div class="video"><button class="play" type="button" aria-label="인터뷰 영상 재생"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg></button><div class="vt"><b>${esc(v?v.title:iv.title)}</b>${v?`<span>${esc(v.len)}</span>`:""}</div></div>
       <div class="as-qa">${iv?`<p class="as-lead">${esc(iv.lead)}</p><dl class="qa">${iv.qa.map(([q,ans])=>`<div><dt>${esc(q)}</dt><dd>${esc(ans)}</dd></div>`).join("")}</dl>`:`<p class="as-lead">작업 과정과 작업실을 보여주는 영상이에요.</p>`}</div></div>`);
     ivs.querySelector(".video").prepend(artCanvas(a,"film",1280,720,""));ivs.querySelector(".play").onclick=()=>{if(v&&v.url)window.open(v.url,"_blank","noopener");else toast("영상 주소가 아직 등록되지 않았어요")}}
   if(exIvs.length){const h=document.createElement("h3");h.className="as-sub";h.textContent="전시 인터뷰";ivs.append(h);const ul=document.createElement("ul");ul.className="as-exiv";
@@ -2697,6 +2745,7 @@ function pathPage(){const p=location.pathname.replace(/\/+$/,"");let m;
   if((m=/^\/exhibition\/([^/]+)$/.exec(p)))return{t:"exhibition",id:decodeURIComponent(m[1])};
   if((m=/^\/book\/([^/]+)$/.exec(p)))return{t:"book",id:decodeURIComponent(m[1])};
   if((m=/^\/review\/([^/]+)$/.exec(p)))return{t:"review",id:decodeURIComponent(m[1])};
+  if((m=/^\/interview\/([^/]+)$/.exec(p)))return{t:"interview",id:decodeURIComponent(m[1])};
   return null}
 function showSite(draw,navHref){
   document.body.classList.add("is-site");
@@ -2720,6 +2769,8 @@ function route(){
     if(P.t==="gallery"&&galById[P.id]){showSite(()=>renderGallerySite(P.id),"#galleries");return}
     const bk=P.t==="book"&&BOOKS.find(b=>b.id===P.id);
     if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden){showSite(()=>renderBookPage(P.id),"#catalogue");return}
+    const iv=P.t==="interview"&&INTERVIEWS.find(x=>x.id===P.id);
+    if(iv&&byId[iv.artist]&&!byId[iv.artist].hidden){showSite(()=>renderInterviewPage(P.id),"#interviews");return}
     const rv=P.t==="review"&&REVIEWS.find(r=>r.id===P.id&&!r.hidden);
     if(rv&&reviewArtists(rv).some(id=>!byId[id].hidden)){showSite(()=>renderReviewPage(P.id),"#reviews");return}
     const x=P.t==="exhibition"&&EXHIBITIONS.find(e=>e.id===P.id);
@@ -2750,7 +2801,7 @@ function renderFootDir(){const box=$("#footDir");if(!box)return;
 /* 서버가 검색엔진용으로 미리 넣은 본문은, 화면을 그리면 걷어내요 */
 document.getElementById("ssr")?.remove();document.getElementById("ssrCss")?.remove();
 renderFootDir();
-renderPortfolio();renderNews();renderReviews();renderInterview(curIv);renderBooks();renderGalleries();renderCalendar();renderStatFilter();renderSchedule();renderHome();buildMega();hxBuild();route();
+renderPortfolio();renderNews();renderReviews();renderInterview();renderBooks();renderGalleries();renderCalendar();renderStatFilter();renderSchedule();renderHome();buildMega();hxBuild();route();
 /* redraw covers once web fonts arrive so titles use Hahmlet */
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderBooks();renderGalleries();renderCalendar();renderHome();hxBuild()});
 

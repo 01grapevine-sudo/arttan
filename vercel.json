@@ -68,6 +68,10 @@
       "destination": "/api/page?t=review&id=:id"
     },
     {
+      "source": "/interview/:id",
+      "destination": "/api/page?t=interview&id=:id"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/page?t=sitemap"
     },
@@ -101,6 +105,15 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/artists/(.*)\\.(mp4|webm)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
         }
       ]
     }

@@ -38,7 +38,7 @@ D.ARTISTS.forEach((a, i) => {
       [q(a.id), k, q(w[0]), q(w[1]), q(w[2]), q(w[3]), q(w[4]), q(img)].join(",") + ");");
   });
 });
-D.INTERVIEWS.forEach(v => out.push(`insert into public.interviews (artist_id,title,date,lead,qa) values (${[q(v.artist), q(v.title), q(v.date), q(v.lead), js(v.qa || [])].join(",")});`));
+D.INTERVIEWS.forEach(v => out.push(`insert into public.interviews (artist_id,slug,title,date,lead,qa,body,photos,video,exhibition_id) values (${[q(v.artist), q(v.id), q(v.title), q(v.date), q(v.lead), js(v.qa || []), q(v.body), js(v.photos || []), js(v.video || null), q(v.exhibition)].join(",")});`));
 Object.entries(D.VIDEOS).forEach(([id, v]) => out.push(`insert into public.videos (artist_id,title,len,date,place,url) values (${[q(id), q(v.title), q(v.len), q(v.date), q(v.place), q(v.url)].join(",")});`));
 const intArr = a => a && a.length ? `array[${a.map(Number).join(",")}]::int[]` : "'{}'::int[]";
 D.GALLERIES.forEach((g, i) => out.push(`insert into public.galleries (id,name,area,addr,hours,tel,site,intro,photo_path,video_url,crawl_url,sort) values (${[q(g.id), q(g.name), q(g.area), q(g.addr), q(g.hours), q(g.tel), q(g.site), q(g.intro), q(g.photo), q(g.video), q(g.crawlUrl), (i + 1) * 10].join(",")});`));

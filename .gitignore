@@ -9,3 +9,4 @@ artists/*/*/*.webp
 초기자료 /
 galleries/*.webp
 artists/*/reviews/*.webp
+artists/*/interviews/*.webp

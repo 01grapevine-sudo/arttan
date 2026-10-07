@@ -299,3 +299,9 @@ drop policy if exists "reviews: admin write" on public.reviews;
 create policy "reviews: admin write" on public.reviews for all using (public.is_admin()) with check (public.is_admin());
 alter table public.reviews add column if not exists videos jsonb not null default '[]';   -- [{url, title}] 유튜브·비메오
 alter table public.reviews add column if not exists interview jsonb;                     -- {artist, lead, qa:[[질문,답]], video}
+-- 작가 인터뷰: 영상({src|url, poster, title})·사진([{src,caption}])·글(lead·body·qa), 연결 전시 — 넣은 것만 보여요
+alter table public.interviews add column if not exists slug text unique;
+alter table public.interviews add column if not exists body text;
+alter table public.interviews add column if not exists photos jsonb not null default '[]';
+alter table public.interviews add column if not exists video jsonb;
+alter table public.interviews add column if not exists exhibition_id text;

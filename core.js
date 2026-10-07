@@ -15,7 +15,7 @@ function registerArtist(a){
   profile.works=(profile.works||[]).slice();
   ARTISTS.push(profile);byId[profile.id]=profile;
   /* 인터뷰·도록은 항상 이 작가 것으로 묶어요 (다른 작가와 섞이지 않게) */
-  interviews.forEach(v=>INTERVIEWS.push({...v,artist:profile.id}));
+  interviews.forEach((v,k)=>INTERVIEWS.push({...v,id:v.id||`${profile.id}-iv${k+1}`,artist:profile.id}));
   if(video)VIDEOS[profile.id]=video;
   books.forEach((b,k)=>BOOKS.push({...b,id:b.id||`${profile.id}-b${k+1}`,artist:profile.id}));
 }
@@ -90,11 +90,8 @@ const REVIEWS = [
    works:[["eloi",1],["eloi",3],["eloi",2]],
    /* 영상: [{url, title}] — 유튜브·비메오 주소. 없으면 칸이 안 보여요 */
    videos:[],
-   /* 이 전시에서 나눈 작가 인터뷰 — 없으면 칸이 안 보여요 */
-   interview:{artist:"eloi", lead:"[테스트용 샘플 인터뷰] 첫 개인전을 연 엘로이에게 「정원의 오후」를 그리게 된 이야기를 들었어요.",
-     qa:[["왜 '오후의 정원'이었나요?","하루 중 빛이 가장 오래 머무는 시간이 오후라고 생각했어요. 같은 정원도 오후에는 색이 겹쳐 보여서, 그 겹침을 원과 색면으로 옮겨 보고 싶었어요."],
-         ["화면에 원이 많이 등장해요.","원은 해이기도 하고 나무의 그늘이기도 해요. 정확한 모양을 그리기보다 빛이 머문 자리를 표시하는 방식이에요."],
-         ["관람객에게 어떻게 보이길 바라나요?","가까이서는 붓자국과 색의 경계를, 멀리서는 정원 전체의 분위기를 느껴 주셨으면 해요."]]}},
+   /* 이 전시의 작가 인터뷰는 '인터뷰'(작가 파일의 interviews)에 exhibition 으로 연결해요 */
+   },
 ];
 
 /* ---------- generative artwork ---------- */
@@ -245,6 +242,20 @@ const exHeadline=e=>`${exNames(e)} ${e.kind||"전시"} : 「${e.title}」 - ${e.
 const artistHeadline=a=>`${a.name} 작가${a.born?` (${a.born}~)`:""} · ${a.genre} ${a.tier}`;
 /* 사이트에 함께 올린 작품 사진(artists/…/*.jpg)은 배포 때 WebP(1200px·480px)로도 만들어 둬요 */
 const optImg=(src,small)=>/^\/?(artists|galleries)\/[^?]+\.jpe?g$/i.test(src||"")?src.replace(/\.jpe?g$/i,small?"-480.webp":".webp"):src;
+/* ---------- 작가 인터뷰: 영상·사진·글 (넣은 것만 보여요) ---------- */
+const interviewPath=v=>`/interview/${encodeURIComponent(v.id)}`;
+const ivIndexable=v=>!!v&&artistIndexable(byId[v.artist]);
+const ytId=u=>(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/.exec(u||"")||[])[1];
+const ivParts=v=>({video:!!(v.video&&(v.video.src||v.video.url)),photos:(v.photos||[]).length>0,text:!!(v.lead||v.body||(v.qa||[]).length)});
+/* 대표 이미지: 사진 → 영상 첫 화면 → 유튜브 썸네일 순 */
+function ivCoverSrc(v,small){if(v.photos&&v.photos[0])return optImg(v.photos[0].src,small);
+  if(v.video){if(v.video.poster)return optImg(v.video.poster,small);const y=ytId(v.video.url||v.video.src);if(y)return `https://i.ytimg.com/vi/${y}/hqdefault.jpg`}return null}
+/* 영상: 유튜브·비메오는 넣어서 재생, 영상 파일(mp4 등)은 사이트 플레이어로 (다운로드 메뉴는 숨겨요) */
+function videoHtml(vd,title){if(!vd)return "";const src=vd.src||vd.url||"";const emb=videoEmbed(src);
+  if(emb)return `<div class="gs-video"><iframe src="${emb}" title="${esc(title||vd.title||"영상")}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
+  if(/\.(mp4|webm|mov|m4v)(\?|$)/i.test(src))return `<div class="gs-video"><video controls playsinline preload="metadata" controlslist="nodownload" disablepictureinpicture oncontextmenu="return false"${vd.poster?` poster="${esc(optImg(vd.poster))}"`:""}><source src="${esc(src)}" type="video/${/\.webm/i.test(src)?"webm":"mp4"}"></video></div>`;
+  return src?`<p><a class="btn ghost" href="${esc(src)}" target="_blank" rel="noopener">${esc(vd.title||"영상 보기")} ↗</a></p>`:""}
+
 /* ---------- 전시리뷰 ---------- */
 const reviewPath=r=>`/review/${encodeURIComponent(r.id)}`;
 const reviewsOfEx=exId=>REVIEWS.filter(r=>r.exhibition===exId&&!r.hidden);
@@ -295,6 +306,7 @@ function seoPages(){const m={"/":"home"};
   EXHIBITIONS.filter(exIndexable).forEach(e=>m[exPath(e)]=JSON.stringify([e.title,e.kind,e.start,e.end,e.g,e.artists,e.desc]));
   BOOKS.filter(bookIndexable).forEach(b=>m[bookPath(b)]=JSON.stringify(b));
   REVIEWS.filter(reviewIndexable).forEach(r=>m[reviewPath(r)]=JSON.stringify(r));
+  INTERVIEWS.filter(ivIndexable).forEach(v=>m[interviewPath(v)]=JSON.stringify(v));
   GALLERIES.filter(galIndexable).forEach(g=>m[galPath(g.id)]=JSON.stringify([g,EXHIBITIONS.filter(e=>e.g===g.id&&exIndexable(e)).map(e=>e.id)]));
   return m}
 const exOfGal=gid=>EXHIBITIONS.filter(e=>e.g===gid).map(e=>({...e,st:status(e)}));
