@@ -1441,9 +1441,9 @@ body.is-site .biz{margin-bottom:28px}
       <a href="#catalogue">도록</a>
       <a href="#shows">전시</a>
       <a href="#reviews">전시리뷰</a>
-      <a href="#news">소식</a>
       <a href="#galleries">갤러리</a>
       <a href="#exhibitions">전시일정</a>
+      <a href="#news">공지</a>
     </nav>
     <div class="util">
       <button type="button" class="icon-btn" id="searchBtn" aria-label="검색" aria-expanded="false" aria-controls="searchBar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg></button>
@@ -1575,7 +1575,7 @@ body.is-site .biz{margin-bottom:28px}
   </section>
 
   <section class="block" id="news" data-view="news">
-    <div class="shead"><h2>소식</h2><span class="en">News</span></div>
+    <div class="shead"><h2>공지</h2><span class="en">Notice</span></div>
     <div class="news-sw" id="newsSw" role="tablist" aria-label="소식 메뉴"></div>
     <div id="newsMain">
       <p class="bk-intro">arttan 공지, 새로 열리는 전시, 아카이브에 더해진 기록을 한곳에 모았어요.</p>
@@ -1751,16 +1751,16 @@ body.is-site .biz{margin-bottom:28px}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=42"></script>
+<script src="core.js?v=43"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=42"></script>
-<script src="artists/jmh/artist.js?v=42"></script>
-<script src="artists/lmg/artist.js?v=42"></script>
-<script src="artists/lhw/artist.js?v=42"></script>
+<script src="artists/eloi/artist.js?v=43"></script>
+<script src="artists/jmh/artist.js?v=43"></script>
+<script src="artists/lmg/artist.js?v=43"></script>
+<script src="artists/lhw/artist.js?v=43"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=42"></script>
-<script src="data.js?v=42"></script>
+<script src="config.js?v=43"></script>
+<script src="data.js?v=43"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2276,7 +2276,7 @@ $("#hxPause").onclick=e=>{e.stopPropagation();hxPaused=!hxPaused;const b=$("#hxP
 /* 전체 카테고리 · 검색 */
 function goArtists(t=null,g=null){curTier=t;curGenre=g;renderPortfolio();location.hash="artists";window.scrollTo(0,0)}
 function goEx(k){if(k==="cal"){setView("cal");location.hash="exhibitions"}else{curStat=k;renderStatFilter();renderSchedule();setView("list");location.hash="shows"}window.scrollTo(0,0)}
-/* 전체 메뉴: 상단 메뉴와 같은 순서 (작가 · 인터뷰 · 도록 · 전시 · 전시리뷰 · 소식 · 갤러리 · 전시일정) */
+/* 전체 메뉴: 상단 메뉴와 같은 순서 (작가 · 인터뷰 · 도록 · 전시 · 전시리뷰 · 갤러리 · 전시일정 · 공지) */
 function megaGroups(){
   const IV=INTERVIEWS.filter(v=>byId[v.artist]&&!byId[v.artist].hidden).slice(0,3);
   const RV=REVIEWS.filter(r=>!r.hidden&&reviewArtists(r).some(id=>!byId[id].hidden)).slice(0,3);
@@ -2288,8 +2288,8 @@ function megaGroups(){
     ["도록",[["전체 도록",()=>{bookKind=null;renderBooks();go("catalogue")()}],...BOOK_KINDS.map(k=>[k,()=>{bookKind=k;renderBooks();go("catalogue")()}])]],
     ["전시",[["전체 전시",()=>goEx("all")],["진행 중 전시",()=>goEx("live")],["예정 전시",()=>goEx("soon")],["지난 전시",()=>goEx("end")],["전시일정 (캘린더)",()=>goEx("cal")]]],
     ["전시리뷰",[["전체 전시리뷰",go("reviews")],...RV.map(r=>[r.title,()=>{location.href=reviewPath(r)}])]],
-    ["소식",[["arttan 소식",()=>{newsSec="news";renderNews();go("news")()}],["자주하는 질문",()=>{newsSec="faq";renderNews();go("news")()}],["공지사항",()=>{newsSec="news";newsKind="공지";renderNews();go("news")()}]]],
-    ["갤러리",[["전체 갤러리",go("galleries")],...[...new Set(GALLERIES.filter(g=>!g.test).map(g=>g.area).filter(Boolean))].slice(0,6).map(ar=>[`${ar} 갤러리`,()=>{curArea=ar;renderGalleries();go("galleries")()}])]]];
+    ["갤러리",[["전체 갤러리",go("galleries")],...[...new Set(GALLERIES.filter(g=>!g.test).map(g=>g.area).filter(Boolean))].slice(0,6).map(ar=>[`${ar} 갤러리`,()=>{curArea=ar;renderGalleries();go("galleries")()}])]],
+    ["공지",[["arttan 소식",()=>{newsSec="news";newsKind="전체";renderNews();go("news")()}],["공지사항",()=>{newsSec="news";newsKind="공지";renderNews();go("news")()}],["자주하는 질문",()=>{newsSec="faq";renderNews();go("news")()}]]]];
 }
 function buildMega(){const m=$("#megaIn");m.innerHTML="";
   megaGroups().forEach(([h,items,cls])=>{const c=document.createElement("div");c.className="mcol"+(cls?" "+cls:"");c.innerHTML=`<h3>${h}</h3><ul></ul>`;
