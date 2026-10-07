@@ -2,5 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
+# 테스트용 가상 작가(엘로이)·테스트 갤러리 이미지는 검색하지 않아요
+Disallow: /artists/eloi/
+Disallow: /galleries/testgal
 
 Sitemap: https://www.arttan.co.kr/sitemap.xml

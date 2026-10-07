@@ -152,6 +152,24 @@
           "value": "application/manifest+json"
         }
       ]
+    },
+    {
+      "source": "/artists/eloi/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noimageindex"
+        }
+      ]
+    },
+    {
+      "source": "/galleries/testgal(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noimageindex"
+        }
+      ]
     }
   ],
   "crons": [
