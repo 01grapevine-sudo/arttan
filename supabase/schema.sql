@@ -297,3 +297,5 @@ drop policy if exists "reviews: public read" on public.reviews;
 create policy "reviews: public read" on public.reviews for select using (hidden = false or public.is_admin());
 drop policy if exists "reviews: admin write" on public.reviews;
 create policy "reviews: admin write" on public.reviews for all using (public.is_admin()) with check (public.is_admin());
+alter table public.reviews add column if not exists videos jsonb not null default '[]';   -- [{url, title}] 유튜브·비메오
+alter table public.reviews add column if not exists interview jsonb;                     -- {artist, lead, qa:[[질문,답]], video}

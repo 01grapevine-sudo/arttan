@@ -168,16 +168,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=36"></script>
+<script src="core.js?v=39"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=36"></script>
-<script src="artists/jmh/artist.js?v=36"></script>
-<script src="artists/lmg/artist.js?v=36"></script>
-<script src="artists/lhw/artist.js?v=36"></script>
+<script src="artists/eloi/artist.js?v=39"></script>
+<script src="artists/jmh/artist.js?v=39"></script>
+<script src="artists/lmg/artist.js?v=39"></script>
+<script src="artists/lhw/artist.js?v=39"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=36"></script>
-<script src="data.js?v=36"></script>
+<script src="config.js?v=39"></script>
+<script src="data.js?v=39"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -655,7 +655,7 @@ function reviewSheet(r){
     w.querySelector("input").oninput=e=>{p.caption=e.target.value};
     const [up,del]=w.querySelectorAll("button");up.onclick=()=>{if(i>0){[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawPh()}};del.onclick=()=>{photos.splice(i,1);drawPh()};phBox.append(w)})};
   const phFile=inp("rPhotos","file");phFile.accept="image/*";phFile.multiple=true;
-  phFile.onchange=async()=>{for(const fl of [...phFile.files]){if(photos.length>=40){toast("사진은 40장까지 올릴 수 있어요");break}const u=await shrink(fl,1800);if(u)photos.push({data:u,caption:""})}phFile.value="";drawPh()};drawPh();
+  phFile.onchange=async()=>{for(const fl of [...phFile.files]){const u=await shrink(fl,2000);if(u)photos.push({data:u,caption:""})}phFile.value="";drawPh()};drawPh();
   const ok=el(`<label class="t-check"><input type="checkbox" id="rOk"> 현장 사진은 직접 찍었거나 사용 허락을 받았어요 (작품이 나온 사진은 작가 허락 포함)</label>`);
   /* 전시에 걸린 작품: 참여 작가의 작품에서 골라요 */
   const wkWrap=el(`<div></div>`);let wk=null;
@@ -665,12 +665,36 @@ function reviewSheet(r){
     const sel=keep?(r?.works||[]).map(([a,i])=>`${a}|${i}`).filter(k=>opts.includes(k)):[];
     wk=chipsField(opts,sel,opts.length,k=>{const [a,i]=k.split("|");return `${byId[a].name} · ${String(+i+1).padStart(2,"0")} ${byId[a].works[i][0]}`});wkWrap.append(wk)};
   exSel.onchange=()=>drawWorks(false);drawWorks(true);
+  /* 영상: 한 줄에 하나 "제목 | 주소" (제목은 빼도 돼요) */
+  const vids=inp("rVideos","textarea",(r?.videos||[]).map(x=>x.title?`${x.title} | ${x.url}`:x.url).join("\n"),"예: 전시 전경 | https://youtu.be/…");vids.rows=3;
+  /* 작가 인터뷰 (이 전시에서 나눈 이야기) — 비워 두면 리뷰에 칸이 안 보여요 */
+  const ivWho=document.createElement("select");ivWho.id="rIvWho";
+  const drawWho=()=>{const e=EXHIBITIONS.find(x=>x.id===exSel.value);const ids=(e?e.artists:[]).filter(id=>byId[id]);const cur=ivWho.value||r?.interview?.artist||"";
+    ivWho.innerHTML=`<option value="">인터뷰 없음</option>`+ids.map(id=>`<option value="${id}">${esc(byId[id].name)}</option>`).join("");ivWho.value=ids.includes(cur)?cur:""};
+  exSel.addEventListener("change",drawWho);drawWho();
+  const ivLead=inp("rIvLead","textarea",r?.interview?.lead||"","인터뷰 소개 한두 줄 (선택)");ivLead.rows=2;
+  const ivQa=inp("rIvQa","textarea",(r?.interview?.qa||[]).map(([q,a])=>`Q. ${q}\nA. ${a}`).join("\n\n"),"Q. 질문\nA. 답\n\nQ. 다음 질문\nA. 답");ivQa.rows=8;
+  const ivVid=inp("rIvVid","url",r?.interview?.video||"","인터뷰 영상 주소 (선택, 유튜브·비메오)");
+  const parseQa=t=>{const out=[];let cur=null,mode=null;
+    String(t).split("\n").forEach(line=>{const m=/^\s*([QqAa])\s*[.:)]\s*(.*)$/.exec(line);
+      if(m&&/q/i.test(m[1])){cur=[m[2].trim(),""];out.push(cur);mode="q"}
+      else if(m&&/a/i.test(m[1])&&cur){cur[1]=m[2].trim();mode="a"}
+      else if(cur&&line.trim()){if(mode==="a")cur[1]+=(cur[1]?"\n":"")+line.trim();else cur[0]+=" "+line.trim()}});
+    return out.filter(([q,a])=>q&&a)};
   let hidden=!!r?.hidden;const sw=switchEl(!hidden,v=>{hidden=!v},"사이트에 공개");
-  f.append(fieldL("전시",exSel),fieldL("제목",title),two,fieldL("리뷰",body),fieldL("현장 사진",phFile,"여러 장을 한꺼번에 고를 수 있어요. 첫 번째 사진이 대표 사진이에요."),phBox,ok,
-    fieldD("전시에 걸린 작품",wkWrap,"고른 작품이 리뷰 페이지에 나오고 작품 페이지로 이어져요."),fieldD("사이트에 공개",sw));
+  f.append(fieldL("전시",exSel),fieldL("제목",title),two,fieldL("리뷰",body),fieldL("현장 사진",phFile,"장수·크기·비율에 제한이 없어요. 세로·가로·파노라마 모두 원래 모양대로 보여요. 첫 번째 사진이 대표 사진이에요."),phBox,ok,
+    fieldD("전시에 걸린 작품",wkWrap,"고른 작품이 리뷰 페이지에 나오고 작품 페이지로 이어져요."),
+    fieldL("영상",vids,"유튜브·비메오 주소를 한 줄에 하나씩. 비워 두면 리뷰에 영상 칸이 안 보여요."),
+    fieldL("작가 인터뷰",ivWho,"이 전시에서 나눈 인터뷰가 있으면 작가를 고르고 질문·답을 적어 주세요. 비워 두면 칸이 안 보여요."),fieldL("인터뷰 소개",ivLead),fieldL("질문과 답",ivQa,"Q. 로 질문, A. 로 답을 시작해요. 질문마다 빈 줄로 나눠요."),fieldL("인터뷰 영상",ivVid),
+    fieldD("사이트에 공개",sw));
   const save=tBtn(isNew?"올리기":"저장하기","primary",async()=>{
     const v={exhibition:exSel.value,title:title.value.trim(),date:date.value||"",author:author.value.trim(),body:body.value.trim(),hidden,
-      works:wk?wk.value().map(k=>{const [a,i]=k.split("|");return [a,+i]}):[]};
+      works:wk?wk.value().map(k=>{const [a,i]=k.split("|");return [a,+i]}):[],
+      videos:vids.value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const k=l.lastIndexOf("|");return k>0?{title:l.slice(0,k).trim(),url:l.slice(k+1).trim()}:{title:"",url:l}}).filter(x=>/^https?:\/\//.test(x.url)),
+      interview:null};
+    const qa=parseQa(ivQa.value);
+    if(ivWho.value&&qa.length)v.interview={artist:ivWho.value,lead:ivLead.value.trim(),qa,video:/^https?:\/\//.test(ivVid.value.trim())?ivVid.value.trim():""};
+    if(ivWho.value&&!qa.length&&ivQa.value.trim()){toast("질문과 답을 'Q.' 'A.' 로 시작해 적어 주세요");ivQa.focus();return}
     if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
     if(!v.body&&!photos.length){toast("리뷰 글이나 현장 사진을 넣어 주세요");return}
     if(photos.some(p=>p.data)&&!$("#rOk").checked){toast("사진 사용 허락을 확인해 주세요");return}
@@ -679,7 +703,7 @@ function reviewSheet(r){
         for(let i=0;i<photos.length;i++){const p=photos[i];let path=p.path;
           if(p.data){const blob=await (await fetch(p.data)).blob();path=`reviews/${rid}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
           ph.push({src:path,caption:p.caption||""})}
-        const row={exhibition_id:v.exhibition,title:v.title,visit_date:v.date||null,author:v.author||null,body:v.body||null,photos:ph,works:v.works,hidden:v.hidden};
+        const row={exhibition_id:v.exhibition,title:v.title,visit_date:v.date||null,author:v.author||null,body:v.body||null,photos:ph,works:v.works,videos:v.videos,interview:v.interview,hidden:v.hidden};
         return isNew?ARTTAN_DB.from("reviews").insert({id:rid,...row}):ARTTAN_DB.from("reviews").update(row).eq("id",r.id)},isNew?"전시리뷰를 올렸어요":"저장했어요",true);return}
     const ph=photos.map(p=>({src:p.data||p.show,caption:p.caption||""}));
     if(isNew){const o={...v,photos:ph,id:"r"+Date.now().toString(36)};AD.reviews=AD.reviews||[];AD.reviews.push(o);if(!adSave()){AD.reviews.pop();return}REVIEWS.push({...o,added:true});toast("전시리뷰를 올렸어요")}

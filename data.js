@@ -68,7 +68,7 @@ async function loadFromSupabase() {
   /* 전시리뷰: 사진 경로는 사이트 파일(artists/…) 또는 Storage 경로 */
   REVIEWS.length = 0;
   rv.forEach(r => REVIEWS.push({ id: r.id, exhibition: r.exhibition_id, title: r.title, date: r.visit_date || "", author: r.author || "", body: r.body || "",
-    photos: (r.photos || []).map(f => ({ src: workImageUrl(f.src), path: f.src, caption: f.caption || "" })), works: r.works || [], hidden: r.hidden }));
+    photos: (r.photos || []).map(f => ({ src: workImageUrl(f.src), path: f.src, caption: f.caption || "" })), works: r.works || [], videos: r.videos || [], interview: r.interview || null, hidden: r.hidden }));
   NOTICES.length = 0;
   nt.forEach(x => NOTICES.push({ id: x.id, tag: x.tag, title: x.title, body: x.body || "", date: x.date || (x.created_at || "").slice(0, 10).replaceAll("-", ".") }));
   return true;

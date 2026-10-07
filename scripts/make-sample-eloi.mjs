@@ -112,6 +112,17 @@ async function main() {
     after: [[300, 1000, 1, "#3B3448"], [460, 990, .95, "#5A4E6E"], [700, 1010, 1.05, "#2E2A3A"], [880, 995, .95, "#6A5C80"], [1120, 1005, 1, "#3B3448"], [1300, 990, .9, "#4A4258"]].map(a => person(...a)).join("") }, [[3, 200, 230, 330, 248], [2, 1060, 230, 330, 248]]);
   /* 5) 작품 가까이 */
   await shot("garden-05.jpg", { base: `<rect width="${RW}" height="${RH}" fill="#2B2620"/>${tag}` }, [[1, 30, 30, RW - 60, RH - 60]]);
+  /* 비율이 다른 현장 사진: 세로 사진(1000×1500)과 아주 넓은 파노라마(2600×900) — 사진 크기·비율에 기준이 없다는 걸 보여줘요 */
+  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1500"><rect width="1000" height="1500" fill="#F4F1EC"/><rect y="1150" width="1000" height="350" fill="#B8AA96"/>
+    <rect x="235" y="215" width="530" height="700" fill="#2B2620"/>${person(500, 1420, 1.3)}<text x="970" y="1475" ${FONT} font-size="22" fill="#5E5244" text-anchor="end">테스트용 샘플 사진 · arttan</text></svg>`))
+    .composite([{ input: await sharp(Buffer.from(artwork(3, 520, 690))).png().toBuffer(), left: 240, top: 220 }]).jpeg({ quality: 84 }).toFile(out("reviews/garden-06.jpg"));
+  const PW = 2600, PH = 900, pano = [[1, 120, 230, 360, 270], [3, 620, 200, 420, 315], [2, 1180, 230, 360, 270], [0, 1660, 210, 400, 300], [5, 2180, 240, 300, 225]];
+  const pc = [];
+  for (const [wi, x, y, w, h] of pano) pc.push({ input: await sharp(Buffer.from(artwork(wi, w, h))).png().toBuffer(), left: x, top: y });
+  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${PW}" height="${PH}"><rect width="${PW}" height="${PH}" fill="#F7F5F1"/><rect y="680" width="${PW}" height="220" fill="#BFB2A0"/>
+    ${pano.map(([, x, y, w, h]) => `<rect x="${x - 5}" y="${y - 5}" width="${w + 10}" height="${h + 10}" fill="#2B2620"/>`).join("")}
+    ${person(900, 870, .8)}${person(1500, 880, .85, "#4A4258")}<text x="${PW - 30}" y="${PH - 22}" ${FONT} font-size="22" fill="#5E5244" text-anchor="end">테스트용 샘플 사진 · arttan</text></svg>`))
+    .composite(pc).jpeg({ quality: 84 }).toFile(out("reviews/garden-07.jpg"));
   console.log("엘로이 샘플 이미지를 만들었어요.");
 }
 main();
