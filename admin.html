@@ -122,6 +122,8 @@ dialog.t-sheet::backdrop{background:rgba(0,0,0,.45)}
   .ad-nav{width:auto;white-space:nowrap;flex-shrink:0;height:40px}
   .ad-nav svg{display:none}
   .ad-back{display:none}
+  /* 메뉴가 화면보다 길면 오른쪽을 흐리게 해서 옆으로 넘길 수 있다고 알려요 */
+  .ad-side.more{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
   .t-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ad-main{padding-top:24px}
 }
@@ -170,16 +172,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=54"></script>
+<script src="core.js?v=55"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=54"></script>
-<script src="artists/jmh/artist.js?v=54"></script>
-<script src="artists/lmg/artist.js?v=54"></script>
-<script src="artists/lhw/artist.js?v=54"></script>
+<script src="artists/eloi/artist.js?v=55"></script>
+<script src="artists/jmh/artist.js?v=55"></script>
+<script src="artists/lmg/artist.js?v=55"></script>
+<script src="artists/lhw/artist.js?v=55"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=54"></script>
-<script src="data.js?v=54"></script>
+<script src="config.js?v=55"></script>
+<script src="data.js?v=55"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -198,6 +200,10 @@ function renderAdmin(){
   AD_MENU.forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:k==="crawl"?CRAWLED.filter(x=>x.status==="pending").length:0;
     const b=el(`<button type="button" class="ad-nav${adView===k?" on":""}"${adView===k?' aria-current="page"':""}>${ic(IC[i])}<span>${l}</span>${n?`<em aria-label="대기 ${n}건">${n}</em>`:""}</button>`);
     b.onclick=()=>go(k);nav.append(b)});
+  /* 휴대폰: 고른 메뉴가 메뉴 줄 화면 안에 보이게 */
+  requestAnimationFrame(()=>{const side=nav.closest(".ad-side"),on=nav.querySelector(".on");if(!side)return;
+    if(on&&side.scrollWidth>side.clientWidth){const r=on.getBoundingClientRect(),sr=side.getBoundingClientRect();if(r.left<sr.left||r.right>sr.right-30)side.scrollLeft+=r.left-sr.left-(sr.width-r.width)/2}
+    const more=()=>side.classList.toggle("more",side.scrollLeft+side.clientWidth<side.scrollWidth-4);more();side.onscroll=more});
   const m=$("#adMain");m.innerHTML=SBM()?`<p class="ad-note">Supabase에 연결돼 있어요. 여기서 저장한 내용은 바로 실제 사이트에 반영돼요.</p>`:`<p class="ad-note">예시 데이터 모드예요. 바꾼 내용은 이 브라우저에만 저장돼요. Supabase를 연결하면 실제 DB에 저장돼요.</p>`;
   ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,review:adReview,set:adSet})[adView](m);
 }
@@ -385,11 +391,13 @@ function artistSheet(a){
 }
 
 /* 전시 */
-let adExSt="live";
+let adExSt=null;  /* null: 처음 열 때 전시가 있는 탭(진행중 → 예정 → 전체)을 골라요 */
 function adEx(m){
   adHead(m,"전시",`전체 ${EXHIBITIONS.length}건`,["전시 추가",()=>exSheet()]);
   const bar=el(`<div class="t-toolbar"></div>`);
-  bar.append(segmented(["live","soon","end","all"],adExSt,v=>{adExSt=v;renderAdmin()},x=>({live:"진행중",soon:"예정",end:"종료",all:"전체"})[x]));m.append(bar);
+  const cnt={live:0,soon:0,end:0,all:EXHIBITIONS.length};EXHIBITIONS.forEach(e=>cnt[status(e).k]++);
+  if(!adExSt)adExSt=cnt.live?"live":cnt.soon?"soon":"all";
+  bar.append(segmented(["live","soon","end","all"],adExSt,v=>{adExSt=v;renderAdmin()},x=>`${({live:"진행중",soon:"예정",end:"종료",all:"전체"})[x]} ${cnt[x]}`));m.append(bar);
   const c=card(m);const ord={live:0,soon:1,end:2};
   const L=EXHIBITIONS.map(e=>({e,st:status(e)})).filter(x=>adExSt==="all"||x.st.k===adExSt).sort((x,y)=>ord[x.st.k]-ord[y.st.k]||(x.st.k==="end"?parse(y.e.start)-parse(x.e.start):parse(x.e.start)-parse(y.e.start)));
   if(!L.length)c.append(el(`<p class="t-empty">해당하는 전시가 없어요.</p>`));
