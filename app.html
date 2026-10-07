@@ -203,6 +203,7 @@ dialog.lb:modal{inset-block:0;max-height:100dvh}
 .fav-btn[aria-pressed="true"]{background:#fff;color:#E0245E;border-color:#fff}
 .fav-btn.light{border-color:var(--line);background:var(--surface);color:var(--ink);backdrop-filter:none}
 .fav-btn.light[aria-pressed="true"]{color:#E0245E;background:#FFF0F4;border-color:#FFD0DD}
+.as-hero-in h1 .as-suf{font-style:normal;font-size:.42em;font-weight:700;margin-left:0;opacity:.9;letter-spacing:0}
 .as-hero-in .fav-btn{margin-top:16px;width:auto;align-self:flex-start;justify-self:start}
 .fav-pop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;width:min(380px,calc(100vw - 32px));background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.35);padding:18px 18px 14px}
 .fav-pop h3{margin:0 0 4px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px}
@@ -1838,16 +1839,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=55"></script>
+<script src="core.js?v=56"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=55"></script>
-<script src="artists/jmh/artist.js?v=55"></script>
-<script src="artists/lmg/artist.js?v=55"></script>
-<script src="artists/lhw/artist.js?v=55"></script>
+<script src="artists/eloi/artist.js?v=56"></script>
+<script src="artists/jmh/artist.js?v=56"></script>
+<script src="artists/lmg/artist.js?v=56"></script>
+<script src="artists/lhw/artist.js?v=56"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=55"></script>
-<script src="data.js?v=55"></script>
+<script src="config.js?v=56"></script>
+<script src="data.js?v=56"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2620,7 +2621,7 @@ function renderArtistSite(id){
   hero.append(a.photos?artCanvas(a,"c5",1600,1000,`${a.name} 대표작`):artCanvas(a,"hero",1600,1000,`${a.name} 대표작`));
   hero.insertAdjacentHTML("beforeend",`<div class="as-hero-shade"></div><div class="as-hero-in">
     <span class="as-eb">arttan 작가 공간 · ${esc(a.tier)} · ${esc(genresOf(a).join(" · "))}</span>
-    <h1>${esc(a.name)}${a.en?`<span>${esc(a.en)}</span>`:""}</h1>
+    <h1>${esc(a.name)} <i class="as-suf">작가</i>${a.en?`<span>${esc(a.en)}</span>`:""}</h1>
     <p class="as-line">${esc(a.quote?`“${a.quote}”`:a.line||"")}</p>
     <p class="as-meta">${[a.born?`${a.born}년생`:"",a.from?`${esc(a.from)} 출생`:"",a.city?`${esc(a.city)} 활동`:""].filter(Boolean).join(" · ")}</p></div>`);
   hero.querySelector(".as-hero-in").append(favBtn(a));
