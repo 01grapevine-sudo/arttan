@@ -4,8 +4,8 @@
    확인 필요: 출생연도·학력·전체 전시 목록, 타공 띠 작업의 제목·연도, 작품별 크기 → 작가 이력서로 채워요. */
 const LMG_WEB="「소우주(Microcosmos)」 연작 · 제목 확인 중";
 registerArtist({
-   id:"lmg", real:true, tier:"중견작가", name:"이민구", genre:"설치·복합매체", more:["서양화"], tags:["거미줄 작가","소우주(Microcosmos)","혼합재료","자동차 도료·단청 안료"], born:null, city:"", style:"lines", pal:["#EFE7D6","#2B2620","#8A7B60","#B9A27A","#141210"],
-   aka:["거미줄 작가 이민구"],   /* 검색할 때 쓰는 다른 이름 */
+   id:"lmg", real:true, tier:"중견작가", name:"이민구", en:"Lee Mingu", genre:"설치·복합매체", more:["서양화"], tags:["거미줄 작가","소우주(Microcosmos)","혼합재료","자동차 도료·단청 안료"], born:null, city:"", style:"lines", pal:["#EFE7D6","#2B2620","#8A7B60","#B9A27A","#141210"],
+   aka:["거미줄 작가 이민구","이민구 Lee Mingu"],   /* 검색할 때 쓰는 다른 이름 (영문 표기: 아트허브 공개 전시 정보 「이민구(Lee Mingu)」) */
    photos:["01","02","03","04","05","06","07","08","09","10","11","12","13","14"].map(n=>`artists/lmg/works/${n}.jpg`),
    sources:[
      {name:"경북매일 (2017, 라우갤러리 초대전)", url:"https://kbmaeil.com/article/201704040188929"},
