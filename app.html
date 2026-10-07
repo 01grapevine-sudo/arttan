@@ -1451,8 +1451,8 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
     <div class="rail" id="weekRail"></div>
   </section>
 
-  <section class="weeksec nextsec" data-view="home" aria-label="다음 전시">
-    <div class="hh"><h2>다음 전시</h2><span class="hsub" id="nextRange">다음 주부터 열리는 전시</span><a href="#shows" class="more">전체보기 ›</a></div>
+  <section class="weeksec nextsec" data-view="home" aria-label="전시">
+    <div class="hh"><h2>전시</h2><span class="hsub" id="nextRange">오늘부터 가까운 순</span><a href="#shows" class="more">전체보기 ›</a></div>
     <div class="tabs scroll" id="tierTabs" role="group" aria-label="장르"></div>
     <div class="rail" id="tierRail"></div>
   </section>
@@ -1661,16 +1661,16 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=34"></script>
+<script src="core.js?v=35"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=34"></script>
-<script src="artists/jmh/artist.js?v=34"></script>
-<script src="artists/lmg/artist.js?v=34"></script>
-<script src="artists/lhw/artist.js?v=34"></script>
+<script src="artists/eloi/artist.js?v=35"></script>
+<script src="artists/jmh/artist.js?v=35"></script>
+<script src="artists/lmg/artist.js?v=35"></script>
+<script src="artists/lhw/artist.js?v=35"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=34"></script>
-<script src="data.js?v=34"></script>
+<script src="config.js?v=35"></script>
+<script src="data.js?v=35"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2152,13 +2152,13 @@ function renderTierRail(){
   const tabs=$("#tierTabs");tabs.innerHTML="";const ex=EXHIBITIONS.map(e=>({...e,st:status(e)}));
   /* 참여 작가의 대표·부가 장르 중 하나라도 맞으면 그 장르 전시로 봐요 */
   const has=(e,g)=>!g||e.artists.some(id=>byId[id]&&genresOf(byId[id]).includes(g));
-  /* 다음 전시: 이번 주(일요일)가 지난 뒤 시작하는 전시를, 가까운 날짜부터 보여줘요. 이번 주 전시는 바로 위 칸에 있어요. */
-  const ws=weekStart(today),we=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+6);
-  const cur=ex.filter(e=>parse(e.start)>we);
+  /* 전시: 지금 열리고 있거나 앞으로 열릴 전시 전부를 오늘 기준 가까운 순으로 (진행 중 → 곧 열릴 전시 순). 끝난 전시는 빼요. */
+  const cur=ex.filter(e=>e.st.k!=="end");
+  const key=e=>Math.max(parse(e.start).getTime(),today.getTime());
   [["전체",null],...GENRES.map(g=>[g,g])].forEach(([l,v])=>tabs.append(chip(l,cur.filter(e=>has(e,v)).length,homeTier===v,()=>{homeTier=v;renderTierRail()})));
-  const L=cur.filter(e=>has(e,homeTier)).sort((x,y)=>parse(x.start)-parse(y.start)).slice(0,10);
-  const nx=new Date(we.getFullYear(),we.getMonth(),we.getDate()+1);$("#nextRange").textContent=`${nx.getMonth()+1}.${nx.getDate()}부터 열리는 전시`;
-  const r=$("#tierRail");r.innerHTML="";if(!L.length)r.innerHTML=`<p class="empty">다음 주부터 열릴 전시가 아직 없어요. 지난 전시는 <a href="#shows">전시</a> 메뉴에서 볼 수 있어요.</p>`;L.forEach(e=>r.append(railCard(e)))}
+  const L=cur.filter(e=>has(e,homeTier)).sort((x,y)=>key(x)-key(y)||parse(x.end)-parse(y.end)).slice(0,20);
+  $("#nextRange").textContent=`진행 중 ${cur.filter(e=>e.st.k==="live").length} · 예정 ${cur.filter(e=>e.st.k==="soon").length} · 오늘부터 가까운 순`;
+  const r=$("#tierRail");r.innerHTML="";if(!L.length)r.innerHTML=`<p class="empty">지금 열리고 있거나 열릴 예정인 전시가 없어요. 지난 전시는 <a href="#shows">전시</a> 메뉴에서 볼 수 있어요.</p>`;L.forEach(e=>r.append(railCard(e)))}
 const ALOG=[
   ["2026.10.07","eloi","[테스트] 샘플 작품 8점·전시 포스터·도록을 올렸어요","테스트용 가상 작가 · 이미지 직접 생성"],
   ["2026.10.06","lhw","작품 90점과 전시 기록을 올렸어요","작가 제공 사진 · 사용 허락"],
