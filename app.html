@@ -1338,7 +1338,6 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .gs-home:hover{background:rgba(255,255,255,.14)}
 .gs-video{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;max-width:960px}
 .gs-video iframe,.gs-video video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
-.hs-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .gs-video.tall{aspect-ratio:9/16;max-width:400px}
 /* arttan SNS 버튼 */
 .sns{display:flex;flex-wrap:wrap;gap:8px}
@@ -2256,10 +2255,8 @@ function buildSlides(){
   pub().filter(a=>a.hero!==false).forEach((a,k)=>{const r=archiveOf(a);
     L.push({eb:k===0?`이달의 작가 · ${today.getMonth()+1}월`:`작가 아카이브 · ${a.tier} · ${a.genre}`,title:a.name,sub:a.quote?`“${a.quote}”`:a.line||"",
       meta:`${a.tier} · ${a.genre} · 작품 ${r.works}점 · 전시 이력 ${r.ex}건`,
-      /* 작가 사진이 있으면 작가 사진을, 없으면 작품을 배경으로 */
-      bg:el=>{if(a.photos&&a.portraits){const im=document.createElement("img");im.src=optImg(a.portraits[0]);im.alt=`${a.name} 작가`;im.className="hs-photo";
-          im.style.objectPosition=(a.portraitFocus||[.5,.3]).map(v=>v*100+"%").join(" ");el.append(im)}
-        else el.append(artCanvas(a,a.photos?"c"+(hash(a.id)%a.photos.length):"c0",1400,1000,a.photos?`${a.name}의 작품`:`${a.name} 작가`))},go:()=>openPortfolio(a.id)})});
+      /* 배경은 작품 사진으로. 작품 사진이 없는 작가만 인물 사진(또는 기본 그림) */
+      bg:el=>el.append(artCanvas(a,a.photos?"c"+(hash(a.id)%a.photos.length):"c0",1400,1000,a.photos?`${a.name}의 작품`:`${a.name} 작가`)),go:()=>openPortfolio(a.id)})});
   const P=pub(),tot=P.reduce((n,a)=>n+archiveOf(a).works,0);
   L.push({eb:"arttan 작가 아카이브",title:"원로부터 청년까지\n작가를 기록합니다",sub:`작가 ${P.length}명 · 기록된 작품 ${tot}점`,meta:"www.arttan.co.kr",fill:true,
     bg:el=>{const f=document.createElement("div");f.className="hs-fan";P.slice(0,3).forEach(a=>f.append(artCanvas(a,"w0",300,400,"")));el.append(f)},go:()=>goArtists()});
