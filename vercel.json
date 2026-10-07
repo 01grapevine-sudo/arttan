@@ -31,6 +31,17 @@
       "permanent": true
     },
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "arttan.vercel.app"
+        }
+      ],
+      "destination": "https://www.arttan.co.kr/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
