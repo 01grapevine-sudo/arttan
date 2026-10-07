@@ -968,9 +968,9 @@ dialog{border-radius:24px}
 .wk[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .wk[aria-pressed="true"] small,.wk[aria-pressed="true"] span{color:inherit;opacity:.75}
 @media (max-width:760px){
-  .wkdays{display:flex;overflow-x:auto;scrollbar-width:none;gap:6px}
-  .wkdays::-webkit-scrollbar{display:none}
-  .wk{flex:0 0 60px}
+  /* 휴대폰: 숨는 날 없이 4칸 × 2줄 (이번 주 · 월 · 화 · 수 / 목 · 금 · 토 · 일) */
+  .wkdays{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .wk{padding:10px 4px}
   .wk.all{flex-basis:76px}
   .wk span{display:none}
 }
@@ -1073,6 +1073,8 @@ dialog.lb[open]{display:flex}
 @media (max-width:640px){
   .as-head-in{flex-wrap:wrap;gap:4px 12px;padding-block:10px;min-height:0}
   .as-nav{order:3;width:100%;margin:0}
+  /* 탭이 화면보다 길 때만 오른쪽을 흐리게 해서 '옆으로 넘길 수 있어요'를 알려요 */
+  .as-nav.more{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
   .as-util{margin-left:auto}
   .as-two{grid-template-columns:1fr}
   /* 아이폰: 위쪽 상태 표시줄·아래쪽 홈 막대에 버튼이 가리지 않게 안전 영역만큼 띄워요 */
@@ -1829,16 +1831,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=50"></script>
+<script src="core.js?v=51"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=50"></script>
-<script src="artists/jmh/artist.js?v=50"></script>
-<script src="artists/lmg/artist.js?v=50"></script>
-<script src="artists/lhw/artist.js?v=50"></script>
+<script src="artists/eloi/artist.js?v=51"></script>
+<script src="artists/jmh/artist.js?v=51"></script>
+<script src="artists/lmg/artist.js?v=51"></script>
+<script src="artists/lhw/artist.js?v=51"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=50"></script>
-<script src="data.js?v=50"></script>
+<script src="config.js?v=51"></script>
+<script src="data.js?v=51"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2593,6 +2595,7 @@ function renderArtistSite(id){
   SITE_SECS.forEach(([sid,lab])=>{const b=document.createElement("button");b.type="button";b.textContent=lab;b.dataset.t=sid;b.onclick=()=>document.getElementById(sid).scrollIntoView({behavior:"smooth"});nav.append(b)});
   head.querySelector(".as-logo").onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
   root.append(head);
+  const navMore=()=>nav.classList.toggle("more",nav.scrollLeft+nav.clientWidth<nav.scrollWidth-4);nav.addEventListener("scroll",navMore,{passive:true});setTimeout(navMore,300);
   /* 히어로 */
   const hero=document.createElement("section");hero.className="as-hero";
   hero.append(a.photos?artCanvas(a,"c5",1600,1000,`${a.name} 대표작`):artCanvas(a,"hero",1600,1000,`${a.name} 대표작`));
