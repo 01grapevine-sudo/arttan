@@ -170,16 +170,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=51"></script>
+<script src="core.js?v=52"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=51"></script>
-<script src="artists/jmh/artist.js?v=51"></script>
-<script src="artists/lmg/artist.js?v=51"></script>
-<script src="artists/lhw/artist.js?v=51"></script>
+<script src="artists/eloi/artist.js?v=52"></script>
+<script src="artists/jmh/artist.js?v=52"></script>
+<script src="artists/lmg/artist.js?v=52"></script>
+<script src="artists/lhw/artist.js?v=52"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=51"></script>
-<script src="data.js?v=51"></script>
+<script src="config.js?v=52"></script>
+<script src="data.js?v=52"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -519,7 +519,8 @@ function ivSheet(v){
   const phIn=inp("iPhotos","file");phIn.accept="image/*";phIn.multiple=true;
   phIn.onchange=async()=>{for(const fl of [...phIn.files]){const u=await shrink(fl,2000);if(u)photos.push({data:u,caption:""})}phIn.value="";drawPh()};drawPh();
   const ok=el(`<label class="t-check"><input type="checkbox" id="iOk"> 사진·영상은 직접 촬영했거나 사용 허락을 받았어요</label>`);
-  f.append(fieldL("작가",who),fieldL("제목",title),two,
+  const ivKind=segField(["없음",...IV_KINDS],v?.kind||"없음");
+  f.append(fieldL("작가",who),fieldL("제목",title),fieldD("인터뷰 종류",ivKind,"고르면 인터뷰 목록에 분류로 나와요."),two,
     el(`<p class="t-desc" style="margin:8px 0 0"><b>영상 · 사진 · 글</b> 중 넣은 것만 인터뷰 페이지에 보여요.</p>`),
     fieldL("영상 주소",vUrl,"유튜브·비메오 주소. 또는 아래에서 영상 파일(mp4, 50MB 이하)을 올려요."),fieldL("영상 파일",vIn),vBox,fieldL("영상 설명",vTitle),
     fieldL("사진",phIn,"여러 장 · 크기와 비율 제한 없어요. 첫 장이 대표 이미지예요."),phBox,
@@ -531,7 +532,7 @@ function ivSheet(v){
     return out.filter(([q,a])=>q&&a)};
   const save=tBtn(isNew?"올리기":"저장하기","primary",async()=>{
     const Q=parseQa(qa.value);
-    const val={artist:who.value,title:title.value.trim(),date:date.value.trim(),exhibition:exSel.value||undefined,lead:lead.value.trim(),body:body.value.trim(),qa:Q};
+    const val={kind:ivKind.dataset.value==="없음"?"":ivKind.dataset.value,artist:who.value,title:title.value.trim(),date:date.value.trim(),exhibition:exSel.value||undefined,lead:lead.value.trim(),body:body.value.trim(),qa:Q};
     if(!val.title){toast("제목을 입력해 주세요");title.focus();return}
     if(qa.value.trim()&&!Q.length){toast("대담은 'Q.' 'A.' 로 시작해 적어 주세요");qa.focus();return}
     const url=vUrl.value.trim();if(url&&!/^https?:\/\//.test(url)){toast("영상 주소는 https:// 로 시작해야 해요");vUrl.focus();return}
@@ -546,7 +547,7 @@ function ivSheet(v){
         if(url)video={url,title:vTitle.value.trim()};
         else if(vFile){let path=vFile.path;if(vFile.file){path=`interviews/${slug}/${Date.now()}-${vFile.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTTAN_DB.storage.from("works").upload(path,vFile.file,{contentType:vFile.file.type||"video/mp4"});if(up.error)return up}
           video={src:path,title:vTitle.value.trim(),...(vFile.poster?{poster:vFile.poster}:{})}}
-        const row={artist_id:val.artist,slug,title:val.title,date:val.date||null,lead:val.lead||null,body:val.body||null,qa:val.qa,photos:ph,video,exhibition_id:val.exhibition||null};
+        const row={artist_id:val.artist,slug,kind:val.kind||null,title:val.title,date:val.date||null,lead:val.lead||null,body:val.body||null,qa:val.qa,photos:ph,video,exhibition_id:val.exhibition||null};
         return isNew?ARTTAN_DB.from("interviews").insert(row):ARTTAN_DB.from("interviews").update(row).eq("id",v.dbId)},isNew?"인터뷰를 올렸어요":"저장했어요",true);return}
     /* Supabase 없이(이 브라우저): 영상은 주소만 저장돼요 */
     if(vFile&&vFile.file&&!url){toast("Supabase 연결 전에는 영상 파일 대신 유튜브 주소를 넣어 주세요");return}

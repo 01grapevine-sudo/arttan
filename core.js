@@ -276,6 +276,9 @@ const faqList=()=>noticeList().filter(isFaq);
      exhibition(전시 id), toc[목차], links[{name,url}]}
    표지 사진이 없으면 글자로 만든 표지를 보여줘요 (다른 곳의 이미지를 가져오지 않아요). */
 const BOOK_KINDS=["전시 도록","화집","작가 저서"];
+/* 인터뷰 종류 (관리자에서 고르면 인터뷰 목록에 분류 칩이 생겨요) */
+const IV_KINDS=["작업실 방문","전시 인터뷰","대담","서면 인터뷰"];
+const ivDateKey=v=>String(v.date||"").replace(/\D/g,"").padEnd(8,"0");
 /* 서점 구매 버튼: 예스24 · 교보문고. ISBN이 있으면 ISBN으로, 없으면 「제목 + 작가」로 서점 검색에 연결해요.
    관리자 '구매·열람처'에 서점 상품 주소를 직접 넣으면 그 주소를 써요. 판매하지 않는 전시 도록은 ISBN이 없으면 숨겨요 (bk.buy 로 직접 켜고 끌 수 있어요) */
 const BUY_SHOPS=[["yes24","예스24",/예스24|yes24/i,q=>`https://www.yes24.com/Product/Search?domain=BOOK&query=${q}`],

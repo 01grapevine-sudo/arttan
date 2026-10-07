@@ -22,7 +22,7 @@ registerArtist({
      ["작은 우주",2026,"종이에 과슈","60×45cm",""]],
    /* 작가 인터뷰: 영상·사진·글(소개·본문·문답)을 모두 넣을 수 있고, 넣은 것만 보여요 (테스트용 샘플) */
    interviews:[
-     {id:"eloi-studio", title:"오후의 빛을 붙잡는 법 — 엘로이 작업실에서", date:"2025.05.12", exhibition:"eloi-2025",
+     {id:"eloi-studio", kind:"작업실 방문", title:"오후의 빛을 붙잡는 법 — 엘로이 작업실에서", date:"2025.05.12", exhibition:"eloi-2025",
       lead:"[테스트용 샘플 인터뷰] 첫 개인전 「정원의 오후」를 마친 엘로이의 작업실을 찾아가 작업 이야기를 들었어요.",
       video:{src:"artists/eloi/interviews/studio-3.mp4", poster:"artists/eloi/interviews/studio-poster-3.jpg", title:"엘로이의 작업실에서 (AI 생성 테스트 영상, 15초)"},
       photos:[

@@ -52,7 +52,7 @@ async function loadFromSupabase() {
       works: w.map(x => { const row = [x.title, x.year || "", x.material || "", x.size || ""]; if (x.description) row.push(x.description); return row; }),
       photos: (imgs.length && imgs.every(Boolean)) ? imgs : undefined,
       interviews: iv.filter(x => x.artist_id === r.id).map(x => ({ id: x.slug || String(x.id), dbId: x.id, title: x.title, date: x.date || "", lead: x.lead || "", qa: x.qa || [],
-        body: x.body || "", exhibition: x.exhibition_id || undefined,
+        body: x.body || "", kind: x.kind || "", exhibition: x.exhibition_id || undefined,
         photos: (x.photos || []).map(f => ({ src: workImageUrl(f.src), path: f.src, caption: f.caption || "" })),
         video: x.video ? { ...x.video, src: x.video.src ? workImageUrl(x.video.src) : undefined, srcPath: x.video.src || null, poster: x.video.poster ? workImageUrl(x.video.poster) : undefined, posterPath: x.video.poster || null } : null })),
       video: v ? { title: v.title, len: v.len, date: v.date, place: v.place, url: v.url } : null,

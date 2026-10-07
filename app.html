@@ -1431,6 +1431,8 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 .bkp-by{margin:0 0 18px;font-size:16px}.bkp-by a{color:var(--ink);font-weight:800}.bkp-by span{color:var(--muted);font-size:14px}
 .bkp-info dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0 0 22px;font-size:15px}.bkp-info dt{color:var(--muted)}.bkp-info dd{margin:0}
 .bkp-acts{display:flex;flex-wrap:wrap;gap:8px}
+#ivTabs,#ivTier{margin-bottom:10px}
+.iv-count{font-size:13px;color:var(--muted);margin:4px 0 16px}
 .bkp-buy{margin:4px 0 14px;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .bkp-buy>b{display:block;font-size:13px;margin-bottom:8px}
 .bkp-buy>div{display:flex;flex-wrap:wrap;gap:8px}
@@ -1665,6 +1667,9 @@ body.is-site .biz{margin-bottom:28px}
   <section class="block" id="interview" data-view="interviews">
     <div class="shead"><h2>작가 인터뷰</h2><span class="en">Interview</span></div>
     <p class="bk-intro">작가를 직접 만나 나눈 이야기예요. 영상, 작업실 사진, 대담을 함께 볼 수 있어요.</p>
+    <div class="tabs scroll" id="ivTabs" role="group" aria-label="인터뷰 분류"></div>
+    <div class="tabs scroll" id="ivTier" role="group" aria-label="작가 분류"></div>
+    <p class="iv-count" id="ivCount"></p>
     <div class="rv-grid" id="ivMain"></div>
   </section>
 
@@ -1831,16 +1836,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=51"></script>
+<script src="core.js?v=52"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=51"></script>
-<script src="artists/jmh/artist.js?v=51"></script>
-<script src="artists/lmg/artist.js?v=51"></script>
-<script src="artists/lhw/artist.js?v=51"></script>
+<script src="artists/eloi/artist.js?v=52"></script>
+<script src="artists/jmh/artist.js?v=52"></script>
+<script src="artists/lmg/artist.js?v=52"></script>
+<script src="artists/lhw/artist.js?v=52"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=51"></script>
-<script src="data.js?v=51"></script>
+<script src="config.js?v=52"></script>
+<script src="data.js?v=52"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -1973,12 +1978,24 @@ function ivCard(v){const a=byId[v.artist]||{},p=ivParts(v),e=v.exhibition&&EXHIB
   if(cs){const i=document.createElement("img");i.src=cs;i.alt="";i.loading="lazy";im.append(i)}else if(a.id)im.append(artCanvas(a,"c0",480,320,""));
   if(p.video)im.insertAdjacentHTML("beforeend",`<span class="iv-play" aria-hidden="true">${PLAYI}</span>`);
   l.append(im);
-  l.insertAdjacentHTML("beforeend",`<span class="rv-eb">${esc(a.name||"")}${e?` · 「${esc(e.title)}」`:""}</span><b>${esc(v.title)}</b><span class="rv-m">${esc(v.date||"")}</span><span class="iv-parts">${[p.video&&"영상",p.photos&&"사진",p.text&&"글"].filter(Boolean).map(x=>`<i>${x}</i>`).join("")}</span>`);
+  l.insertAdjacentHTML("beforeend",`<span class="rv-eb">${v.kind?`${esc(v.kind)} · `:""}${esc(a.name||"")}${e?` · 「${esc(e.title)}」`:""}</span><b>${esc(v.title)}</b><span class="rv-m">${esc(v.date||"")}</span><span class="iv-parts">${[p.video&&"영상",p.photos&&"사진",p.text&&"글"].filter(Boolean).map(x=>`<i>${x}</i>`).join("")}</span>`);
   return l}
 const SNS_CTA=()=>{const h=snsHtml();return h?`<div class="sns-cta"><p><b>arttan 채널</b>에서 더 많은 작가 영상을 볼 수 있어요.</p>${h}</div>`:""};
+/* 인터뷰 목록: 최신순. 분류(영상·전시 연계·인터뷰 종류)와 작가 구분(원로·중견·청년)으로 골라 볼 수 있어요. 해당하는 인터뷰가 있는 칩만 보여요 */
+let ivType="전체",ivTierSel="전체";
+const IV_TYPES=[["전체",()=>true],["영상",v=>ivParts(v).video],["전시 연계",v=>!!v.exhibition],...IV_KINDS.map(k=>[k,v=>v.kind===k])];
 function renderInterview(){const m=$("#ivMain");m.innerHTML="";
-  const L=INTERVIEWS.filter(v=>byId[v.artist]&&!byId[v.artist].hidden).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-  if(!L.length){m.innerHTML=`<p class="empty">아직 올라온 인터뷰가 없어요.</p>`;return}
+  const ALL=INTERVIEWS.filter(v=>byId[v.artist]&&!byId[v.artist].hidden).sort((a,b)=>ivDateKey(b).localeCompare(ivDateKey(a)));
+  const typeFn=(IV_TYPES.find(([k])=>k===ivType)||IV_TYPES[0])[1],tierOk=v=>ivTierSel==="전체"||byId[v.artist].tier===ivTierSel;
+  /* opts: [[값, 보여줄 이름]] — 인터뷰가 0편인 칩은 숨기고, '전체'만 남으면 줄 자체를 숨겨요 */
+  const chips=(box,opts,cur,set,count)=>{box.innerHTML="";opts.forEach(([k,lab])=>{const n=count(k);if(k!=="전체"&&!n&&k!==cur)return;
+    const b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("aria-pressed",k===cur);b.innerHTML=`${esc(lab)}<span class="n">${n}</span>`;b.onclick=()=>{set(k);renderInterview()};box.append(b)});
+    box.hidden=box.children.length<2};
+  chips($("#ivTabs"),IV_TYPES.map(([k])=>[k,k]),ivType,k=>ivType=k,k=>ALL.filter(v=>tierOk(v)&&(IV_TYPES.find(([x])=>x===k)[1])(v)).length);
+  chips($("#ivTier"),[["전체","모든 작가"],...TIERS.filter(([,t])=>t).map(([lab,t])=>[t,lab+"작가"])],ivTierSel,k=>ivTierSel=k,k=>ALL.filter(v=>typeFn(v)&&(k==="전체"||byId[v.artist].tier===k)).length);
+  const L=ALL.filter(v=>typeFn(v)&&tierOk(v));
+  $("#ivCount").textContent=ALL.length?`${L.length}편 · 최신순`:"";
+  if(!L.length){m.innerHTML=`<p class="empty">${ALL.length?"조건에 맞는 인터뷰가 없어요.":"아직 올라온 인터뷰가 없어요."}</p>`}
   L.forEach(v=>m.append(ivCard(v)));
   $("#ivSns")?.remove();const c=SNS_CTA();if(c)m.insertAdjacentHTML("afterend",`<div id="ivSns">${c}</div>`)}
 /* 인터뷰 한 편의 페이지: /interview/<id> — 영상·소개·본문·문답·사진·연결 전시 중 있는 것만 */

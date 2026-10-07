@@ -357,3 +357,6 @@ revoke all on function public.push_subscribe(text,text,text,text[]) from public;
 revoke all on function public.push_unsubscribe(text) from public;
 grant execute on function public.push_subscribe(text,text,text,text[]) to anon, authenticated;
 grant execute on function public.push_unsubscribe(text) to anon, authenticated;
+
+-- 인터뷰 종류 (작업실 방문 · 전시 인터뷰 · 대담 · 서면 인터뷰)
+alter table public.interviews add column if not exists kind text;
