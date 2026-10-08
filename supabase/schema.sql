@@ -360,3 +360,40 @@ grant execute on function public.push_unsubscribe(text) to anon, authenticated;
 
 -- 인터뷰 종류 (작업실 방문 · 전시 인터뷰 · 대담 · 서면 인터뷰)
 alter table public.interviews add column if not exists kind text;
+
+-- 회원 (이메일·카카오·Google 로그인) -------------------------------------------
+-- 가입 동의(이용약관·개인정보 수집·이용)를 마친 회원만 profiles 에 생겨요. 회원은 자기 정보만 읽고 고쳐요.
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  nickname text not null check (char_length(nickname) between 1 and 20),
+  email text, provider text,
+  agree_terms_at timestamptz not null, agree_privacy_at timestamptz not null,
+  marketing_ok boolean not null default false,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+alter table public.profiles enable row level security;
+drop policy if exists "profiles: own read" on public.profiles;
+create policy "profiles: own read" on public.profiles for select using (auth.uid() = id or public.is_admin());
+drop policy if exists "profiles: own insert" on public.profiles;
+create policy "profiles: own insert" on public.profiles for insert with check (auth.uid() = id);
+drop policy if exists "profiles: own update" on public.profiles;
+create policy "profiles: own update" on public.profiles for update using (auth.uid() = id) with check (auth.uid() = id);
+-- 회원의 관심 작가 (기기 사이에 맞춰져요)
+create table if not exists public.member_favs (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  artist_id text not null check (artist_id ~ '^[a-z0-9_-]{1,40}$'),
+  created_at timestamptz not null default now(), primary key (user_id, artist_id));
+alter table public.member_favs enable row level security;
+drop policy if exists "member_favs: own all" on public.member_favs;
+create policy "member_favs: own all" on public.member_favs for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "member_favs: admin read" on public.member_favs;
+create policy "member_favs: admin read" on public.member_favs for select using (public.is_admin());
+-- 회원 탈퇴: 본인 계정만 (관리자 계정 제외)
+create or replace function public.delete_my_account()
+returns void language plpgsql security definer set search_path = public, auth as $$
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  if exists (select 1 from public.admins where user_id = auth.uid()) then raise exception 'admin account'; end if;
+  delete from auth.users where id = auth.uid();
+end $$;
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;

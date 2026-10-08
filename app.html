@@ -196,6 +196,27 @@ dialog.lb:modal{inset-block:0;max-height:100dvh}
 .colophon{aspect-ratio:3/4;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;font-size:12px;color:var(--muted)}
 .colophon b{font-family:var(--serif);font-size:20px;color:var(--ink);font-weight:500;margin-bottom:12px}
 
+/* 회원 로그인 */
+.me-av{width:28px;height:28px;border-radius:50%;background:var(--accent,#7C3AED);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center}
+#authDlg{width:min(440px,calc(100vw - 32px))}
+.au-lead{font-size:14px;line-height:1.7;color:var(--muted);margin:0 0 16px}.au-lead b{color:var(--ink)}
+.au-btn{width:100%;height:50px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.au-btn.kakao{background:#FEE500;border-color:#FEE500;color:#191919}
+.au-btn.google{background:#fff;color:#1f1f1f}
+.au-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:16px 0 12px}.au-or:before,.au-or:after{content:"";flex:1;height:1px;background:var(--line)}
+.au-f{display:grid;gap:6px;margin-bottom:10px;font-size:13px;font-weight:700}
+.au-f input{height:46px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+.au-main{width:100%;justify-content:center;margin-top:6px;height:48px}
+.au-links{text-align:center;font-size:13px;color:var(--muted);margin:14px 0 0}.au-links button{border:0;background:none;font:inherit;color:var(--ink);text-decoration:underline;cursor:pointer;padding:4px}
+.au-note{font-size:12px;color:var(--muted);line-height:1.6;margin:14px 0 0}
+.au-msg{font-size:13px;color:#D93025;margin:10px 0 0;line-height:1.5}
+.au-agree{display:grid;gap:8px;padding:14px;border-radius:12px;background:var(--surface);margin:6px 0 4px;font-size:13px;line-height:1.5}
+.au-agree label{display:flex;gap:8px;align-items:flex-start}.au-agree input{margin-top:3px}.au-agree small{color:var(--muted)}
+.au-all{padding-bottom:8px;border-bottom:1px solid var(--line)}
+.au-check{display:flex;gap:8px;font-size:13px;margin:4px 0 8px}
+.au-me{display:grid;gap:6px;margin:0 0 14px;font-size:14px}.au-me div{display:flex;gap:10px}.au-me dt{color:var(--muted);min-width:56px}.au-me dd{margin:0}
+.au-danger{color:#D93025!important}.au-danger-btn{background:#D93025!important;border-color:#D93025!important;color:#fff!important}
+.biz-links{display:flex;gap:12px}.biz-links a{color:inherit}
 /* 관심 작가 */
 .fav-top{position:relative}
 .fav-top .fav-n{position:absolute;top:2px;right:0;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--accent,#7C3AED);color:#fff;font-size:10px;line-height:17px;font-weight:800;text-align:center}
@@ -1521,6 +1542,7 @@ body.is-site .biz{margin-bottom:28px}
       <a href="#news">공지</a>
     </nav>
     <div class="util">
+      <button type="button" class="icon-btn me-btn" id="meBtn" aria-label="로그인" aria-haspopup="dialog" hidden></button>
       <button type="button" class="icon-btn fav-top" id="favTop" aria-label="관심 작가" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.3 1.1 4 2.3h3.2C14.3 6.1 15.6 5 17.6 5 21 5 22.7 8.5 21.2 11.4 19 15.6 12 20 12 20z"/></svg><b class="fav-n" id="favCount" hidden>0</b></button>
       <button type="button" class="icon-btn" id="searchBtn" aria-label="검색" aria-expanded="false" aria-controls="searchBar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg></button>
       <button type="button" class="menu-btn" id="allCat" aria-expanded="false" aria-controls="mega"><span class="burger" aria-hidden="true"></span><span class="lbl">전체 메뉴</span></button>
@@ -1745,6 +1767,7 @@ body.is-site .biz{margin-bottom:28px}
     <b>arttan 아트탄</b>
     <span>상호 그레이프바인</span><span>대표 오준성</span><span>사업자등록번호 877-21-01573</span>
     <span>주소 서울특별시 강남구 봉은사로34길 7, 6층 6127호(역삼동)</span><span>전화 <a href="tel:02-532-5558">02-532-5558</a></span>
+    <span class="biz-links"><a href="/terms">이용약관</a><a href="/privacy"><b>개인정보처리방침</b></a></span>
     <small>© 2026 그레이프바인. 작품 이미지의 저작권은 각 작가에게 있어요.</small>
   </address>
 
@@ -1836,22 +1859,28 @@ body.is-site .biz{margin-bottom:28px}
 <!-- 관심 작가 전시 소식 (사이트에 들어오면 한 번 보여줘요) -->
 <aside class="fav-pop" id="favPop" hidden aria-live="polite" aria-label="관심 작가 전시 소식"></aside>
 
+<!-- 로그인 · 회원가입 · 내 정보 -->
+<dialog id="authDlg" aria-labelledby="authTitle">
+  <div class="dlg-head"><span class="eyebrow" id="authTitle">로그인</span><button class="x" type="button" data-close aria-label="닫기">×</button></div>
+  <div class="dlg-body" id="authBody"></div>
+</dialog>
+
 <!-- 관심 작가 모음 · 알림 설정 -->
 <dialog id="favDlg" aria-labelledby="favTitle">
   <div class="dlg-head"><span class="eyebrow" id="favTitle">관심 작가</span><button class="x" type="button" data-close aria-label="닫기">×</button></div>
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=59"></script>
+<script src="core.js?v=60"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=59"></script>
-<script src="artists/jmh/artist.js?v=59"></script>
-<script src="artists/lmg/artist.js?v=59"></script>
-<script src="artists/lhw/artist.js?v=59"></script>
+<script src="artists/eloi/artist.js?v=60"></script>
+<script src="artists/jmh/artist.js?v=60"></script>
+<script src="artists/lmg/artist.js?v=60"></script>
+<script src="artists/lhw/artist.js?v=60"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=59"></script>
-<script src="data.js?v=59"></script>
+<script src="config.js?v=60"></script>
+<script src="data.js?v=60"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2932,7 +2961,7 @@ let FAV=(lsGet(FAV_KEY,[])||[]).filter(x=>typeof x==="string");
 const isFav=id=>FAV.includes(id);
 const favArtists=()=>FAV.map(id=>byId[id]).filter(a=>a&&!a.hidden);
 const HEART=on=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.3 1.1 4 2.3h3.2C14.3 6.1 15.6 5 17.6 5 21 5 22.7 8.5 21.2 11.4 19 15.6 12 20 12 20z" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
-function setFav(a,on){FAV=FAV.filter(x=>x!==a.id);if(on)FAV.unshift(a.id);lsSet(FAV_KEY,FAV);updateFavUI();pushSync()}
+function setFav(a,on){FAV=FAV.filter(x=>x!==a.id);if(on)FAV.unshift(a.id);lsSet(FAV_KEY,FAV);updateFavUI();pushSync();if(typeof memberFavWrite==="function")memberFavWrite(a.id,on)}
 function favBtn(a,cls=""){const b=document.createElement("button");b.type="button";b.className=("fav-btn "+cls).trim();
   b._draw=()=>{const on=isFav(a.id);b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",`${a.name} 작가 ${on?"관심 작가에서 빼기":"관심 작가로 담기"}`);b.innerHTML=`${HEART(on)}<span>${on?"관심 작가":"관심 작가 담기"}</span>`};b._draw();
   b.onclick=e=>{e.stopPropagation();const on=!isFav(a.id);setFav(a,on);if(on){toast(`${a.name} 작가를 관심 작가로 담았어요`);setTimeout(()=>offerPush(a),600)}else toast("관심 작가에서 뺐어요")};return b}
@@ -3014,11 +3043,131 @@ function favPopup(){if(!favArtists().length||$("#favPop").hidden===false)return;
   const all=document.createElement("button");all.type="button";all.className="btn ghost";all.textContent=E.length>3?`전체 ${E.length}건 보기`:"관심 작가 보기";all.onclick=()=>{hideFavPop(true);openFavDlg()};
   const close=document.createElement("button");close.type="button";close.className="btn";close.textContent="확인";close.onclick=()=>hideFavPop(true);
   acts.append(all,close);p.hidden=false}
+/* ===== 회원: 이메일 · 구글 · 카카오 로그인 =====
+   가입 동의(이용약관·개인정보 수집·이용)를 마친 회원만 profiles 에 저장돼요. 동의하지 않으면 계정을 지워요.
+   회원의 관심 작가는 member_favs 에 저장돼서 어느 기기에서 로그인해도 같아요. 관리자 계정은 회원 화면을 건너뛰어요. */
+let ME=null,MEP=null;
+const authOn=()=>typeof sbClient==="function"&&!!sbClient();
+const AUTH_BACK="arttan.authBack";
+const KAKAO_SVG='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#191919" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7l-1 3.6c-.1.3.3.6.6.4l4.2-2.8c.5.1 1 .1 1.5.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>';
+const GOOGLE_SVG='<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+const provName=p=>({kakao:"카카오",google:"구글",email:"이메일"})[p]||p||"이메일";
+
+async function authInit(){if(!authOn())return;const sb=sbClient();
+  try{const {data:{session}}=await sb.auth.getSession();await onAuth(session)}catch(e){console.warn("로그인 상태 확인 실패",e)}
+  sb.auth.onAuthStateChange((ev,s)=>{if(ev==="PASSWORD_RECOVERY"){ME=s?.user||null;openAuth("newpw");return}
+    if(ev==="SIGNED_IN"||ev==="SIGNED_OUT"||ev==="USER_UPDATED")setTimeout(()=>onAuth(s),0)});
+  /* 소셜 로그인에서 돌아온 주소의 ?code= 정리하고, 로그인 전 보던 화면으로 */
+  if(/[?&](code|error|error_description)=/.test(location.search)){const u=new URL(location.href);["code","error","error_code","error_description","state"].forEach(k=>u.searchParams.delete(k));
+    let back="";try{back=sessionStorage.getItem(AUTH_BACK)||"";sessionStorage.removeItem(AUTH_BACK)}catch(e){}
+    history.replaceState(null,"",(u.pathname+u.search)+(back||u.hash));if(back&&back.startsWith("#"))window.dispatchEvent(new HashChangeEvent("hashchange"))}}
+async function onAuth(s){const sb=sbClient();ME=s?.user||null;MEP=null;
+  if(ME){try{const {data}=await sb.from("profiles").select("*").eq("id",ME.id).maybeSingle();MEP=data||null}catch(e){}
+    if(!MEP){const {data:adm}=await sb.rpc("is_admin");if(adm===true)ME.isAdmin=true;
+      else{const md=ME.user_metadata||{};
+        /* 이메일 가입은 가입 화면에서 이미 동의했어요 → 첫 로그인 때 회원 정보를 만들어요 */
+        if(md.agree_terms&&md.agree_privacy)MEP=await createProfile({nickname:md.nickname,marketing:!!md.marketing});
+        else openAuth("finish")}}
+    if(MEP)await favPullMerge()}
+  drawMe()}
+async function createProfile({nickname,marketing}){const sb=sbClient(),now=new Date().toISOString(),md=ME.user_metadata||{};
+  const prov=ME.app_metadata?.provider||"email";
+  const row={id:ME.id,nickname:String(nickname||md.name||md.full_name||md.preferred_username||(ME.email||"회원").split("@")[0]).slice(0,20),email:ME.email||null,provider:prov,agree_terms_at:now,agree_privacy_at:now,marketing_ok:!!marketing};
+  const {data,error}=await sb.from("profiles").insert(row).select().single();if(error){console.warn(error);toast("회원 정보를 저장하지 못했어요. 잠시 뒤 다시 해 주세요");return null}return data}
+/* 관심 작가: 이 기기에 담아 둔 것과 계정에 저장된 것을 합쳐요 */
+async function favPullMerge(){const sb=sbClient();const {data,error}=await sb.from("member_favs").select("artist_id");if(error)return;
+  const server=new Set(data.map(x=>x.artist_id)),local=FAV.filter(id=>!server.has(id));
+  if(local.length)await sb.from("member_favs").upsert(local.map(id=>({user_id:ME.id,artist_id:id})));
+  FAV=[...new Set([...FAV,...server])];lsSet(FAV_KEY,FAV);updateFavUI();pushSync()}
+function memberFavWrite(id,on){if(!MEP)return;const sb=sbClient();
+  (on?sb.from("member_favs").upsert({user_id:ME.id,artist_id:id}):sb.from("member_favs").delete().eq("user_id",ME.id).eq("artist_id",id)).then(r=>{if(r.error)console.warn("관심 작가 저장 실패",r.error)})}
+function drawMe(){const b=$("#meBtn");if(!b)return;b.hidden=!authOn();
+  if(MEP||ME?.isAdmin){const n=MEP?MEP.nickname:"관리자";b.innerHTML=`<span class="me-av" aria-hidden="true">${esc(n.slice(0,1))}</span>`;b.setAttribute("aria-label",`${n}님 내 정보`)}
+  else{b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';b.setAttribute("aria-label","로그인")}}
+
+/* 로그인 창 */
+function openAuth(mode="login"){const d=$("#authDlg"),body=$("#authBody");body.innerHTML="";const add=h=>body.insertAdjacentHTML("beforeend",h);
+  const field=(id,label,type,ph,val="",auto="")=>`<label class="au-f"><span>${label}</span><input id="${id}" type="${type}" placeholder="${esc(ph)}" value="${esc(val)}"${auto?` autocomplete="${auto}"`:""}></label>`;
+  const consent=(pre="")=>`<div class="au-agree">
+      <label class="au-all"><input type="checkbox" id="${pre}agAll"> <b>모두 동의해요</b></label>
+      <label><input type="checkbox" id="${pre}agTerms" class="ag-req"> [필수] <a href="/terms" target="_blank" rel="noopener">이용약관</a> 동의</label>
+      <label><input type="checkbox" id="${pre}agPriv" class="ag-req"> [필수] <a href="/privacy" target="_blank" rel="noopener">개인정보 수집·이용</a> 동의 <small>(이메일·닉네임·로그인 정보, 탈퇴 시 바로 삭제)</small></label>
+      <label><input type="checkbox" id="${pre}agMk"> [선택] 관심 작가 전시 소식 메일 받기</label></div>`;
+  const wireAll=pre=>{const all=$("#"+pre+"agAll"),boxes=[$("#"+pre+"agTerms"),$("#"+pre+"agPriv"),$("#"+pre+"agMk")];all.onchange=()=>boxes.forEach(x=>x.checked=all.checked);boxes.forEach(x=>x.onchange=()=>all.checked=boxes.every(y=>y.checked))};
+  const msg=t=>{let m=body.querySelector(".au-msg");if(!m){m=document.createElement("p");m.className="au-msg";body.append(m)}m.textContent=t};
+  if(mode==="login"){$("#authTitle").textContent="로그인 · 회원가입";
+    add(`<p class="au-lead">로그인하면 관심 작가를 휴대폰·PC 어디서나 똑같이 볼 수 있어요.</p>
+      <button type="button" class="au-btn kakao" id="auKakao">${KAKAO_SVG}<span>카카오로 시작하기</span></button>
+      <button type="button" class="au-btn google" id="auGoogle">${GOOGLE_SVG}<span>Google로 시작하기</span></button>
+      <div class="au-or"><span>또는 이메일로</span></div>
+      ${field("auEmail","이메일","email","name@example.com","","email")}${field("auPw","비밀번호","password","8자 이상","","current-password")}
+      <button type="button" class="btn au-main" id="auLogin">이메일로 로그인</button>
+      <p class="au-links"><button type="button" id="auToSignup">이메일로 가입하기</button> · <button type="button" id="auToReset">비밀번호 찾기</button></p>
+      <p class="au-note">처음 카카오·Google로 시작하면 이용약관·개인정보 수집·이용 동의를 한 번 받아요. 관리자 로그인은 <a href="/admin">관리자 화면</a>에서 해요.</p>`);
+    const oauth=async p=>{try{sessionStorage.setItem(AUTH_BACK,location.hash||"")}catch(e){}
+      const {error}=await sbClient().auth.signInWithOAuth({provider:p,options:{redirectTo:location.origin+location.pathname}});
+      if(error)msg(`${provName(p)} 로그인을 시작하지 못했어요: ${error.message}`)};
+    $("#auKakao").onclick=()=>oauth("kakao");$("#auGoogle").onclick=()=>oauth("google");
+    $("#auLogin").onclick=async()=>{const em=$("#auEmail").value.trim(),pw=$("#auPw").value;if(!em||!pw){msg("이메일과 비밀번호를 넣어 주세요");return}
+      const {error}=await sbClient().auth.signInWithPassword({email:em,password:pw});
+      if(error){msg(/confirm/i.test(error.message)?"메일함에서 가입 인증 링크를 먼저 눌러 주세요":"이메일 또는 비밀번호가 맞지 않아요");return}
+      d.close();toast("로그인했어요")};
+    $("#auToSignup").onclick=()=>openAuth("signup");$("#auToReset").onclick=()=>openAuth("reset")}
+  else if(mode==="signup"){$("#authTitle").textContent="이메일로 가입하기";
+    add(`${field("suEmail","이메일","email","name@example.com","","email")}${field("suPw","비밀번호","password","8자 이상, 영문·숫자 섞어서","","new-password")}${field("suPw2","비밀번호 확인","password","한 번 더","","new-password")}${field("suNick","닉네임","text","사이트에 보일 이름 (20자 이내)")}
+      ${consent("su")}<button type="button" class="btn au-main" id="suGo">가입하기</button><p class="au-links"><button type="button" id="suBack">로그인으로 돌아가기</button></p>`);
+    wireAll("su");$("#suBack").onclick=()=>openAuth("login");
+    $("#suGo").onclick=async()=>{const em=$("#suEmail").value.trim(),pw=$("#suPw").value,nick=$("#suNick").value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){msg("이메일 주소를 확인해 주세요");return}
+      if(pw.length<8||!/[a-z]/i.test(pw)||!/\d/.test(pw)){msg("비밀번호는 영문과 숫자를 섞어 8자 이상으로 해 주세요");return}
+      if(pw!==$("#suPw2").value){msg("비밀번호 확인이 달라요");return}
+      if(!nick||nick.length>20){msg("닉네임을 20자 이내로 넣어 주세요");return}
+      if(!$("#suagTerms").checked||!$("#suagPriv").checked){msg("필수 항목에 동의해 주세요");return}
+      const {data,error}=await sbClient().auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+"/",data:{nickname:nick,agree_terms:true,agree_privacy:true,marketing:$("#suagMk").checked}}});
+      if(error){msg(/registered|exists/i.test(error.message)?"이미 가입된 이메일이에요. 로그인해 주세요":`가입하지 못했어요: ${error.message}`);return}
+      if(!data.session){body.innerHTML=`<p class="au-lead"><b>${esc(em)}</b>로 인증 메일을 보냈어요.<br>메일의 링크를 누르면 가입이 끝나요. 메일이 안 보이면 스팸함도 확인해 주세요.</p><button type="button" class="btn au-main" id="suOk">확인</button>`;$("#suOk").onclick=()=>d.close()}
+      else{d.close();toast("가입을 환영해요")}}}
+  else if(mode==="finish"){$("#authTitle").textContent="가입 마무리";const md=ME?.user_metadata||{};
+    add(`<p class="au-lead"><b>${provName(ME?.app_metadata?.provider)}</b> 계정으로 처음 오셨어요. 아래 내용에 동의하면 가입이 끝나요.</p>
+      ${field("fnNick","닉네임","text","사이트에 보일 이름 (20자 이내)",String(md.name||md.full_name||md.preferred_username||"").slice(0,20))}${consent("fn")}
+      <button type="button" class="btn au-main" id="fnGo">동의하고 가입하기</button><p class="au-links"><button type="button" id="fnNo">동의하지 않고 나가기</button></p>`);
+    wireAll("fn");
+    $("#fnGo").onclick=async()=>{const nick=$("#fnNick").value.trim();if(!nick){msg("닉네임을 넣어 주세요");return}
+      if(!$("#fnagTerms").checked||!$("#fnagPriv").checked){msg("필수 항목에 동의해 주세요");return}
+      MEP=await createProfile({nickname:nick,marketing:$("#fnagMk").checked});if(!MEP)return;await favPullMerge();drawMe();d.close();toast("가입을 환영해요")};
+    $("#fnNo").onclick=async()=>{try{await sbClient().rpc("delete_my_account")}catch(e){}await sbClient().auth.signOut();ME=MEP=null;drawMe();d.close();toast("가입하지 않고 나갔어요. 받은 정보는 지웠어요")}}
+  else if(mode==="reset"){$("#authTitle").textContent="비밀번호 찾기";
+    add(`<p class="au-lead">가입한 이메일로 비밀번호를 새로 정하는 링크를 보내 드려요. (이메일로 가입한 경우만)</p>${field("rsEmail","이메일","email","name@example.com","","email")}<button type="button" class="btn au-main" id="rsGo">링크 보내기</button><p class="au-links"><button type="button" id="rsBack">로그인으로 돌아가기</button></p>`);
+    $("#rsBack").onclick=()=>openAuth("login");
+    $("#rsGo").onclick=async()=>{const em=$("#rsEmail").value.trim();if(!em){msg("이메일을 넣어 주세요");return}
+      await sbClient().auth.resetPasswordForEmail(em,{redirectTo:location.origin+"/"});msg("메일을 보냈어요. 메일의 링크를 누르면 새 비밀번호를 정할 수 있어요")}}
+  else if(mode==="newpw"){$("#authTitle").textContent="새 비밀번호";
+    add(`${field("npPw","새 비밀번호","password","영문·숫자 섞어 8자 이상","","new-password")}<button type="button" class="btn au-main" id="npGo">바꾸기</button>`);
+    $("#npGo").onclick=async()=>{const pw=$("#npPw").value;if(pw.length<8||!/[a-z]/i.test(pw)||!/\d/.test(pw)){msg("영문과 숫자를 섞어 8자 이상으로 해 주세요");return}
+      const {error}=await sbClient().auth.updateUser({password:pw});if(error){msg(`바꾸지 못했어요: ${error.message}`);return}d.close();toast("비밀번호를 바꿨어요")}}
+  else if(mode==="me"){$("#authTitle").textContent="내 정보";
+    if(ME?.isAdmin&&!MEP){add(`<p class="au-lead">관리자 계정으로 로그인돼 있어요.</p><a class="btn au-main" href="/admin">관리자 화면으로</a><p class="au-links"><button type="button" id="meOut">로그아웃</button></p>`)}
+    else{add(`<dl class="au-me"><div><dt>로그인</dt><dd>${esc(provName(MEP.provider))}${MEP.email?` · ${esc(MEP.email)}`:""}</dd></div><div><dt>가입일</dt><dd>${esc(String(MEP.created_at).slice(0,10).replaceAll("-","."))}</dd></div></dl>
+      ${field("meNick","닉네임","text","20자 이내",MEP.nickname)}<label class="au-check"><input type="checkbox" id="meMk"${MEP.marketing_ok?" checked":""}> 관심 작가 전시 소식 메일 받기 (선택)</label>
+      <button type="button" class="btn au-main" id="meSave">저장하기</button>
+      <button type="button" class="btn ghost au-main" id="meFav">관심 작가 ${favArtists().length}명 보기</button>
+      <p class="au-links"><button type="button" id="meOut">로그아웃</button> · <button type="button" id="meDel" class="au-danger">회원 탈퇴</button></p>`);
+      $("#meSave").onclick=async()=>{const nick=$("#meNick").value.trim();if(!nick||nick.length>20){msg("닉네임을 20자 이내로 넣어 주세요");return}
+        const {data,error}=await sbClient().from("profiles").update({nickname:nick,marketing_ok:$("#meMk").checked,updated_at:new Date().toISOString()}).eq("id",ME.id).select().single();
+        if(error){msg("저장하지 못했어요");return}MEP=data;drawMe();toast("저장했어요");d.close()};
+      $("#meFav").onclick=()=>{d.close();openFavDlg()};
+      $("#meDel").onclick=()=>{body.innerHTML=`<p class="au-lead"><b>정말 탈퇴할까요?</b><br>회원 정보와 계정에 저장된 관심 작가가 바로 지워지고 되돌릴 수 없어요. (이 기기에 담아 둔 관심 작가는 남아요)</p><button type="button" class="btn au-main au-danger-btn" id="delGo">탈퇴하기</button><p class="au-links"><button type="button" id="delNo">취소</button></p>`;
+        $("#delNo").onclick=()=>openAuth("me");
+        $("#delGo").onclick=async()=>{const {error}=await sbClient().rpc("delete_my_account");if(error){msg("탈퇴하지 못했어요. 02-532-5558로 연락 주세요");return}
+          await sbClient().auth.signOut();ME=MEP=null;drawMe();d.close();toast("탈퇴했어요. 그동안 고마웠어요")}}}
+    const out=$("#meOut");if(out)out.onclick=async()=>{await sbClient().auth.signOut();ME=MEP=null;drawMe();d.close();toast("로그아웃했어요")}}
+  if(!d.open)d.showModal();d.scrollTop=0}
+$("#meBtn").onclick=()=>{if(!authOn()){toast("로그인 기능을 준비하고 있어요");return}if(MEP||ME?.isAdmin)openAuth("me");else if(ME)openAuth("finish");else openAuth("login")};
 /* 서버가 검색엔진용으로 미리 넣은 본문은, 화면을 그리면 걷어내요 */
 document.getElementById("ssr")?.remove();document.getElementById("ssrCss")?.remove();
 renderFootDir();renderSnsFoot();
 renderPortfolio();renderNews();renderReviews();renderInterview();renderBooks();renderGalleries();renderCalendar();renderStatFilter();renderSchedule();renderHome();buildMega();hxBuild();route();
-updateFavUI();setTimeout(favPopup,1500);pushSync();
+updateFavUI();setTimeout(favPopup,1500);pushSync();drawMe();authInit();
 /* redraw covers once web fonts arrive so titles use Hahmlet */
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderBooks();renderGalleries();renderCalendar();renderHome();hxBuild()});
 

@@ -11,7 +11,8 @@ function sbConfigured() {
 function sbClient() {
   if (!window.ARTTAN_DB && sbConfigured()) {
     const c = window.ARTTAN_CONFIG;
-    window.ARTTAN_DB = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey);
+    /* 로그인 유지 + 구글·카카오 로그인은 PKCE 방식으로 받아요 (돌아온 주소의 ?code= 를 자동으로 처리) */
+    window.ARTTAN_DB = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey, { auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
   }
   return window.ARTTAN_DB;
 }

@@ -179,16 +179,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=59"></script>
+<script src="core.js?v=60"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=59"></script>
-<script src="artists/jmh/artist.js?v=59"></script>
-<script src="artists/lmg/artist.js?v=59"></script>
-<script src="artists/lhw/artist.js?v=59"></script>
+<script src="artists/eloi/artist.js?v=60"></script>
+<script src="artists/jmh/artist.js?v=60"></script>
+<script src="artists/lmg/artist.js?v=60"></script>
+<script src="artists/lhw/artist.js?v=60"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=59"></script>
-<script src="data.js?v=59"></script>
+<script src="config.js?v=60"></script>
+<script src="data.js?v=60"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -198,7 +198,7 @@ function refreshPublic(){}
 const IC={home:"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",user:"M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0",cal:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",inbox:"M4 13l2-8h12l2 8v6H4zM4 13h5l1 2h4l1-2h5",mic:"M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3",book:"M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11",building:"M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18",gear:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",chev:"M9 6l6 6-6 6",plus:"M12 5v14M5 12h14",mega:"M4 10v4h3l6 4V6l-6 4zM17 9a4 4 0 0 1 0 6",mail:"M4 6h16v12H4zM4 7l8 6 8-6",search:"M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"};
 const ic=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 const el=h=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild};
-const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["review","전시리뷰","book"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["notice","공지·질문","mega"],["iv","인터뷰","mic"],["books","책·도록","book"],["set","설정","gear"]];
+const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["review","전시리뷰","book"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["inq","작가 문의","mail"],["members","회원","user"],["notice","공지·질문","mega"],["iv","인터뷰","mic"],["books","책·도록","book"],["set","설정","gear"]];
 let adView="dash";
 const pendingApps=()=>AD.apps.filter(a=>!AD.done[a.id]);
 function go(v){adView=v;renderAdmin();window.scrollTo(0,0)}
@@ -212,7 +212,7 @@ function renderAdmin(){
     if(on&&side.scrollWidth>side.clientWidth){const r=on.getBoundingClientRect(),sr=side.getBoundingClientRect();if(r.left<sr.left||r.right>sr.right-30)side.scrollLeft+=r.left-sr.left-(sr.width-r.width)/2}
     const more=()=>side.classList.toggle("more",side.scrollLeft+side.clientWidth<side.scrollWidth-4);more();side.onscroll=more});
   const m=$("#adMain");m.innerHTML=SBM()?`<p class="ad-note">Supabase에 연결돼 있어요. 여기서 저장한 내용은 바로 실제 사이트에 반영돼요.</p>`:`<p class="ad-note">예시 데이터 모드예요. 바꾼 내용은 이 브라우저에만 저장돼요. Supabase를 연결하면 실제 DB에 저장돼요.</p>`;
-  ({dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,review:adReview,set:adSet})[adView](m);
+  ({members:adMembers,dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,review:adReview,set:adSet})[adView](m);
 }
 function adHead(m,title,sub,action){const h=el(`<div class="ad-head"><div><h1>${esc(title)}</h1>${sub?`<p>${esc(sub)}</p>`:""}</div></div>`);
   if(action){const b=el(`<button type="button" class="t-btn primary sm">${ic(IC.plus,18)}${esc(action[0])}</button>`);b.onclick=action[1];h.append(b)}m.append(h)}
@@ -986,6 +986,22 @@ function unpublish(x){
   AD.exhibitions=AD.exhibitions.filter(e=>e.id!==x.exhibition_id);const i=EXHIBITIONS.findIndex(e=>e.id===x.exhibition_id);if(i>=0)EXHIBITIONS.splice(i,1);
   Object.assign(AD.crawled.find(y=>y.id===x.id),{status:"pending",exhibition_id:null});adSave();CRAWLED=AD.crawled;renderAdmin();toast("게시를 내렸어요")}
 
+/* 회원: 가입 동의를 마친 회원 목록과, 회원들이 관심 작가로 담은 작가 순위 */
+async function adMembers(m){adHead(m,"회원","");
+  if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 이메일·카카오·Google로 가입한 회원이 여기에 보여요.</p>`));return}
+  const top=card(m,"관심 작가 순위"),c=card(m,"회원 목록");top.append(el(`<p class="t-empty">불러오는 중…</p>`));c.append(el(`<p class="t-empty">불러오는 중…</p>`));
+  const [pr,fv]=await Promise.all([ARTTAN_DB.from("profiles").select("id,nickname,email,provider,marketing_ok,created_at").order("created_at",{ascending:false}).limit(500),ARTTAN_DB.from("member_favs").select("artist_id")]);
+  if(pr.error){c.innerHTML="";c.append(el(`<p class="t-empty">회원 목록을 불러오지 못했어요: ${esc(pr.error.message)}</p>`));return}
+  const L=pr.data||[],F=fv.data||[];
+  m.querySelector(".ad-head p")?.remove();m.querySelector(".ad-head div").append(el(`<p>회원 ${L.length}명 · 소식 메일 동의 ${L.filter(x=>x.marketing_ok).length}명</p>`));
+  top.innerHTML='<div class="t-card-h"><h2>관심 작가 순위</h2></div>';const cnt={};F.forEach(x=>cnt[x.artist_id]=(cnt[x.artist_id]||0)+1);
+  const R=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  if(!R.length)top.append(el(`<p class="t-empty">아직 회원이 담은 관심 작가가 없어요.</p>`));
+  R.forEach(([id,n])=>{const a=byId[id];top.append(row({thumb:a?thumbOf(a):null,title:a?aName(a):id,sub:`회원 ${n}명이 담았어요`}))});
+  c.innerHTML='<div class="t-card-h"><h2>회원 목록</h2></div>';
+  if(!L.length)c.append(el(`<p class="t-empty">아직 가입한 회원이 없어요.</p>`));
+  const PV={kakao:"카카오",google:"Google",email:"이메일"};
+  L.forEach(x=>c.append(row({title:x.nickname,sub:`${PV[x.provider]||x.provider||"이메일"} · ${x.email||"이메일 없음"} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 가입${x.marketing_ok?" · 소식 메일 동의":""}`})))}
 /* 설정 */
 function adSet(m){adHead(m,"설정");
   /* arttan 공식 SNS: 주소를 넣은 것만 사이트 아래쪽·인터뷰 페이지에 버튼으로 보여요 */
