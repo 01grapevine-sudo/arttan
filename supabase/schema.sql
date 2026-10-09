@@ -397,3 +397,8 @@ begin
 end $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- 문의 처리 상태(new 새 문의 · contacted 연락함 · done 완료)와 상담 메모
+alter table public.inquiries add column if not exists status text not null default 'new';
+alter table public.inquiries add column if not exists memo text;
+alter table public.inquiries add column if not exists handled_at timestamptz;

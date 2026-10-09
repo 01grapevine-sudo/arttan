@@ -179,16 +179,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=61"></script>
+<script src="core.js?v=62"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=61"></script>
-<script src="artists/jmh/artist.js?v=61"></script>
-<script src="artists/lmg/artist.js?v=61"></script>
-<script src="artists/lhw/artist.js?v=61"></script>
+<script src="artists/eloi/artist.js?v=62"></script>
+<script src="artists/jmh/artist.js?v=62"></script>
+<script src="artists/lmg/artist.js?v=62"></script>
+<script src="artists/lhw/artist.js?v=62"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=61"></script>
-<script src="data.js?v=61"></script>
+<script src="config.js?v=62"></script>
+<script src="data.js?v=62"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -204,7 +204,7 @@ const pendingApps=()=>AD.apps.filter(a=>!AD.done[a.id]);
 function go(v){adView=v;renderAdmin();window.scrollTo(0,0)}
 function renderAdmin(){
   const nav=$("#adNav");nav.innerHTML="";
-  AD_MENU.forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:k==="crawl"?CRAWLED.filter(x=>x.status==="pending").length:0;
+  AD_MENU.forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:k==="crawl"?CRAWLED.filter(x=>x.status==="pending").length:k==="inq"?INQ_NEW:0;
     const b=el(`<button type="button" class="ad-nav${adView===k?" on":""}"${adView===k?' aria-current="page"':""}>${ic(IC[i])}<span>${l}</span>${n?`<em aria-label="대기 ${n}건">${n}</em>`:""}</button>`);
     b.onclick=()=>go(k);nav.append(b)});
   /* 휴대폰: 고른 메뉴가 메뉴 줄 화면 안에 보이게 */
@@ -269,7 +269,10 @@ async function loadCrawled(){
   const {data,error}=await ARTTAN_DB.from("crawled_exhibitions").select("*").order("start_date",{ascending:false}).limit(500);
   if(error){console.warn("수집한 전시를 불러오지 못했어요",error.message);CRAWLED=[];return}
   CRAWLED=(data||[]).map(x=>({id:x.id,gallery_id:x.gallery_id,hash:x.hash,title:x.title,context:x.context||"",start:x.start_date,end:x.end_date,source_url:x.source_url||"",status:x.status,exhibition_id:x.exhibition_id||null}))}
-async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();await loadCrawled();renderAdmin()}
+/* 새 문의 개수 (메뉴 배지 · 홈 카드) */
+let INQ_NEW=0;
+async function loadInqCount(){if(!SBM())return;try{const {count}=await ARTTAN_DB.from("inquiries").select("id",{count:"exact",head:true}).eq("status","new");INQ_NEW=count||0}catch(e){}}
+async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();await loadCrawled();await loadInqCount();renderAdmin()}
 async function dbDo(fn,msg,closeAfter){
   const before=seoPages();
   try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg);pingSearch(before,seoPages())}
@@ -315,7 +318,7 @@ function adDash(m){
   const ws=weekStart(today),we=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+6);
   const live=EXHIBITIONS.filter(e=>status(e).k==="live").length, open=EXHIBITIONS.filter(e=>{const s=parse(e.start);return s>=ws&&s<=we}).length, pa=pendingApps().length;
   const g=el(`<div class="t-stats"></div>`);
-  [["공개 작가",`${pub().length}명`,"artists"],["진행중 전시",`${live}건`,"ex"],["이번 주 개막",`${open}건`,"ex"],["등록 신청",`${pa}건`,"apps",pa>0]].forEach(([l,v,k,hi])=>{
+  [["공개 작가",`${pub().length}명`,"artists"],["진행중 전시",`${live}건`,"ex"],["이번 주 개막",`${open}건`,"ex"],["등록 신청",`${pa}건`,"apps",pa>0],...(SBM()?[["새 문의",`${INQ_NEW}건`,"inq",INQ_NEW>0]]:[])].forEach(([l,v,k,hi])=>{
     const b=el(`<button type="button" class="t-stat${hi?" hi":""}"><span>${l}</span><b>${v}</b></button>`);b.onclick=()=>go(k);g.append(b)});
   m.append(g);
   const todo=card(m,"확인이 필요해요");const items=[];
@@ -589,15 +592,47 @@ function noticeSheet(i){
 }
 
 /* 작가 문의 */
+/* 문의: 새 문의 → 연락함 → 완료. 메일·전화 바로 연결, 상담 메모 */
+const INQ_ST={new:["새 문의","blue"],contacted:["연락함","green"],done:["완료","gray"]};
+let inqSt="new";
+const inqIsMail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||"").trim());
+const inqTel=v=>{const d=String(v||"").replace(/[^0-9+]/g,"");return d.length>=9&&!inqIsMail(v)?d:""};
 function adInq(m){
-  adHead(m,"작가 문의","작가 공간의 문의 양식으로 들어온 메시지");const c=card(m);
+  adHead(m,"작가 문의","작가 공간 문의와 홈의 촬영·제작 서비스 문의");const c=card(m);
   if(!SBM()){c.append(el(`<p class="t-info">Supabase를 연결하면 작가 공간의 문의(작품 구매, 전시 제안, 취재)와 홈의 촬영·제작 서비스 문의가 여기에 쌓여요.</p>`));return}
   c.append(el(`<p class="t-empty">불러오는 중…</p>`));
-  ARTTAN_DB.from("inquiries").select("*").order("created_at",{ascending:false}).limit(100).then(({data,error})=>{c.innerHTML="";
+  ARTTAN_DB.from("inquiries").select("*").order("created_at",{ascending:false}).limit(300).then(({data,error})=>{c.innerHTML="";
     if(error){c.append(el(`<p class="t-empty">문의를 불러오지 못했어요.</p>`));return}
-    if(!data.length){c.append(el(`<p class="t-empty">아직 들어온 문의가 없어요.</p>`));return}
-    data.forEach(x=>{const a=byId[x.artist_id];c.append(row({thumb:a?thumbOf(a):null,title:`[${x.type||"문의"}] ${x.name} · ${x.email}`,sub:`${a?a.name+" 작가 · ":(x.type||"").startsWith("서비스")?"arttan 서비스 문의 · ":""}${(x.created_at||"").slice(0,10)} · ${x.message}`,
-      onClick:()=>openSheet("작가 문의",el(`<div class="t-form"><p class="t-desc"><b>${esc(x.name)}</b> (${esc(x.email)})<br>${esc(a?a.name+" 작가":"")} · ${esc(x.type||"")}</p><p class="t-desc" style="white-space:pre-wrap">${esc(x.message)}</p></div>`),[tBtn("닫기","ghost",closeSheet)])}))})})}
+    const cnt={new:0,contacted:0,done:0,all:data.length};data.forEach(x=>cnt[x.status||"new"]++);INQ_NEW=cnt.new;
+    const bar=el(`<div class="t-toolbar" style="padding:12px 16px 4px"></div>`);
+    bar.append(segmented(["new","contacted","done","all"],inqSt,v=>{inqSt=v;renderAdmin()},x=>`${x==="all"?"전체":INQ_ST[x][0]} ${cnt[x]}`));c.append(bar);
+    const L=data.filter(x=>inqSt==="all"||(x.status||"new")===inqSt);
+    if(!L.length){c.append(el(`<p class="t-empty">${inqSt==="new"?"새 문의가 없어요.":"해당하는 문의가 없어요."}</p>`));return}
+    L.forEach(x=>{const a=byId[x.artist_id],st=INQ_ST[x.status||"new"];
+      const who=a?`${aName(a)} 작가`:(x.type||"").startsWith("서비스")?"arttan 서비스 문의":"문의";
+      c.append(row({thumb:a?thumbOf(a):null,title:`[${x.type||"문의"}] ${x.name}`,
+        sub:`${who} · ${x.email} · ${(x.created_at||"").slice(0,16).replace("T"," ")}${x.memo?" · 메모 있음":""}`,
+        right:el(`<span class="t-pill ${st[1]}">${st[0]}</span>`),onClick:()=>inqSheet(x,who)}))})})}
+function inqSheet(x,who){
+  const f=el(`<div class="t-form"></div>`),tel=inqTel(x.email);
+  f.append(el(`<div class="t-desc"><b>${esc(x.name)}</b> · ${esc(x.email)}<br>${esc(who)} · ${esc(x.type||"")} · ${esc((x.created_at||"").slice(0,16).replace("T"," "))}</div>`));
+  f.append(el(`<p class="t-desc" style="white-space:pre-wrap;background:var(--t-bg);border-radius:12px;padding:12px 14px;color:var(--t-text)">${esc(x.message||"")}</p>`));
+  /* 바로 연락 */
+  const acts=el(`<div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px"></div>`);
+  if(inqIsMail(x.email)){const sub=encodeURIComponent(`[arttan] ${x.type||"문의"} 답변드려요`),bd=encodeURIComponent(`${x.name}님, 안녕하세요. arttan입니다.\n\n남겨 주신 문의에 답변드려요.\n\n\n---\n보내신 내용:\n${x.message||""}\n\narttan 아트탄 · 02-532-5558 · www.arttan.co.kr`);
+    const b=el(`<a class="t-btn ghost sm" href="mailto:${esc(x.email.trim())}?subject=${sub}&body=${bd}">메일 쓰기</a>`);b.onclick=()=>{if((x.status||"new")==="new")inqSave(x,{status:"contacted"},true)};acts.append(b)}
+  if(tel){const b=el(`<a class="t-btn ghost sm" href="tel:${esc(tel)}">전화 걸기</a>`);b.onclick=()=>{if((x.status||"new")==="new")inqSave(x,{status:"contacted"},true)};acts.append(b)}
+  const cp=tBtn("연락처 복사","ghost sm",()=>{navigator.clipboard?.writeText(x.email).then(()=>toast("연락처를 복사했어요"),()=>toast(x.email))});acts.append(cp);
+  f.append(fieldD("바로 연락",acts,"메일 쓰기·전화 걸기를 누르면 자동으로 '연락함'으로 바뀌어요."));
+  const st=segField(["new","contacted","done"],x.status||"new",k=>INQ_ST[k][0]);
+  const memo=inp("iqMemo","textarea",x.memo||"","상담 메모 (견적, 일정, 다음 연락 날짜 등). 문의한 분에게는 보이지 않아요.");memo.rows=4;
+  f.append(fieldD("처리 상태",st),fieldL("메모",memo));
+  if(x.handled_at)f.append(el(`<p class="t-desc">마지막 처리: ${esc(String(x.handled_at).slice(0,16).replace("T"," "))}</p>`));
+  openSheet(`${x.name} 님 문의`,f,[tBtn("닫기","ghost",closeSheet),tBtn("저장하기","primary",()=>inqSave(x,{status:st.dataset.value,memo:memo.value.trim()||null}))])}
+async function inqSave(x,patch,quiet){const p={...patch,handled_at:new Date().toISOString()};
+  const {error}=await ARTTAN_DB.from("inquiries").update(p).eq("id",x.id);
+  if(error){toast("저장하지 못했어요: "+error.message);return}
+  Object.assign(x,p);await loadInqCount();if(!quiet){closeSheet();toast("저장했어요")}renderAdmin()}
 
 /* 인터뷰 · 도록 · 갤러리 */
 /* ================= 작가 인터뷰: 영상·사진·글 (넣은 것만 사이트에 보여요) ================= */
