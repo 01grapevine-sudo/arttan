@@ -111,4 +111,5 @@ async function postSubmit(kind, data, hp, table) {
   if (error) throw error; return { ok: true };
 }
 const submitApplication = (v, hp) => postSubmit("application", v, hp, "applications");
+const submitUpdate = (v, hp) => postSubmit("update", v, hp, "artist_requests");
 const submitInquiry = (v, hp) => postSubmit("inquiry", v, hp, "inquiries");

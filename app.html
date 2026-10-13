@@ -1294,6 +1294,8 @@ body.is-site main>footer{display:flex}
 /* ===== 작가 등록 신청 ===== */
 dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 #joinForm,#svcForm{padding:24px;display:flex;flex-direction:column;gap:14px}
+.as-upd{margin-top:28px;padding:18px 20px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}.as-upd p{margin:0;font-size:14px;line-height:1.6;color:var(--muted)}.as-upd p b{color:var(--ink)}
+#updForm{padding:24px;display:flex;flex-direction:column;gap:14px}
 .j-photos{display:grid;gap:8px}.j-ph-l{font-size:13px;font-weight:700}.j-ph-l small{color:var(--muted);font-weight:500}
 .j-ph-add{display:inline-flex;align-items:center;justify-content:center;height:44px;border:1px dashed var(--line);border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;color:var(--accent)}
 .j-ph-add input{position:absolute;opacity:0;width:1px;height:1px}
@@ -1825,6 +1827,33 @@ body.is-site .biz{margin-bottom:28px}
   <button class="lb-nav next" type="button" id="lbNext" aria-label="다음 작품">›</button>
 </dialog>
 
+<!-- 작가 정보 수정·작품 추가 요청 (작가 본인 또는 대리인) -->
+<dialog id="updDlg" class="join" aria-labelledby="updTitle">
+  <form id="updForm" novalidate>
+    <div class="join-head"><span class="free-tag">작가</span><h2 id="updTitle">정보 수정·작품 추가 요청</h2><button class="x" type="button" data-close aria-label="닫기">×</button></div>
+    <p class="join-lead" id="updLead">고칠 내용이나 새 작품·전시 소식, 사진과 영상을 보내 주세요. arttan이 확인한 뒤 작가 공간에 반영하고 연락드려요.</p>
+    <div class="join-grid">
+      <label>보내는 분 이름<input id="uName" required autocomplete="name"></label>
+      <label>연락처 (이메일 또는 전화)<input id="uMail" required autocomplete="email"></label>
+      <label class="wide">요청 내용<textarea id="uMsg" rows="5" placeholder="예: 약력에 2026년 개인전 추가, 작품 3점 추가 (제목·연도·재료·크기), 소개 글 수정 등"></textarea></label>
+      <div class="wide j-photos">
+        <span class="j-ph-l">작품·인물 사진 <small>(선택 · 최대 10장)</small></span>
+        <label class="j-ph-add" id="uPhAdd"><input type="file" id="uPhotos" accept="image/jpeg,image/png,image/webp" multiple><span>＋ 사진 고르기</span></label>
+        <div class="j-ph-prev" id="uPhPrev"></div>
+      </div>
+      <label class="wide">영상 주소 <small style="font-weight:500;color:var(--muted)">(선택 · 유튜브·인스타그램 등)</small><input id="uVUrl" type="url" placeholder="https://youtu.be/…"></label>
+      <div class="wide j-photos">
+        <span class="j-ph-l">영상 파일 <small>(선택 · 50MB 이하, 큰 영상은 유튜브 주소로)</small></span>
+        <label class="j-ph-add" id="uVAdd"><input type="file" id="uVFile" accept="video/mp4,video/quicktime,video/webm"><span>＋ 영상 고르기</span></label>
+        <small class="j-ph-note" id="uVName"></small>
+      </div>
+      <label class="wide j-ph-ok"><input type="checkbox" id="uOk"> 작가 본인이거나 작가의 허락을 받았고, 보내는 사진·영상을 arttan 작가 공간에 게시하는 데 동의해요</label>
+    </div>
+    <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="btn join-go" type="submit">요청 보내기</button>
+  </form>
+</dialog>
+
 <dialog id="svcDlg" class="join" aria-labelledby="svcTitle">
   <form id="svcForm" novalidate>
     <div class="join-head"><span class="free-tag">문의</span><h2 id="svcTitle">촬영·제작 문의</h2><button class="x" type="button" data-close aria-label="닫기">×</button></div>
@@ -1890,16 +1919,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=66"></script>
+<script src="core.js?v=67"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=66"></script>
-<script src="artists/jmh/artist.js?v=66"></script>
-<script src="artists/lmg/artist.js?v=66"></script>
-<script src="artists/lhw/artist.js?v=66"></script>
+<script src="artists/eloi/artist.js?v=67"></script>
+<script src="artists/jmh/artist.js?v=67"></script>
+<script src="artists/lmg/artist.js?v=67"></script>
+<script src="artists/lhw/artist.js?v=67"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=66"></script>
-<script src="data.js?v=66"></script>
+<script src="config.js?v=67"></script>
+<script src="data.js?v=67"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2744,6 +2773,8 @@ function renderArtistSite(id){
     rs.append(g)}
   /* 문의 */
   const cs=sec("as-contact","Contact",`${esc(a.name)} 작가에게 문의`);
+  cs.insertAdjacentHTML("beforeend",`<div class="as-upd"><p><b>${esc(a.name)} 작가님이신가요?</b> 약력 수정, 새 작품·전시 추가, 사진·영상을 직접 보내 주실 수 있어요.</p><button type="button" class="btn ghost" id="asUpdBtn">정보 수정·작품 추가 요청</button></div>`);
+  cs.querySelector("#asUpdBtn").onclick=()=>openUpd(a);
   cs.insertAdjacentHTML("beforeend",`<form class="as-form" novalidate>
     <p class="as-lead">작품 구매, 전시 제안, 인터뷰·취재 문의를 남겨 주세요. arttan이 확인한 뒤 작가에게 전달해요.</p>
     <div class="as-two"><label>이름<input id="cfName" name="name" autocomplete="name" required></label><label>이메일<input id="cfMail" name="email" type="email" autocomplete="email" required></label></div>
@@ -2896,6 +2927,36 @@ $("#jPhotos").onchange=async e=>{for(const fl of [...e.target.files]){if(JPH.len
 async function jUpload(){if(!JPH.length)return [];const sb=typeof sbClient==="function"&&sbClient();if(!sb)return [];
   const dir=(crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g,()=>(Math.random()*16|0).toString(16)));
   const out=[];for(let i=0;i<JPH.length;i++){const path=`pending/${dir}/${i}.jpg`;const {error}=await sb.storage.from("applications").upload(path,JPH[i].blob,{contentType:"image/jpeg",upsert:false});if(error)throw error;out.push(path)}return out}
+/* 작가 정보 수정·작품 추가 요청: 사진 최대 10장(긴 변 2000px로 줄임) + 영상(주소 또는 50MB 이하 파일) → 비공개 저장소 → 관리자 '수정 요청' */
+let UPH=[],UVF=null,UPD_A=null;
+const uDrawPh=()=>{const box=$("#uPhPrev");box.innerHTML="";UPH.forEach((p,i)=>{const w=document.createElement("span");w.className="j-ph";w.innerHTML=`<img src="${p.url}" alt="사진 ${i+1}"><button type="button" aria-label="사진 ${i+1} 빼기">×</button>`;
+  w.querySelector("button").onclick=()=>{URL.revokeObjectURL(p.url);UPH.splice(i,1);uDrawPh()};box.append(w)});$("#uPhAdd").hidden=UPH.length>=10};
+const uDrawV=()=>{$("#uVName").textContent=UVF?`${UVF.name} (${(UVF.size/1048576).toFixed(1)}MB)`:""};
+function openUpd(a){UPD_A=a;const f=$("#updForm");f.reset();UPH.forEach(p=>URL.revokeObjectURL(p.url));UPH=[];UVF=null;uDrawPh();uDrawV();
+  $("#updTitle").textContent=`${a.name} 작가 정보 수정·작품 추가 요청`;$("#updDlg").showModal()}
+$("#uPhotos").onchange=async e=>{for(const fl of [...e.target.files]){if(UPH.length>=10){toast("사진은 10장까지 보낼 수 있어요");break}
+    if(!/^image\/(jpeg|png|webp)$/.test(fl.type)){toast(`${fl.name}: JPG·PNG·WEBP 사진만 올릴 수 있어요`);continue}
+    try{const blob=await jShrink(fl);UPH.push({blob,url:URL.createObjectURL(blob)})}catch(err){toast(`${fl.name}: 사진을 읽지 못했어요`)}}
+  e.target.value="";uDrawPh()};
+$("#uVFile").onchange=e=>{const fl=e.target.files[0];e.target.value="";if(!fl)return;
+  if(fl.size>50*1024*1024){toast("영상 파일은 50MB 이하로 보내 주세요. 큰 영상은 유튜브에 올리고 주소를 적어 주세요");return}
+  if(!/^video\/(mp4|quicktime|webm)$/.test(fl.type)){toast("MP4·MOV·WEBM 영상만 올릴 수 있어요");return}UVF=fl;uDrawV()};
+$("#updForm").onsubmit=async e=>{e.preventDefault();const f=e.target,a=UPD_A;
+  const v={artist_id:a?.id||null,name:$("#uName").value.trim(),email:$("#uMail").value.trim(),message:$("#uMsg").value.trim(),video_url:$("#uVUrl").value.trim()};
+  if(!v.name||v.email.length<5){toast("이름과 연락처를 적어 주세요");return}
+  if(!v.message&&!UPH.length&&!v.video_url&&!UVF){toast("요청 내용이나 사진·영상 중 하나는 보내 주세요");return}
+  if(v.video_url&&!/^https:\/\//.test(v.video_url)){toast("영상 주소는 https:// 로 시작해야 해요");return}
+  if((UPH.length||UVF||v.video_url)&&!$("#uOk").checked){toast("사진·영상 게시 동의를 체크해 주세요");return}
+  const btn=f.querySelector(".join-go");btn.disabled=true;
+  try{const sb=typeof sbClient==="function"&&sbClient();
+    if(sb&&(UPH.length||UVF)){const dir=(crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g,()=>(Math.random()*16|0).toString(16)));v.photos=[];
+      for(let i=0;i<UPH.length;i++){btn.textContent=`사진 올리는 중… ${i+1}/${UPH.length}`;const path=`updates/${dir}/${i}.jpg`;const {error}=await sb.storage.from("applications").upload(path,UPH[i].blob,{contentType:"image/jpeg",upsert:false});if(error)throw error;v.photos.push(path)}
+      if(UVF){btn.textContent="영상 올리는 중…";const ext=UVF.type==="video/quicktime"?"mov":UVF.type==="video/webm"?"webm":"mp4";const path=`updates/${dir}/video.${ext}`;
+        const {error}=await sb.storage.from("applications").upload(path,UVF,{contentType:UVF.type,upsert:false});if(error)throw error;v.video_path=path}}
+    btn.textContent="보내는 중…";const r=await submitUpdate(v,f.website.value);$("#updDlg").close();
+    toast(r.local?"아직 접수 창구가 연결되지 않아 요청이 저장되지 않았어요":"요청을 받았어요. 확인 후 작가 공간에 반영하고 연락드릴게요")}
+  catch(err){console.warn(err);toast("요청을 보내지 못했어요. 잠시 뒤 다시 시도하거나 02-532-5558로 연락 주세요")}
+  finally{btn.disabled=false;btn.textContent="요청 보내기"}};
 $("#joinBtn").onclick=()=>{$("#joinForm").reset();JPH.forEach(p=>URL.revokeObjectURL(p.url));JPH=[];jDrawPh();$("#joinDlg").showModal()};
 $("#joinForm").onsubmit=async e=>{e.preventDefault();
   const v={name:$("#jName").value.trim(),born:+$("#jBorn").value,genre:$("#jGenre").value,city:$("#jCity").value.trim(),email:$("#jMail").value.trim(),note:$("#jNote").value.trim()};

@@ -416,3 +416,26 @@ create policy "applications: admin read" on storage.objects for select using (bu
 drop policy if exists "applications: admin delete" on storage.objects;
 create policy "applications: admin delete" on storage.objects for delete using (bucket_id = 'applications' and public.is_admin());
 alter table public.applications add column if not exists photos text[] not null default '{}';
+
+-- 작가 정보 수정·작품 추가 요청 (작가 공간의 요청 양식) ------------------------
+create table if not exists public.artist_requests (
+  id bigserial primary key, artist_id text references public.artists(id) on delete set null,
+  name text not null check (char_length(name) between 1 and 60), email text not null check (char_length(email) <= 120),
+  message text check (char_length(message) <= 3000), photos text[] not null default '{}',
+  video_url text check (video_url is null or video_url ~ '^https://'), video_path text,
+  status text not null default 'new' check (status in ('new','done','rejected')), memo text,
+  created_at timestamptz not null default now(), handled_at timestamptz);
+alter table public.artist_requests enable row level security;
+drop policy if exists "artist_requests: public insert" on public.artist_requests;
+create policy "artist_requests: public insert" on public.artist_requests for insert to anon, authenticated with check (status = 'new' and memo is null and handled_at is null);
+drop policy if exists "artist_requests: admin all" on public.artist_requests;
+create policy "artist_requests: admin all" on public.artist_requests for all using (public.is_admin()) with check (public.is_admin());
+-- 같은 비공개 저장소(applications): updates/<uuid>/0~9.jpg|png|webp, updates/<uuid>/video.mp4|mov|webm (50MB)
+update storage.buckets set file_size_limit = 52428800,
+  allowed_mime_types = array['image/jpeg','image/png','image/webp','video/mp4','video/quicktime','video/webm'] where id = 'applications';
+drop policy if exists "applications: anon upload" on storage.objects;
+create policy "applications: anon upload" on storage.objects for insert to anon, authenticated
+  with check (bucket_id = 'applications' and (
+    name ~ '^pending/[0-9a-f-]{36}/[0-4]\.(jpg|png|webp)$'
+    or name ~ '^updates/[0-9a-f-]{36}/[0-9]\.(jpg|png|webp)$'
+    or name ~ '^updates/[0-9a-f-]{36}/video\.(mp4|mov|webm)$'));
