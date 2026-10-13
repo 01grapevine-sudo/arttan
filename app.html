@@ -231,6 +231,7 @@ dialog.lb:modal{inset-block:0;max-height:100dvh}
 .fav-btn[aria-pressed="true"]{background:#fff;color:#E0245E;border-color:#fff}
 .fav-btn.light{border-color:var(--line);background:var(--surface);color:var(--ink);backdrop-filter:none}
 .fav-btn.light[aria-pressed="true"]{color:#E0245E;background:#FFF0F4;border-color:#FFD0DD}
+.as-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.as-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:13px;font-weight:700;text-decoration:none;backdrop-filter:blur(6px)}.as-links a:hover{background:rgba(255,255,255,.28)}
 .as-hero-in h1 .as-suf{font-style:normal;font-size:.42em;font-weight:700;margin-left:0;opacity:.9;letter-spacing:0}
 .as-hero-in .fav-btn{margin-top:16px;width:auto;align-self:flex-start;justify-self:start}
 .fav-pop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;width:min(380px,calc(100vw - 32px));background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.35);padding:18px 18px 14px}
@@ -1299,6 +1300,7 @@ dialog.join{width:min(560px,calc(100vw - 32px));border-radius:24px;padding:0}
 #joinForm,#svcForm{padding:24px;display:flex;flex-direction:column;gap:14px}
 .as-upd{margin-top:28px;padding:18px 20px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}.as-upd p{margin:0;font-size:14px;line-height:1.6;color:var(--muted)}.as-upd p b{color:var(--ink)}
 #updForm{padding:24px;display:flex;flex-direction:column;gap:14px}
+.j-sns{display:grid;gap:8px}.j-sns input{height:44px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;font-size:15px;background:var(--bg);color:var(--ink);min-width:0}
 .j-photos{display:grid;gap:8px}.j-ph-l{font-size:13px;font-weight:700}.j-ph-l small{color:var(--muted);font-weight:500}
 .j-ph-add{display:inline-flex;align-items:center;justify-content:center;height:44px;border:1px dashed var(--line);border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;color:var(--accent)}
 .j-ph-add input{position:absolute;opacity:0;width:1px;height:1px}
@@ -1837,13 +1839,17 @@ body.is-site .biz{margin-bottom:28px}
     <p class="join-lead" id="updLead">고칠 내용이나 새 작품·전시 소식, 사진과 영상을 보내 주세요. arttan이 확인한 뒤 작가 공간에 반영하고 연락드려요.</p>
     <div class="join-grid">
       <label>보내는 분 이름<input id="uName" required autocomplete="name"></label>
-      <label>연락처 (이메일 또는 전화)<input id="uMail" required autocomplete="email"></label>
+      <label>답장 받을 이메일<input id="uMail" type="email" required autocomplete="email"></label>
       <label class="wide">요청 내용<textarea id="uMsg" rows="5" placeholder="예: 약력에 2026년 개인전 추가, 작품 3점 추가 (제목·연도·재료·크기), 소개 글 수정 등"></textarea></label>
       <div class="wide j-photos">
         <span class="j-ph-l">작품·인물 사진 <small>(선택 · 최대 10장)</small></span>
         <label class="j-ph-add" id="uPhAdd"><input type="file" id="uPhotos" accept="image/jpeg,image/png,image/webp" multiple><span>＋ 사진 고르기</span></label>
         <div class="j-ph-prev" id="uPhPrev"></div>
       </div>
+      <div class="wide j-sns"><span class="j-ph-l">작가 SNS·홈페이지 <small>(선택 · 작가 공간에 버튼으로 나와요)</small></span>
+        <input id="uIg" type="url" placeholder="인스타그램 https://instagram.com/…">
+        <input id="uYt" type="url" placeholder="유튜브 https://youtube.com/@…">
+        <input id="uWeb" type="url" placeholder="블로그·홈페이지 https://…"></div>
       <label class="wide">영상 주소 <small style="font-weight:500;color:var(--muted)">(선택 · 유튜브·인스타그램 등)</small><input id="uVUrl" type="url" placeholder="https://youtu.be/…"></label>
       <div class="wide j-photos">
         <span class="j-ph-l">영상 파일 <small>(선택 · 50MB 이하, 큰 영상은 유튜브 주소로)</small></span>
@@ -1883,6 +1889,10 @@ body.is-site .biz{margin-bottom:28px}
       <label>활동 지역<input id="jCity" placeholder="예: 서울"></label>
       <label class="wide">이메일<input id="jMail" type="email" required autocomplete="email"></label>
       <label class="wide">간단한 소개 · 경력<textarea id="jNote" rows="4" placeholder="개인전·단체전, 주요 작업 등을 적어 주세요"></textarea></label>
+      <div class="wide j-sns"><span class="j-ph-l">작가 SNS·홈페이지 <small>(선택 · 작가 공간에 버튼으로 나와요)</small></span>
+        <input id="jIg" type="url" placeholder="인스타그램 https://instagram.com/…">
+        <input id="jYt" type="url" placeholder="유튜브 https://youtube.com/@…">
+        <input id="jWeb" type="url" placeholder="블로그·홈페이지 https://…"></div>
       <div class="wide j-photos">
         <span class="j-ph-l">대표 작품 사진 <small>(선택 · 최대 5장)</small></span>
         <label class="j-ph-add"><input type="file" id="jPhotos" accept="image/jpeg,image/png,image/webp" multiple><span>＋ 사진 고르기</span></label>
@@ -1923,16 +1933,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=68"></script>
+<script src="core.js?v=69"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=68"></script>
-<script src="artists/jmh/artist.js?v=68"></script>
-<script src="artists/lmg/artist.js?v=68"></script>
-<script src="artists/lhw/artist.js?v=68"></script>
+<script src="artists/eloi/artist.js?v=69"></script>
+<script src="artists/jmh/artist.js?v=69"></script>
+<script src="artists/lmg/artist.js?v=69"></script>
+<script src="artists/lhw/artist.js?v=69"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=68"></script>
-<script src="data.js?v=68"></script>
+<script src="config.js?v=69"></script>
+<script src="data.js?v=69"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2707,7 +2717,7 @@ function renderArtistSite(id){
     <span class="as-eb">arttan 작가 공간 · ${esc(a.tier)} · ${esc(genresOf(a).join(" · "))}</span>
     <h1>${esc(a.name)} <i class="as-suf">작가</i>${a.en?`<span>${esc(a.en)}</span>`:""}</h1>
     <p class="as-line">${esc(a.quote?`“${a.quote}”`:a.line||"")}</p>
-    <p class="as-meta">${[a.born?`${a.born}년생`:"",a.from?`${esc(a.from)} 출생`:"",a.city?`${esc(a.city)} 활동`:""].filter(Boolean).join(" · ")}</p></div>`);
+    <p class="as-meta">${[a.born?`${a.born}년생`:"",a.from?`${esc(a.from)} 출생`:"",a.city?`${esc(a.city)} 활동`:""].filter(Boolean).join(" · ")}</p>${artistLinksHtml(a)}</div>`);
   hero.querySelector(".as-hero-in").append(favBtn(a));
   root.append(hero);
   const sec=(sid,en,title,extra="")=>{const s=document.createElement("section");s.className="as-sec";s.id=sid;s.innerHTML=`<div class="as-h"><span class="en">${en}</span><h2>${title}</h2>${extra}</div>`;root.append(s);return s};
@@ -2915,6 +2925,9 @@ function renderGallerySite(gid){
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 document.querySelectorAll("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close()}));
 $("#jGenre").innerHTML=GENRES.map(g=>`<option>${g}</option>`).join("");
+/* 신청서의 SNS 칸 → [{type,url}] (https 주소만) */
+function formLinks(pre){const out=[],bad=[];[["instagram","Ig"],["youtube","Yt"],["homepage","Web"]].forEach(([t,k])=>{const el=$("#"+pre+k);const u=(el?.value||"").trim();if(!u)return;
+  if(!/^https:\/\/\S+$/.test(u)){bad.push(el);return}out.push({type:t==="homepage"?linkType(u):t,url:u})});return {links:out,bad}}
 /* 작가 등록 신청: 작품 사진 (선택, 최대 5장). 긴 변 2000px JPEG로 줄여서 비공개 저장소에 올려요 */
 let JPH=[];
 const jDrawPh=()=>{const box=$("#jPhPrev");box.innerHTML="";JPH.forEach((p,i)=>{const w=document.createElement("span");w.className="j-ph";w.innerHTML=`<img src="${p.url}" alt="작품 사진 ${i+1}"><button type="button" aria-label="사진 ${i+1} 빼기">×</button>`;
@@ -2947,8 +2960,9 @@ $("#uVFile").onchange=e=>{const fl=e.target.files[0];e.target.value="";if(!fl)re
   if(!/^video\/(mp4|quicktime|webm)$/.test(fl.type)){toast("MP4·MOV·WEBM 영상만 올릴 수 있어요");return}UVF=fl;uDrawV()};
 $("#updForm").onsubmit=async e=>{e.preventDefault();const f=e.target,a=UPD_A;
   const v={artist_id:a?.id||null,name:$("#uName").value.trim(),email:$("#uMail").value.trim(),message:$("#uMsg").value.trim(),video_url:$("#uVUrl").value.trim()};
-  if(!v.name||v.email.length<5){toast("이름과 연락처를 적어 주세요");return}
-  if(!v.message&&!UPH.length&&!v.video_url&&!UVF){toast("요청 내용이나 사진·영상 중 하나는 보내 주세요");return}
+  if(!v.name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)){toast("이름과 답장 받을 이메일을 적어 주세요");return}
+  {const L=formLinks("u");if(L.bad.length){toast("SNS·홈페이지 주소는 https:// 로 시작해야 해요");L.bad[0].focus();return}v.links=L.links}
+  if(!v.message&&!UPH.length&&!v.video_url&&!UVF&&!v.links.length){toast("요청 내용이나 사진·영상·SNS 중 하나는 보내 주세요");return}
   if(v.video_url&&!/^https:\/\//.test(v.video_url)){toast("영상 주소는 https:// 로 시작해야 해요");return}
   if((UPH.length||UVF||v.video_url)&&!$("#uOk").checked){toast("사진·영상 게시 동의를 체크해 주세요");return}
   const btn=f.querySelector(".join-go");btn.disabled=true;
@@ -2970,6 +2984,7 @@ $("#joinForm").onsubmit=async e=>{e.preventDefault();
   const v={name:$("#jName").value.trim(),born:+$("#jBorn").value,genre:$("#jGenre").value,city:$("#jCity").value.trim(),email:$("#jMail").value.trim(),note:$("#jNote").value.trim()};
   if(!v.name||!(v.born>1900&&v.born<=today.getFullYear())||!v.email.includes("@")){toast("이름, 출생연도(네 자리), 이메일을 확인해 주세요");return}
   if(JPH.length&&!$("#jPhOk").checked){toast("작품 사진 게시 동의를 체크해 주세요");return}
+  {const L=formLinks("j");if(L.bad.length){toast("SNS·홈페이지 주소는 https:// 로 시작해야 해요");L.bad[0].focus();return}v.links=L.links}
   const btn=e.target.querySelector(".join-go");btn.disabled=true;
   try{if(JPH.length){btn.textContent="사진 올리는 중…";v.photos=await jUpload()}
     const r=await submitApplication(v,e.target.website.value);JPH.forEach(p=>URL.revokeObjectURL(p.url));JPH=[];jDrawPh();$("#joinDlg").close();toast(r.local?"아직 접수 창구가 연결되지 않아 신청이 저장되지 않았어요":"신청을 받았어요. 확인 후 연락드릴게요")}
@@ -3289,10 +3304,13 @@ function openClaim(){const body=$("#authBody");$("#authTitle").textContent="작�
   const opts=ARTISTS.filter(a=>!a.hidden&&a.real!==false).map(a=>`<option value="${a.id}">${esc(aName(a))} · ${esc(a.genre)}</option>`).join("");
   body.innerHTML=`<p class="au-lead">어느 작가 공간을 관리하실지 골라 주세요. arttan이 본인인지 확인한 뒤 승인해요 (보통 1~2일).</p>
     <label class="au-f"><span>작가</span><select id="clArt" style="height:46px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;background:var(--bg);color:var(--ink)"><option value="">작가 고르기</option>${opts}</select></label>
-    <label class="au-f"><span>본인 확인용 메모</span><textarea id="clNote" rows="3" style="border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:inherit;background:var(--bg);color:var(--ink)" placeholder="연락받을 전화번호, 작가 본인·가족·관리인 여부 등"></textarea></label>
+    <label class="au-f"><span>본인 확인용 작가 SNS 주소</span><input id="clSns" type="url" placeholder="https://instagram.com/… (arttan이 이 계정 메시지로 확인해요)"></label>
+    <label class="au-f"><span>메모 (선택)</span><textarea id="clNote" rows="2" style="border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:inherit;background:var(--bg);color:var(--ink)" placeholder="작가 본인·가족·관리인 여부 등. 전화번호는 적지 마세요"></textarea></label>
     <button type="button" class="btn au-main" id="clGo">연결 신청하기</button><p class="au-links"><button type="button" id="clBack">내 정보로 돌아가기</button></p>`;
   $("#clBack").onclick=()=>openAuth("me");
-  $("#clGo").onclick=async()=>{const aid=$("#clArt").value,note=$("#clNote").value.trim();if(!aid){toast("작가를 골라 주세요");return}if(!note){toast("본인 확인용 연락처나 메모를 적어 주세요");return}
+  $("#clGo").onclick=async()=>{const aid=$("#clArt").value,sns=$("#clSns").value.trim(),memo=$("#clNote").value.trim();if(!aid){toast("작가를 골라 주세요");return}
+    if(!/^https:\/\/\S+$/.test(sns)){toast("본인 확인용 작가 SNS 주소를 https:// 로 적어 주세요");$("#clSns").focus();return}
+    const note=`SNS: ${sns}${memo?`\n${memo}`:""}`;
     try{await submitClaim({artist_id:aid,note,nickname:MEP?.nickname,email:ME?.email});await loadMyArt();toast("연결 신청을 받았어요. 확인 후 알려 드릴게요");openAuth("me")}
     catch(err){toast(/duplicate|이미/.test(err.message)?"이미 신청한 작가예요":`신청하지 못했어요: ${err.message}`)}}}
 $("#meBtn").onclick=()=>{if(!authOn()){toast("로그인 기능을 준비하고 있어요");return}if(MEP||ME?.isAdmin)openAuth("me");else if(ME)openAuth("finish");else openAuth("login")};

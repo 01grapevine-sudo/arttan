@@ -502,3 +502,8 @@ create trigger log_member_edit after insert or update or delete on public.videos
 alter table public.applications add column if not exists user_id uuid references auth.users(id) on delete set null;
 drop policy if exists "applications: anyone can apply" on public.applications;
 create policy "applications: anyone can apply" on public.applications for insert with check (status = 'pending' and (user_id is null or user_id = auth.uid()));
+
+-- 작가 SNS·홈페이지 [{"type","url"}] (작가 공간 버튼 + 검색엔진 sameAs). 신청서·수정 요청에도 받아요
+alter table public.artists add column if not exists links jsonb not null default '[]'::jsonb;
+alter table public.applications add column if not exists links jsonb not null default '[]'::jsonb;
+alter table public.artist_requests add column if not exists links jsonb not null default '[]'::jsonb;

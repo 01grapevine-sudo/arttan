@@ -344,6 +344,15 @@ const SNS_META=[["youtube","유튜브","M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 1
 const snsList=()=>SNS_META.filter(([k])=>/^https:\/\//.test(SNS[k]||"")).map(([k,label,d])=>({k,label,d,url:SNS[k]}));
 function snsHtml(cls="sns"){const L=snsList();if(!L.length)return "";
   return `<nav class="${cls}" aria-label="arttan SNS">${L.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener me" aria-label="arttan ${s.label}" title="arttan ${s.label}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="${s.d}" fill="currentColor"/></svg><span>${s.label}</span></a>`).join("")}</nav>`}
+/* 작가 SNS·홈페이지: links = [{type, url}] — 작가 공간에 버튼으로, 검색엔진에는 같은 사람의 공식 계정(sameAs)으로 알려요 */
+const ARTIST_LINKS=[["instagram","인스타그램",/instagram\.com/],["youtube","유튜브",/youtube\.com|youtu\.be/],["blog","블로그",/blog\.naver\.com|tistory\.com|brunch\.co\.kr|blogspot|wordpress/],["facebook","페이스북",/facebook\.com/],["homepage","홈페이지",/./]];
+const linkType=u=>(ARTIST_LINKS.find(([,,re])=>re.test(u))||ARTIST_LINKS[4])[0];
+const cleanLinks=L=>(Array.isArray(L)?L:[]).filter(x=>x&&/^https:\/\/[^\s]+$/.test(x.url||"")).map(x=>({type:ARTIST_LINKS.some(([k])=>k===x.type)?x.type:linkType(x.url),url:String(x.url).slice(0,300)})).slice(0,8);
+const LINK_ICON={instagram:SNS_META.find(x=>x[0]==="instagram")[2],youtube:SNS_META.find(x=>x[0]==="youtube")[2],facebook:SNS_META.find(x=>x[0]==="facebook")[2],
+  blog:"M5 3h11l3 3v15H5zM8 9h8M8 13h8M8 17h5",homepage:"M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 0c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9m0-18C9.5 5.6 8.2 8.6 8.2 12s1.3 6.4 3.8 9M3.5 9h17M3.5 15h17"};
+function artistLinksHtml(a,cls="as-links"){const L=cleanLinks(a.links);if(!L.length)return "";
+  return `<nav class="${cls}" aria-label="${esc(a.name)} 작가 SNS·홈페이지">${L.map(x=>{const lab=(ARTIST_LINKS.find(([k])=>k===x.type)||[,"링크"])[1];const line=x.type==="blog"||x.type==="homepage";
+    return `<a href="${esc(x.url)}" target="_blank" rel="noopener me" aria-label="${esc(a.name)} ${lab}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="${LINK_ICON[x.type]}" ${line?'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"':'fill="currentColor"'}/></svg><span>${lab}</span></a>`}).join("")}</nav>`}
 /* 검색에 알릴 주소와 내용 요약. 관리자에서 저장한 뒤 바뀐 주소만 골라 네이버에 바로 알려요. */
 function seoPages(){const m={"/":"home"};
   ARTISTS.filter(artistIndexable).forEach(a=>{
