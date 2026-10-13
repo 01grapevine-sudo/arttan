@@ -1054,6 +1054,7 @@ body.is-site>header.top,body.is-site main>footer{display:none}
 .as-work-cap span{font-size:13px;color:var(--muted)}
 .as-iv{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:32px;align-items:start}
 .as-iv .video{border-radius:18px}
+.as-vid{margin-top:20px;max-width:960px}.as-vcap{font-size:13px;color:var(--muted);margin:8px 0 0}
 .as-lead{font-size:16px;color:var(--muted);line-height:1.7;margin:0 0 16px}
 .as-books{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,220px));gap:24px}
 .as-pubs{list-style:none;margin:20px 0 0;padding:20px 24px;background:var(--surface);border-radius:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px 24px;font-size:15px}
@@ -1874,16 +1875,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=62"></script>
+<script src="core.js?v=63"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=62"></script>
-<script src="artists/jmh/artist.js?v=62"></script>
-<script src="artists/lmg/artist.js?v=62"></script>
-<script src="artists/lhw/artist.js?v=62"></script>
+<script src="artists/eloi/artist.js?v=63"></script>
+<script src="artists/jmh/artist.js?v=63"></script>
+<script src="artists/lmg/artist.js?v=63"></script>
+<script src="artists/lhw/artist.js?v=63"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=62"></script>
-<script src="data.js?v=62"></script>
+<script src="config.js?v=63"></script>
+<script src="data.js?v=63"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -2696,9 +2697,8 @@ function renderArtistSite(id){
   const myIvs=INTERVIEWS.filter(x=>x.artist===id);
   if(v||myIvs.length||exIvs.length){const ivs=sec("as-iv","Interview","인터뷰");
   if(myIvs.length){const g=document.createElement("div");g.className="rv-grid";myIvs.forEach(x=>g.append(ivCard(x)));ivs.append(g)}
-  if(v&&!myIvs.length){ivs.insertAdjacentHTML("beforeend",`<div class="as-iv"><div class="video"><button class="play" type="button" aria-label="인터뷰 영상 재생"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg></button><div class="vt"><b>${esc(v?v.title:iv.title)}</b>${v?`<span>${esc(v.len)}</span>`:""}</div></div>
-      <div class="as-qa">${iv?`<p class="as-lead">${esc(iv.lead)}</p><dl class="qa">${iv.qa.map(([q,ans])=>`<div><dt>${esc(q)}</dt><dd>${esc(ans)}</dd></div>`).join("")}</dl>`:`<p class="as-lead">작업 과정과 작업실을 보여주는 영상이에요.</p>`}</div></div>`);
-    ivs.querySelector(".video").prepend(artCanvas(a,"film",1280,720,""));ivs.querySelector(".play").onclick=()=>{if(v&&v.url)window.open(v.url,"_blank","noopener");else toast("영상 주소가 아직 등록되지 않았어요")}}
+  /* 대표 영상 (관리자 → 작가 → 대표 영상): 유튜브·비메오 등은 페이지 안에서 재생 */
+  if(v&&v.url){ivs.insertAdjacentHTML(myIvs.length?"beforeend":"beforeend",`<div class="as-vid">${videoHtml({url:v.url,title:v.title},v.title||`${a.name} 작가 영상`)}${[v.title,v.date,v.place].some(Boolean)?`<p class="as-vcap">${esc([v.title,v.date,v.place].filter(Boolean).join(" · "))}</p>`:""}</div>`)}
   if(exIvs.length){const h=document.createElement("h3");h.className="as-sub";h.textContent="전시 인터뷰";ivs.append(h);const ul=document.createElement("ul");ul.className="as-exiv";
     exIvs.forEach(x=>{const e=EXHIBITIONS.find(y=>y.id===x.exhibition)||{};ul.insertAdjacentHTML("beforeend",`<li><a href="${reviewPath(x)}#rv-iv"><b>「${esc(e.title||x.title)}」에서 나눈 이야기</b><span>${esc(x.interview.lead||(x.interview.qa[0]||[""])[0])}</span><em>질문 ${x.interview.qa.length}개 · 전시리뷰에서 보기 ›</em></a></li>`)});ivs.append(ul)}
   }
