@@ -439,3 +439,66 @@ create policy "applications: anon upload" on storage.objects for insert to anon,
     name ~ '^pending/[0-9a-f-]{36}/[0-4]\.(jpg|png|webp)$'
     or name ~ '^updates/[0-9a-f-]{36}/[0-9]\.(jpg|png|webp)$'
     or name ~ '^updates/[0-9a-f-]{36}/video\.(mp4|mov|webm)$'));
+
+-- 작가 계정 (회원 ↔ 작가 공간). 관리자가 승인한 연결만 자기 작가 공간을 고칠 수 있어요 ----
+create table if not exists public.artist_members (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  artist_id text not null references public.artists(id) on delete cascade,
+  status text not null default 'pending' check (status in ('pending','approved','rejected')),
+  note text check (char_length(note) <= 1000), created_at timestamptz not null default now(), approved_at timestamptz,
+  primary key (user_id, artist_id));
+alter table public.artist_members enable row level security;
+drop policy if exists "artist_members: own read" on public.artist_members;
+create policy "artist_members: own read" on public.artist_members for select using (auth.uid() = user_id or public.is_admin());
+drop policy if exists "artist_members: own claim" on public.artist_members;
+create policy "artist_members: own claim" on public.artist_members for insert to authenticated with check (auth.uid() = user_id and status = 'pending' and approved_at is null);
+drop policy if exists "artist_members: admin all" on public.artist_members;
+create policy "artist_members: admin all" on public.artist_members for all using (public.is_admin()) with check (public.is_admin());
+create or replace function public.is_artist_member(aid text) returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.artist_members where user_id = auth.uid() and artist_id = aid and status = 'approved'); $$;
+revoke all on function public.is_artist_member(text) from public;
+grant execute on function public.is_artist_member(text) to anon, authenticated;
+drop policy if exists "artists: member update" on public.artists;
+create policy "artists: member update" on public.artists for update to authenticated using (public.is_artist_member(id)) with check (public.is_artist_member(id));
+drop policy if exists "works: member write" on public.works;
+create policy "works: member write" on public.works for all to authenticated using (public.is_artist_member(artist_id)) with check (public.is_artist_member(artist_id));
+drop policy if exists "videos: member write" on public.videos;
+create policy "videos: member write" on public.videos for all to authenticated using (public.is_artist_member(artist_id)) with check (public.is_artist_member(artist_id));
+drop policy if exists "works images: member write" on storage.objects;
+create policy "works images: member write" on storage.objects for all to authenticated
+  using (bucket_id = 'works' and public.is_artist_member(split_part(name, '/', 1)))
+  with check (bucket_id = 'works' and public.is_artist_member(split_part(name, '/', 1)));
+-- 이름·출생연도·분류·공개·홈 노출·순서는 관리자만
+create or replace function public.guard_artist_member_edit() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if public.is_admin() or auth.uid() is null then return new; end if;
+  new.id := old.id; new.name := old.name; new.born := old.born; new.tier := old.tier;
+  new.hidden := old.hidden; new.hero := old.hero; new.sort := old.sort; new.is_real := old.is_real; new.style := old.style; new.pal := old.pal;
+  return new;
+end $$;
+drop trigger if exists guard_artist_member_edit on public.artists;
+create trigger guard_artist_member_edit before update on public.artists for each row execute function public.guard_artist_member_edit();
+-- 작가가 고친 기록 (관리자만 봐요)
+create table if not exists public.artist_edit_log (id bigserial primary key, artist_id text, user_id uuid, tbl text, action text, detail text, created_at timestamptz not null default now());
+alter table public.artist_edit_log enable row level security;
+drop policy if exists "artist_edit_log: admin read" on public.artist_edit_log;
+create policy "artist_edit_log: admin read" on public.artist_edit_log for select using (public.is_admin());
+create or replace function public.log_artist_member_edit() returns trigger language plpgsql security definer set search_path = public as $$
+declare r jsonb;
+begin
+  if public.is_admin() or auth.uid() is null then return coalesce(new, old); end if;
+  r := case when tg_op = 'DELETE' then to_jsonb(old) else to_jsonb(new) end;
+  insert into public.artist_edit_log(artist_id, user_id, tbl, action, detail)
+  values (case when tg_table_name = 'artists' then r->>'id' else r->>'artist_id' end, auth.uid(), tg_table_name, lower(tg_op), case when tg_table_name = 'works' then r->>'title' else null end);
+  return coalesce(new, old);
+end $$;
+drop trigger if exists log_member_edit on public.artists;
+create trigger log_member_edit after update on public.artists for each row execute function public.log_artist_member_edit();
+drop trigger if exists log_member_edit on public.works;
+create trigger log_member_edit after insert or update or delete on public.works for each row execute function public.log_artist_member_edit();
+drop trigger if exists log_member_edit on public.videos;
+create trigger log_member_edit after insert or update or delete on public.videos for each row execute function public.log_artist_member_edit();
+-- 로그인한 상태로 작가 등록 신청 → 승인 때 작가 계정 자동 연결
+alter table public.applications add column if not exists user_id uuid references auth.users(id) on delete set null;
+drop policy if exists "applications: anyone can apply" on public.applications;
+create policy "applications: anyone can apply" on public.applications for insert with check (status = 'pending' and (user_id is null or user_id = auth.uid()));

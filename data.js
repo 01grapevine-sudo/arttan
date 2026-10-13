@@ -98,7 +98,10 @@ async function arttanBoot(start) {
    hp: 사람에게는 안 보이는 칸(로봇 막기) 값 */
 async function postSubmit(kind, data, hp, table) {
   let r;
-  try { r = await fetch("/api/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, data, website: hp || "" }) }); }
+  /* 로그인한 회원이면 토큰을 함께 보내요 (작가 등록 신청 → 승인 때 작가 계정 연결) */
+  const h = { "Content-Type": "application/json" };
+  try { const sb = sbClient(); const s = sb && (await sb.auth.getSession()).data.session; if (s) h.Authorization = "Bearer " + s.access_token; } catch (e) { /* 비회원 */ }
+  try { r = await fetch("/api/submit", { method: "POST", headers: h, body: JSON.stringify({ kind, data, website: hp || "" }) }); }
   catch (e) { r = null; }
   if (r && r.status !== 404 && r.status !== 405) {
     const j = await r.json().catch(() => ({}));
@@ -112,4 +115,5 @@ async function postSubmit(kind, data, hp, table) {
 }
 const submitApplication = (v, hp) => postSubmit("application", v, hp, "applications");
 const submitUpdate = (v, hp) => postSubmit("update", v, hp, "artist_requests");
+const submitClaim = v => postSubmit("claim", v, "", "artist_members");
 const submitInquiry = (v, hp) => postSubmit("inquiry", v, hp, "inquiries");

@@ -8,7 +8,8 @@ export default async function handler(req, res) {
     let body = req.body;
     if (typeof body === "string") body = JSON.parse(body || "{}");
     const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
-    const r = await handleSubmit(body, { ip });
+    const userToken = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+    const r = await handleSubmit(body, { ip, userToken });
     send(r.status, r);
   } catch (err) {
     console.error("접수 실패", err);
