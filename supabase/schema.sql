@@ -402,3 +402,17 @@ grant execute on function public.delete_my_account() to authenticated;
 alter table public.inquiries add column if not exists status text not null default 'new';
 alter table public.inquiries add column if not exists memo text;
 alter table public.inquiries add column if not exists handled_at timestamptz;
+
+-- 작가 등록 신청 사진 (비공개 저장소 applications) -----------------------------
+-- 방문자는 'pending/<uuid>/0~4.jpg' 에 올리기만 하고(읽기·덮어쓰기 불가), 관리자만 보고 지워요. 한 장 10MB, JPG·PNG·WEBP.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('applications','applications', false, 10485760, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update set public=false, file_size_limit=10485760, allowed_mime_types=array['image/jpeg','image/png','image/webp'];
+drop policy if exists "applications: anon upload" on storage.objects;
+create policy "applications: anon upload" on storage.objects for insert to anon, authenticated
+  with check (bucket_id = 'applications' and name ~ '^pending/[0-9a-f-]{36}/[0-4]\.(jpg|png|webp)$');
+drop policy if exists "applications: admin read" on storage.objects;
+create policy "applications: admin read" on storage.objects for select using (bucket_id = 'applications' and public.is_admin());
+drop policy if exists "applications: admin delete" on storage.objects;
+create policy "applications: admin delete" on storage.objects for delete using (bucket_id = 'applications' and public.is_admin());
+alter table public.applications add column if not exists photos text[] not null default '{}';
