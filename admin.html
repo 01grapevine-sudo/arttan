@@ -181,16 +181,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=63"></script>
+<script src="core.js?v=64"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=63"></script>
-<script src="artists/jmh/artist.js?v=63"></script>
-<script src="artists/lmg/artist.js?v=63"></script>
-<script src="artists/lhw/artist.js?v=63"></script>
+<script src="artists/eloi/artist.js?v=64"></script>
+<script src="artists/jmh/artist.js?v=64"></script>
+<script src="artists/lmg/artist.js?v=64"></script>
+<script src="artists/lhw/artist.js?v=64"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=63"></script>
-<script src="data.js?v=63"></script>
+<script src="config.js?v=64"></script>
+<script src="data.js?v=64"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -396,7 +396,7 @@ function workSheet(a,i,backQ=""){
   const two=(x,y)=>{const t=el(`<div class="t-two"></div>`);t.append(x,y);return t};
   let file=null;const fi=inp("wFile","file");fi.accept="image/*";const fprev=el(`<div class="t-prev"></div>`);
   fi.onchange=async()=>{const fl=fi.files[0];if(!fl)return;file=await shrink(fl,2000);fprev.innerHTML="";if(file)fprev.append(el(`<img src="${file}" alt="">`))};
-  const ok=el(`<label class="t-check"><input type="checkbox" id="wOk"> 작품 사진 사용을 작가에게 허락받았어요</label>`);
+  const ok=el(`<label class="t-check"><input type="checkbox" id="wOk"> 작가에게 이 사진의 게시 허락을 받았어요 (작가가 준 사진도 돼요)</label>`);
   f.append(fieldL("제목",title),two(fieldL("제작 연도",year),fieldL("크기",size)),fieldL("재료",mat),fieldL("설명",desc));
   if(SBM())f.append(fieldL(isNew?"작품 사진":"사진 바꾸기",fi,isNew?"긴 변 2000px로 줄여서 저장해요.":"새 사진을 고르면 지금 사진 대신 들어가요."),fprev,ok);
   if(!isNew)f.append(el(`<p class="t-desc">작품 페이지: <a href="${workPath(a.id,i)}" target="_blank" rel="noopener">${esc(workPath(a.id,i))}</a></p>`));
@@ -404,7 +404,7 @@ function workSheet(a,i,backQ=""){
     const v={title:title.value.trim(),year:year.value.trim(),material:mat.value.trim(),size:size.value.trim(),desc:desc.value.trim()};
     if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
     if(isNew&&!file){toast("작품 사진을 골라 주세요");return}
-    if(file&&!$("#wOk").checked){toast("작품 사진 사용 허락을 확인해 주세요");return}
+    if(file&&!$("#wOk").checked){toast("작가에게 게시 허락을 받았다면 아래 확인 칸을 체크해 주세요");return}
     if(SBM()){dbDo(async()=>{let path=null;
         if(file){const blob=await (await fetch(file)).blob();path=`${a.id}/${Date.now()}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
         if(isNew){const sort=Math.max(-1,...(a.workSorts||[]))+1;return ARTTAN_DB.from("works").insert({artist_id:a.id,sort,...workDbRow(v),image_path:path})}
@@ -493,7 +493,7 @@ function artistSheet(a){
   const FOC={"얼굴이 위쪽":[.5,.15],"가운데":[.5,.4],"아래쪽":[.5,.7]};
   const curF=a?.portraitFocus?Object.entries(FOC).reduce((b,[k,v])=>Math.abs(v[1]-a.portraitFocus[1])<Math.abs(FOC[b][1]-a.portraitFocus[1])?k:b,"가운데"):"얼굴이 위쪽";
   const focus=segField(Object.keys(FOC),curF);
-  const pOk=el(`<label class="t-check"><input type="checkbox" id="fPortOk"> 이 사진은 작가(또는 촬영자)의 사용 허락을 받았어요</label>`);
+  const pOk=el(`<label class="t-check"><input type="checkbox" id="fPortOk"> 작가에게 이 사진의 게시 허락을 받았어요 (작가가 준 사진도 돼요)</label>`);
   sec("인물 사진","작품 사진이 없으면 홈 배너와 목록에 인물 사진이 나와요. 작품 사진이 있으면 작가 소개 칸에 보여요.");
   if(SBM())f.append(fieldL("사진 올리기",pFile,"최대 4장, 긴 변 1600px로 줄여서 저장해요."),pBox,fieldD("자를 때 기준",focus,"화면 비율에 맞춰 자를 때 얼굴이 잘리지 않게 기준을 골라요."),pOk);
   else f.append(el(`<p class="t-desc">Supabase를 연결하면 인물 사진을 올릴 수 있어요.</p>`));
@@ -539,7 +539,7 @@ function artistSheet(a){
     if(!v.genre){toast("대표 장르를 골라 주세요");return}
     if(lines(srcs.value).length>v.sources.length){toast("참고 자료는 '이름 | https://주소' 형식으로 적어 주세요");srcs.focus();return}
     const vu=vUrl.value.trim();if(vu&&!/^https?:\/\//.test(vu)){toast("영상 주소는 https:// 로 시작해야 해요");vUrl.focus();return}
-    if(ports.some(p=>p.data)&&!$("#fPortOk")?.checked){toast("인물 사진 사용 허락을 확인해 주세요");return}
+    if(ports.some(p=>p.data)&&!$("#fPortOk")?.checked){toast("작가에게 게시 허락을 받았다면 아래 확인 칸을 체크해 주세요");return}
     if(SBM()){const row={name:v.name,born:v.born,tier:v.tier,genre:v.genre,more:v.more,city:v.city||null,bio:v.bio||null,en:v.en||null,aka:v.aka,birthplace:v.from||null,tags:v.tags,
         line:v.line||null,quote:v.quote||null,cv:v.cv,history:v.history.length?v.history:null,collections:v.collections||null,works_total:v.worksTotal||null,sources:v.sources.length?v.sources:null,
         hidden:v.hidden,hero:v.hero,portrait_focus:FOC[focus.dataset.value]};
@@ -742,7 +742,7 @@ function ivSheet(v){
     up.onclick=()=>{if(i>0){[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawPh()}};del.onclick=()=>{photos.splice(i,1);drawPh()};phBox.append(w)})};
   const phIn=inp("iPhotos","file");phIn.accept="image/*";phIn.multiple=true;
   phIn.onchange=async()=>{for(const fl of [...phIn.files]){const u=await shrink(fl,2000);if(u)photos.push({data:u,caption:""})}phIn.value="";drawPh()};drawPh();
-  const ok=el(`<label class="t-check"><input type="checkbox" id="iOk"> 사진·영상은 직접 촬영했거나 사용 허락을 받았어요</label>`);
+  const ok=el(`<label class="t-check"><input type="checkbox" id="iOk"> 사진·영상의 게시 허락을 받았어요 (직접 찍었거나, 작가·촬영자에게 받은 자료)</label>`);
   const ivKind=segField(["없음",...IV_KINDS],v?.kind||"없음");
   f.append(fieldL("작가",who),fieldL("제목",title),fieldD("인터뷰 종류",ivKind,"고르면 인터뷰 목록에 분류로 나와요."),two,
     el(`<p class="t-desc" style="margin:8px 0 0"><b>영상 · 사진 · 글</b> 중 넣은 것만 인터뷰 페이지에 보여요.</p>`),
@@ -921,7 +921,7 @@ function venueSheet(g){
   let photo=g?.photo?{show:g.photo,path:g.photoPath??g.photo}:null;
   const phBox=el(`<div class="t-prev"></div>`),drawPh=()=>{phBox.innerHTML="";if(photo){const w=el(`<span class="t-pi"><img src="${photo.data||photo.show}" alt="대표 사진" style="width:160px;height:100px"><button type="button" aria-label="사진 지우기">×</button></span>`);w.querySelector("button").onclick=()=>{photo=null;drawPh()};phBox.append(w)}};
   const phFile=inp("gPhoto","file");phFile.accept="image/*";phFile.onchange=async()=>{const u=phFile.files[0]&&await shrink(phFile.files[0],1800);if(u){photo={data:u};drawPh()}};drawPh();
-  const phOk=el(`<label class="t-check"><input type="checkbox" id="gPhOk"> 이 사진은 전시장(또는 촬영자)의 사용 허락을 받았어요</label>`);
+  const phOk=el(`<label class="t-check"><input type="checkbox" id="gPhOk"> 전시장(또는 촬영자)에게 이 사진의 게시 허락을 받았어요</label>`);
   const prev=el(`<div class="t-crawlprev"></div>`);
   const test=tBtn("미리 수집해 보기","ghost sm",async()=>{if(!/^https?:\/\//.test(curl.value.trim())){toast("전시 목록 주소를 https:// 로 넣어 주세요");return}
     test.disabled=true;test.textContent="읽는 중…";prev.innerHTML="";
@@ -988,7 +988,7 @@ function reviewSheet(r){
     const [up,del]=w.querySelectorAll("button");up.onclick=()=>{if(i>0){[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawPh()}};del.onclick=()=>{photos.splice(i,1);drawPh()};phBox.append(w)})};
   const phFile=inp("rPhotos","file");phFile.accept="image/*";phFile.multiple=true;
   phFile.onchange=async()=>{for(const fl of [...phFile.files]){const u=await shrink(fl,2000);if(u)photos.push({data:u,caption:""})}phFile.value="";drawPh()};drawPh();
-  const ok=el(`<label class="t-check"><input type="checkbox" id="rOk"> 현장 사진은 직접 찍었거나 사용 허락을 받았어요 (작품이 나온 사진은 작가 허락 포함)</label>`);
+  const ok=el(`<label class="t-check"><input type="checkbox" id="rOk"> 현장 사진의 게시 허락을 받았어요 (직접 찍었거나 받은 사진, 작품이 나오면 작가 허락 포함)</label>`);
   /* 전시에 걸린 작품: 참여 작가의 작품에서 골라요 */
   const wkWrap=el(`<div></div>`);let wk=null;
   const drawWorks=keep=>{const e=EXHIBITIONS.find(x=>x.id===exSel.value);wkWrap.innerHTML="";
