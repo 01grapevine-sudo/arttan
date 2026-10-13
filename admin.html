@@ -181,16 +181,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=64"></script>
+<script src="core.js?v=65"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=64"></script>
-<script src="artists/jmh/artist.js?v=64"></script>
-<script src="artists/lmg/artist.js?v=64"></script>
-<script src="artists/lhw/artist.js?v=64"></script>
+<script src="artists/eloi/artist.js?v=65"></script>
+<script src="artists/jmh/artist.js?v=65"></script>
+<script src="artists/lmg/artist.js?v=65"></script>
+<script src="artists/lhw/artist.js?v=65"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=64"></script>
-<script src="data.js?v=64"></script>
+<script src="config.js?v=65"></script>
+<script src="data.js?v=65"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -570,7 +570,7 @@ function artistSheet(a){
   if(a&&(SBM()||a.added))foot.push(tBtn("삭제","ghost",()=>{
     if(EXHIBITIONS.some(e=>e.artists.includes(a.id))){toast("이 작가가 참여한 전시를 먼저 삭제해 주세요");return}
     confirmSheet(`${a.name} 작가를 삭제할까요?`,"작품·인터뷰·도록 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").delete().eq("id",a.id),"삭제했어요");return}AD.artists=AD.artists.filter(x=>x.id!==a.id);delete AD.hidden[a.id];adSave();ARTISTS.splice(ARTISTS.indexOf(a),1);delete byId[a.id];refreshPublic();renderAdmin();toast("삭제했어요")})}));
-  if(!isNew&&a.works.length)foot.unshift(tBtn(`작품 관리 ${a.works.length}점`,"ghost",()=>worksSheet(a)));
+  if(!isNew)foot.unshift(tBtn(a.works.length?`작품 관리 ${a.works.length}점`:"작품 올리기","ghost",()=>a.works.length?worksSheet(a):(SBM()?workSheet(a,null):worksSheet(a))));
   foot.push(save);openSheet(isNew?"작가 추가":"작가 정보 수정",f,foot);
 }
 
