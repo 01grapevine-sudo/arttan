@@ -1933,16 +1933,16 @@ body.is-site .biz{margin-bottom:28px}
   <div class="dlg-body" id="favBody"></div>
 </dialog>
 
-<script src="core.js?v=69"></script>
+<script src="core.js?v=70"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=69"></script>
-<script src="artists/jmh/artist.js?v=69"></script>
-<script src="artists/lmg/artist.js?v=69"></script>
-<script src="artists/lhw/artist.js?v=69"></script>
+<script src="artists/eloi/artist.js?v=70"></script>
+<script src="artists/jmh/artist.js?v=70"></script>
+<script src="artists/lmg/artist.js?v=70"></script>
+<script src="artists/lhw/artist.js?v=70"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=69"></script>
-<script src="data.js?v=69"></script>
+<script src="config.js?v=70"></script>
+<script src="data.js?v=70"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -3171,6 +3171,8 @@ const authOn=()=>typeof sbClient==="function"&&!!sbClient();
 const AUTH_BACK="arttan.authBack";
 const KAKAO_SVG='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#191919" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7l-1 3.6c-.1.3.3.6.6.4l4.2-2.8c.5.1 1 .1 1.5.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>';
 const GOOGLE_SVG='<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+/* 휴대폰 번호: 숫자만 받아 010-1234-5678 꼴로 (사이트에 공개하지 않아요) */
+const fmtPhone=v=>{const d=String(v||"").replace(/\D/g,"");return /^01[016789]\d{7,8}$/.test(d)?d.replace(/^(\d{3})(\d{3,4})(\d{4})$/,"$1-$2-$3"):null};
 const provName=p=>({kakao:"카카오",google:"구글",email:"이메일"})[p]||p||"이메일";
 
 async function authInit(){if(!authOn())return;const sb=sbClient();
@@ -3186,7 +3188,7 @@ async function onAuth(s){const sb=sbClient();ME=s?.user||null;MEP=null;
     if(!MEP){const {data:adm}=await sb.rpc("is_admin");if(adm===true)ME.isAdmin=true;
       else{const md=ME.user_metadata||{};
         /* 이메일 가입은 가입 화면에서 이미 동의했어요 → 첫 로그인 때 회원 정보를 만들어요 */
-        if(md.agree_terms&&md.agree_privacy)MEP=await createProfile({nickname:md.nickname,marketing:!!md.marketing});
+        if(md.agree_terms&&md.agree_privacy&&fmtPhone(md.phone))MEP=await createProfile({nickname:md.nickname,marketing:!!md.marketing,phone:md.phone});
         else openAuth("finish")}}
     if(MEP){await favPullMerge();await loadMyArt()}}
   else MYART={approved:[],pending:[]};
@@ -3197,9 +3199,9 @@ async function loadMyArt(){try{const {data}=await sbClient().from("artist_member
 /* 작가 페이지: 이 작가 공간을 관리하는 회원이면 '내 작가 공간 관리' */
 function refreshArtistCta(){const b=$("#asUpdBtn");if(!b)return;const aid=b.dataset.artist;
   if(MYART.approved.includes(aid)){b.textContent="내 작가 공간 관리";b.className="btn";b.onclick=()=>{location.href="/admin"};const p=b.parentElement.querySelector("p");if(p)p.innerHTML="<b>작가 계정으로 로그인했어요.</b> 소개·이력·작품·영상을 직접 고칠 수 있어요."}}
-async function createProfile({nickname,marketing}){const sb=sbClient(),now=new Date().toISOString(),md=ME.user_metadata||{};
+async function createProfile({nickname,marketing,phone}){const sb=sbClient(),now=new Date().toISOString(),md=ME.user_metadata||{};
   const prov=ME.app_metadata?.provider||"email";
-  const row={id:ME.id,nickname:String(nickname||md.name||md.full_name||md.preferred_username||(ME.email||"회원").split("@")[0]).slice(0,20),email:ME.email||null,provider:prov,agree_terms_at:now,agree_privacy_at:now,marketing_ok:!!marketing};
+  const row={id:ME.id,nickname:String(nickname||md.name||md.full_name||md.preferred_username||(ME.email||"회원").split("@")[0]).slice(0,20),email:ME.email||null,phone:fmtPhone(phone||md.phone),provider:prov,agree_terms_at:now,agree_privacy_at:now,marketing_ok:!!marketing};
   const {data,error}=await sb.from("profiles").insert(row).select().single();if(error){console.warn(error);toast("회원 정보를 저장하지 못했어요. 잠시 뒤 다시 해 주세요");return null}return data}
 /* 관심 작가: 이 기기에 담아 둔 것과 계정에 저장된 것을 합쳐요 */
 async function favPullMerge(){const sb=sbClient();const {data,error}=await sb.from("member_favs").select("artist_id");if(error)return;
@@ -3218,7 +3220,7 @@ function openAuth(mode="login"){const d=$("#authDlg"),body=$("#authBody");body.i
   const consent=(pre="")=>`<div class="au-agree">
       <label class="au-all"><input type="checkbox" id="${pre}agAll"> <b>모두 동의해요</b></label>
       <label><input type="checkbox" id="${pre}agTerms" class="ag-req"> [필수] <a href="/terms" target="_blank" rel="noopener">이용약관</a> 동의</label>
-      <label><input type="checkbox" id="${pre}agPriv" class="ag-req"> [필수] <a href="/privacy" target="_blank" rel="noopener">개인정보 수집·이용</a> 동의 <small>(이메일·닉네임·로그인 정보, 탈퇴 시 바로 삭제)</small></label>
+      <label><input type="checkbox" id="${pre}agPriv" class="ag-req"> [필수] <a href="/privacy" target="_blank" rel="noopener">개인정보 수집·이용</a> 동의 <small>(이메일·닉네임·휴대폰 번호·로그인 정보 — 본인 확인과 중요 안내에만 쓰고 공개하지 않아요, 탈퇴 시 바로 삭제)</small></label>
       <label><input type="checkbox" id="${pre}agMk"> [선택] 관심 작가 전시 소식 메일 받기</label></div>`;
   const wireAll=pre=>{const all=$("#"+pre+"agAll"),boxes=[$("#"+pre+"agTerms"),$("#"+pre+"agPriv"),$("#"+pre+"agMk")];all.onchange=()=>boxes.forEach(x=>x.checked=all.checked);boxes.forEach(x=>x.onchange=()=>all.checked=boxes.every(y=>y.checked))};
   const msg=t=>{let m=body.querySelector(".au-msg");if(!m){m=document.createElement("p");m.className="au-msg";body.append(m)}m.textContent=t};
@@ -3241,7 +3243,7 @@ function openAuth(mode="login"){const d=$("#authDlg"),body=$("#authBody");body.i
       d.close();toast("로그인했어요")};
     $("#auToSignup").onclick=()=>openAuth("signup");$("#auToReset").onclick=()=>openAuth("reset")}
   else if(mode==="signup"){$("#authTitle").textContent="이메일로 가입하기";
-    add(`${field("suEmail","이메일","email","name@example.com","","email")}${field("suPw","비밀번호","password","8자 이상, 영문·숫자 섞어서","","new-password")}${field("suPw2","비밀번호 확인","password","한 번 더","","new-password")}${field("suNick","닉네임","text","사이트에 보일 이름 (20자 이내)")}
+    add(`${field("suEmail","이메일","email","name@example.com","","email")}${field("suPw","비밀번호","password","8자 이상, 영문·숫자 섞어서","","new-password")}${field("suPw2","비밀번호 확인","password","한 번 더","","new-password")}${field("suNick","닉네임","text","사이트에 보일 이름 (20자 이내)")}${field("suPhone","휴대폰 번호","tel","010-1234-5678 (공개되지 않아요)","","tel")}
       ${consent("su")}<button type="button" class="btn au-main" id="suGo">가입하기</button><p class="au-links"><button type="button" id="suBack">로그인으로 돌아가기</button></p>`);
     wireAll("su");$("#suBack").onclick=()=>openAuth("login");
     $("#suGo").onclick=async()=>{const em=$("#suEmail").value.trim(),pw=$("#suPw").value,nick=$("#suNick").value.trim();
@@ -3249,19 +3251,21 @@ function openAuth(mode="login"){const d=$("#authDlg"),body=$("#authBody");body.i
       if(pw.length<8||!/[a-z]/i.test(pw)||!/\d/.test(pw)){msg("비밀번호는 영문과 숫자를 섞어 8자 이상으로 해 주세요");return}
       if(pw!==$("#suPw2").value){msg("비밀번호 확인이 달라요");return}
       if(!nick||nick.length>20){msg("닉네임을 20자 이내로 넣어 주세요");return}
+      const ph=fmtPhone($("#suPhone").value);if(!ph){msg("휴대폰 번호를 확인해 주세요 (예: 010-1234-5678)");return}
       if(!$("#suagTerms").checked||!$("#suagPriv").checked){msg("필수 항목에 동의해 주세요");return}
-      const {data,error}=await sbClient().auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+"/",data:{nickname:nick,agree_terms:true,agree_privacy:true,marketing:$("#suagMk").checked}}});
+      const {data,error}=await sbClient().auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+"/",data:{nickname:nick,phone:ph,agree_terms:true,agree_privacy:true,marketing:$("#suagMk").checked}}});
       if(error){msg(/registered|exists/i.test(error.message)?"이미 가입된 이메일이에요. 로그인해 주세요":`가입하지 못했어요: ${error.message}`);return}
       if(!data.session){body.innerHTML=`<p class="au-lead"><b>${esc(em)}</b>로 인증 메일을 보냈어요.<br>메일의 링크를 누르면 가입이 끝나요. 메일이 안 보이면 스팸함도 확인해 주세요.</p><button type="button" class="btn au-main" id="suOk">확인</button>`;$("#suOk").onclick=()=>d.close()}
       else{d.close();toast("가입을 환영해요")}}}
   else if(mode==="finish"){$("#authTitle").textContent="가입 마무리";const md=ME?.user_metadata||{};
     add(`<p class="au-lead"><b>${provName(ME?.app_metadata?.provider)}</b> 계정으로 처음 오셨어요. 아래 내용에 동의하면 가입이 끝나요.</p>
-      ${field("fnNick","닉네임","text","사이트에 보일 이름 (20자 이내)",String(md.name||md.full_name||md.preferred_username||"").slice(0,20))}${consent("fn")}
+      ${field("fnNick","닉네임","text","사이트에 보일 이름 (20자 이내)",String(md.name||md.full_name||md.preferred_username||"").slice(0,20))}${field("fnPhone","휴대폰 번호","tel","010-1234-5678 (공개되지 않아요)",fmtPhone(md.phone||ME?.phone)||"","tel")}${consent("fn")}
       <button type="button" class="btn au-main" id="fnGo">동의하고 가입하기</button><p class="au-links"><button type="button" id="fnNo">동의하지 않고 나가기</button></p>`);
     wireAll("fn");
     $("#fnGo").onclick=async()=>{const nick=$("#fnNick").value.trim();if(!nick){msg("닉네임을 넣어 주세요");return}
+      const ph=fmtPhone($("#fnPhone").value);if(!ph){msg("휴대폰 번호를 확인해 주세요 (예: 010-1234-5678)");return}
       if(!$("#fnagTerms").checked||!$("#fnagPriv").checked){msg("필수 항목에 동의해 주세요");return}
-      MEP=await createProfile({nickname:nick,marketing:$("#fnagMk").checked});if(!MEP)return;await favPullMerge();drawMe();d.close();toast("가입을 환영해요")};
+      MEP=await createProfile({nickname:nick,marketing:$("#fnagMk").checked,phone:ph});if(!MEP)return;await favPullMerge();drawMe();d.close();toast("가입을 환영해요")};
     $("#fnNo").onclick=async()=>{try{await sbClient().rpc("delete_my_account")}catch(e){}await sbClient().auth.signOut();ME=MEP=null;drawMe();d.close();toast("가입하지 않고 나갔어요. 받은 정보는 지웠어요")}}
   else if(mode==="reset"){$("#authTitle").textContent="비밀번호 찾기";
     add(`<p class="au-lead">가입한 이메일로 비밀번호를 새로 정하는 링크를 보내 드려요. (이메일로 가입한 경우만)</p>${field("rsEmail","이메일","email","name@example.com","","email")}<button type="button" class="btn au-main" id="rsGo">링크 보내기</button><p class="au-links"><button type="button" id="rsBack">로그인으로 돌아가기</button></p>`);
@@ -3275,13 +3279,14 @@ function openAuth(mode="login"){const d=$("#authDlg"),body=$("#authBody");body.i
   else if(mode==="me"){$("#authTitle").textContent="내 정보";
     if(ME?.isAdmin&&!MEP){add(`<p class="au-lead">관리자 계정으로 로그인돼 있어요.</p><a class="btn au-main" href="/admin">관리자 화면으로</a><p class="au-links"><button type="button" id="meOut">로그아웃</button></p>`)}
     else{add(`<dl class="au-me"><div><dt>로그인</dt><dd>${esc(provName(MEP.provider))}${MEP.email?` · ${esc(MEP.email)}`:""}</dd></div><div><dt>가입일</dt><dd>${esc(String(MEP.created_at).slice(0,10).replaceAll("-","."))}</dd></div></dl>
-      ${field("meNick","닉네임","text","20자 이내",MEP.nickname)}<label class="au-check"><input type="checkbox" id="meMk"${MEP.marketing_ok?" checked":""}> 관심 작가 전시 소식 메일 받기 (선택)</label>
+      ${field("meNick","닉네임","text","20자 이내",MEP.nickname)}${field("mePhone","휴대폰 번호","tel","010-1234-5678 (공개되지 않아요)",MEP.phone||"","tel")}<label class="au-check"><input type="checkbox" id="meMk"${MEP.marketing_ok?" checked":""}> 관심 작가 전시 소식 메일 받기 (선택)</label>
       <button type="button" class="btn au-main" id="meSave">저장하기</button>
       <button type="button" class="btn ghost au-main" id="meFav">관심 작가 ${favArtists().length}명 보기</button>
       <div class="au-artist" id="meArt"></div>
       <p class="au-links"><button type="button" id="meOut">로그아웃</button> · <button type="button" id="meDel" class="au-danger">회원 탈퇴</button></p>`);
       $("#meSave").onclick=async()=>{const nick=$("#meNick").value.trim();if(!nick||nick.length>20){msg("닉네임을 20자 이내로 넣어 주세요");return}
-        const {data,error}=await sbClient().from("profiles").update({nickname:nick,marketing_ok:$("#meMk").checked,updated_at:new Date().toISOString()}).eq("id",ME.id).select().single();
+        const ph=fmtPhone($("#mePhone").value);if(!ph){msg("휴대폰 번호를 확인해 주세요 (예: 010-1234-5678)");return}
+        const {data,error}=await sbClient().from("profiles").update({nickname:nick,phone:ph,marketing_ok:$("#meMk").checked,updated_at:new Date().toISOString()}).eq("id",ME.id).select().single();
         if(error){msg("저장하지 못했어요");return}MEP=data;drawMe();toast("저장했어요");d.close()};
       $("#meFav").onclick=()=>{d.close();openFavDlg()};
       drawMeArt();
@@ -3305,7 +3310,7 @@ function openClaim(){const body=$("#authBody");$("#authTitle").textContent="작�
   body.innerHTML=`<p class="au-lead">어느 작가 공간을 관리하실지 골라 주세요. arttan이 본인인지 확인한 뒤 승인해요 (보통 1~2일).</p>
     <label class="au-f"><span>작가</span><select id="clArt" style="height:46px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;background:var(--bg);color:var(--ink)"><option value="">작가 고르기</option>${opts}</select></label>
     <label class="au-f"><span>본인 확인용 작가 SNS 주소</span><input id="clSns" type="url" placeholder="https://instagram.com/… (arttan이 이 계정 메시지로 확인해요)"></label>
-    <label class="au-f"><span>메모 (선택)</span><textarea id="clNote" rows="2" style="border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:inherit;background:var(--bg);color:var(--ink)" placeholder="작가 본인·가족·관리인 여부 등. 전화번호는 적지 마세요"></textarea></label>
+    <label class="au-f"><span>메모 (선택)</span><textarea id="clNote" rows="2" style="border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:inherit;background:var(--bg);color:var(--ink)" placeholder="작가 본인·가족·관리인 여부 등 (연락은 가입 때 넣은 휴대폰 번호로 드려요)"></textarea></label>
     <button type="button" class="btn au-main" id="clGo">연결 신청하기</button><p class="au-links"><button type="button" id="clBack">내 정보로 돌아가기</button></p>`;
   $("#clBack").onclick=()=>openAuth("me");
   $("#clGo").onclick=async()=>{const aid=$("#clArt").value,sns=$("#clSns").value.trim(),memo=$("#clNote").value.trim();if(!aid){toast("작가를 골라 주세요");return}

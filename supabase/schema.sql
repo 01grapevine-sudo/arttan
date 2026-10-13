@@ -507,3 +507,10 @@ create policy "applications: anyone can apply" on public.applications for insert
 alter table public.artists add column if not exists links jsonb not null default '[]'::jsonb;
 alter table public.applications add column if not exists links jsonb not null default '[]'::jsonb;
 alter table public.artist_requests add column if not exists links jsonb not null default '[]'::jsonb;
+
+-- 회원 휴대폰 번호 (가입 필수, 본인·관리자만 열람, 비공개)
+alter table public.profiles add column if not exists phone text;
+alter table public.profiles drop constraint if exists profiles_phone_check;
+alter table public.profiles add constraint profiles_phone_check check (phone is null or phone ~ '^01[016789]-?[0-9]{3,4}-?[0-9]{4}$');
+drop policy if exists "profiles: own insert" on public.profiles;
+create policy "profiles: own insert" on public.profiles for insert with check (auth.uid() = id and phone is not null);

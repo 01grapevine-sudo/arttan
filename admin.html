@@ -181,16 +181,16 @@ html,body{background:var(--t-bg)}
 </dialog>
 <div class="toast" id="toast" hidden></div>
 
-<script src="core.js?v=69"></script>
+<script src="core.js?v=70"></script>
 <!-- 작가별 데이터 (작가 한 명 = 파일 하나) -->
 <!-- 엘로이(테스트용 가상 작가)를 맨 앞에: 홈의 대표·예시 자리는 엘로이가 맡아요 -->
-<script src="artists/eloi/artist.js?v=69"></script>
-<script src="artists/jmh/artist.js?v=69"></script>
-<script src="artists/lmg/artist.js?v=69"></script>
-<script src="artists/lhw/artist.js?v=69"></script>
+<script src="artists/eloi/artist.js?v=70"></script>
+<script src="artists/jmh/artist.js?v=70"></script>
+<script src="artists/lmg/artist.js?v=70"></script>
+<script src="artists/lhw/artist.js?v=70"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js?v=69"></script>
-<script src="data.js?v=69"></script>
+<script src="config.js?v=70"></script>
+<script src="data.js?v=70"></script>
 <script>
 /* 데이터(Supabase 또는 예시)를 준비한 뒤 시작해요 */
 function startApp(){
@@ -756,16 +756,16 @@ function adAccounts(m){
   if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 작가 계정 연결 신청이 여기에 쌓여요.</p>`));return}
   const cp=card(m,"연결 신청"),ca=card(m,"연결된 작가 계정"),cl=card(m,"작가가 고친 기록 (최근 30건)");
   [cp,ca,cl].forEach(c=>c.append(el(`<p class="t-empty">불러오는 중…</p>`)));
-  Promise.all([ARTTAN_DB.from("artist_members").select("*").order("created_at",{ascending:false}),ARTTAN_DB.from("profiles").select("id,nickname,email,provider"),
+  Promise.all([ARTTAN_DB.from("artist_members").select("*").order("created_at",{ascending:false}),ARTTAN_DB.from("profiles").select("id,nickname,email,phone,provider"),
     ARTTAN_DB.from("artist_edit_log").select("*").order("created_at",{ascending:false}).limit(30)]).then(([mm,pp,lg])=>{
-    const P={};(pp.data||[]).forEach(p=>P[p.id]=p);const who=u=>P[u]?`${P[u].nickname}${P[u].email?" · "+P[u].email:""}`:"회원 정보 없음";
+    const P={};(pp.data||[]).forEach(p=>P[p.id]=p);const who=u=>P[u]?`${P[u].nickname}${P[u].email?" · "+P[u].email:""}${P[u].phone?" · "+P[u].phone:""}`:"회원 정보 없음";
     const L=mm.data||[],pend=L.filter(x=>x.status==="pending"),appr=L.filter(x=>x.status==="approved");ACC_NEW=pend.length;
     const keep=c=>{c.querySelector(".t-empty")?.remove()};[cp,ca,cl].forEach(keep);
     if(!pend.length)cp.append(el(`<p class="t-empty">새 연결 신청이 없어요.</p>`));
     pend.forEach(x=>{const a=byId[x.artist_id];const ok=tBtn("승인","primary sm",()=>dbDo(()=>ARTTAN_DB.from("artist_members").update({status:"approved",approved_at:new Date().toISOString()}).eq("user_id",x.user_id).eq("artist_id",x.artist_id),`${a?a.name:""} 작가 계정을 연결했어요`));
       const no=tBtn("반려","gray sm",()=>confirmSheet("이 연결 신청을 반려할까요?","회원 계정은 그대로 남아요.","반려하기",()=>dbDo(()=>ARTTAN_DB.from("artist_members").update({status:"rejected"}).eq("user_id",x.user_id).eq("artist_id",x.artist_id),"반려했어요")));
       cp.append(row({thumb:a?thumbOf(a):null,title:`${a?aName(a):x.artist_id} ← ${who(x.user_id)}`,sub:`${x.note||"메모 없음"} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 신청`,right:[no,ok]}))});
-    cp.append(el(`<p class="t-info">메모의 작가 SNS 계정으로 메시지를 보내 작가 본인(또는 작가가 정한 관리인)인지 꼭 확인한 뒤 승인해 주세요. 승인하면 그 회원이 소개·이력·작품·영상을 직접 고칠 수 있어요. 이름·출생연도·공개 여부는 관리자만 바꿀 수 있어요.</p>`));
+    cp.append(el(`<p class="t-info">회원 휴대폰 번호나 메모의 작가 SNS 계정으로 작가 본인(또는 작가가 정한 관리인)인지 꼭 확인한 뒤 승인해 주세요. 승인하면 그 회원이 소개·이력·작품·영상을 직접 고칠 수 있어요. 이름·출생연도·공개 여부는 관리자만 바꿀 수 있어요.</p>`));
     if(!appr.length)ca.append(el(`<p class="t-empty">연결된 작가 계정이 없어요.</p>`));
     appr.forEach(x=>{const a=byId[x.artist_id];const off=tBtn("연결 해제","gray sm",()=>confirmSheet("작가 계정 연결을 해제할까요?","그 회원은 더 이상 작가 공간을 고칠 수 없어요.","해제하기",()=>dbDo(()=>ARTTAN_DB.from("artist_members").delete().eq("user_id",x.user_id).eq("artist_id",x.artist_id),"연결을 해제했어요")));
       ca.append(row({thumb:a?thumbOf(a):null,title:a?aName(a):x.artist_id,sub:`${who(x.user_id)} · ${String(x.approved_at||"").slice(0,10).replaceAll("-",".")} 승인`,right:off}))});
@@ -1232,7 +1232,7 @@ function unpublish(x){
 async function adMembers(m){adHead(m,"회원","");
   if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 이메일·카카오·Google로 가입한 회원이 여기에 보여요.</p>`));return}
   const top=card(m,"관심 작가 순위"),c=card(m,"회원 목록");top.append(el(`<p class="t-empty">불러오는 중…</p>`));c.append(el(`<p class="t-empty">불러오는 중…</p>`));
-  const [pr,fv]=await Promise.all([ARTTAN_DB.from("profiles").select("id,nickname,email,provider,marketing_ok,created_at").order("created_at",{ascending:false}).limit(500),ARTTAN_DB.from("member_favs").select("artist_id")]);
+  const [pr,fv]=await Promise.all([ARTTAN_DB.from("profiles").select("id,nickname,email,phone,provider,marketing_ok,created_at").order("created_at",{ascending:false}).limit(500),ARTTAN_DB.from("member_favs").select("artist_id")]);
   if(pr.error){c.innerHTML="";c.append(el(`<p class="t-empty">회원 목록을 불러오지 못했어요: ${esc(pr.error.message)}</p>`));return}
   const L=pr.data||[],F=fv.data||[];
   m.querySelector(".ad-head p")?.remove();m.querySelector(".ad-head div").append(el(`<p>회원 ${L.length}명 · 소식 메일 동의 ${L.filter(x=>x.marketing_ok).length}명</p>`));
@@ -1243,7 +1243,7 @@ async function adMembers(m){adHead(m,"회원","");
   c.innerHTML='<div class="t-card-h"><h2>회원 목록</h2></div>';
   if(!L.length)c.append(el(`<p class="t-empty">아직 가입한 회원이 없어요.</p>`));
   const PV={kakao:"카카오",google:"Google",email:"이메일"};
-  L.forEach(x=>c.append(row({title:x.nickname,sub:`${PV[x.provider]||x.provider||"이메일"} · ${x.email||"이메일 없음"} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 가입${x.marketing_ok?" · 소식 메일 동의":""}`})))}
+  L.forEach(x=>c.append(row({title:x.nickname,sub:`${PV[x.provider]||x.provider||"이메일"} · ${x.email||"이메일 없음"}${x.phone?` · ${x.phone}`:""} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 가입${x.marketing_ok?" · 소식 메일 동의":""}`})))}
 /* 설정 */
 function adSet(m){adHead(m,"설정");
   /* arttan 공식 SNS: 주소를 넣은 것만 사이트 아래쪽·인터뷰 페이지에 버튼으로 보여요 */
