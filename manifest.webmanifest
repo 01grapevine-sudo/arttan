@@ -1,6 +1,6 @@
 {
-  "name": "arttan 아트탄 — 작가 아카이브",
-  "short_name": "arttan",
+  "name": "artlist — 작가 아카이브",
+  "short_name": "artlist",
   "description": "원로·중견·청년 작가 아카이브. 관심 작가의 전시 소식을 알려 드려요.",
   "lang": "ko",
   "start_url": "/",

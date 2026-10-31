@@ -1,4 +1,4 @@
-/* arttan core — 사이트(index.html)와 관리자(admin.html)가 함께 쓰는 데이터와 그리기 함수 */
+/* artlist core — 사이트(index.html)와 관리자(admin.html)가 함께 쓰는 데이터와 그리기 함수 */
 /* 최종 분류 */
 const TIERS = [["전체",null],["원로","원로작가"],["중견","중견작가"],["청년","청년작가"]];
 const GENRES = ["서양화","한국화","서예·문인화","조각","판화","사진","공예·도예","뉴미디어","설치·복합매체","드로잉·일러스트"];
@@ -58,7 +58,7 @@ const GALLERIES = [
   {id:"jmhm", name:"정명희미술관", area:"대전", addr:"대전평생학습관 302호"},
   {id:"cbcc", name:"충북문화관 숲속갤러리", area:"청주"},
   /* 테스트용 가상 갤러리 (엘로이 샘플 전시용) */
-  {id:"testgal", test:true, name:"arttan 테스트 갤러리", area:"인사동", photo:"galleries/testgal-3.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 AI로 생성한 샘플이에요."},
+  {id:"testgal", test:true, name:"artlist 테스트 갤러리", area:"인사동", photo:"galleries/testgal-3.jpg", intro:"기능 시험용 가상 갤러리예요. 실제 장소가 아니에요. 사진은 AI로 생성한 샘플이에요."},
 ];
 const galById=Object.fromEntries(GALLERIES.map(g=>[g.id,g]));
 
@@ -77,7 +77,7 @@ const EXHIBITIONS = [
    photos: [{src, caption}] — 직접 찍었거나 사용을 허락받은 사진만. works: [[작가id, 작품번호(0부터)], …]
    id 가 eloi- 로 시작하는 것은 테스트용 샘플이에요. */
 const REVIEWS = [
-  {id:"eloi-garden", exhibition:"eloi-2025", title:"오후의 빛이 머무는 방 — 「정원의 오후」 스케치", date:"2025-05-10", author:"arttan 편집부",
+  {id:"eloi-garden", exhibition:"eloi-2025", title:"오후의 빛이 머무는 방 — 「정원의 오후」 스케치", date:"2025-05-10", author:"artlist 편집부",
    body:"[테스트용 샘플 리뷰예요. 전시리뷰 기능을 시험하려고 만든 글이고, 실제 전시가 아니에요. 사진은 AI로 생성했어요.]\n\n인사동 골목 안쪽, 유리창에 커다란 정원 그림 배너가 걸린 작은 전시장이 보여요. 20대 일러스트 작가 엘로이의 첫 개인전 「정원의 오후」는 과슈와 색연필로 그린 일상의 풍경으로 채워졌어요.\n\n흰 벽에는 액자 속 그림들이 눈높이에 나란히 걸려 있어요. 나무 그늘 아래 책을 읽는 사람, 물 위에 누워 떠 있는 사람, 새벽빛이 들어온 작은 방. 모두 하루 중 빛이 가장 오래 머무는 순간을 붙잡은 장면이에요.\n\n대표작 「정원의 오후」 앞에서 작가는 관람객과 한참 이야기를 나눴어요. 전시장 한쪽 진열대에는 스케치북과 색 견본이 놓여 있어, 그림 한 장이 완성되기까지의 과정을 엿볼 수 있었어요.",
    photos:[
      {src:"artists/eloi/reviews/garden-01-3.jpg", caption:"인사동 골목의 전시장 입구 — 창에 걸린 전시 배너"},
@@ -233,7 +233,7 @@ const exPath=e=>`/exhibition/${encodeURIComponent(e.id)}`;
 const artistIndexable=a=>!!(a&&a.real&&!a.hidden);
 const exIndexable=e=>!!(e&&e.id&&e.artists.some(id=>artistIndexable(byId[id])));
 const galIndexable=g=>!!g&&!g.test&&(!!(g.addr||g.intro)||EXHIBITIONS.some(e=>e.g===g.id&&exIndexable(e)));
-/* 참여 작가 이름: arttan 에 등록된 작가 + 등록되지 않은 작가(artists_text, 쉼표로 구분) */
+/* 참여 작가 이름: artlist 에 등록된 작가 + 등록되지 않은 작가(artists_text, 쉼표로 구분) */
 /* ---------- 작가 주소 규칙(영문 이름 + 출생연도)과 동명이인 구분 ----------
    새 작가 주소: /artist/lee-mingu-1975 (영문 이름이 없으면 한글 이름을 로마자로). 출생연도를 모르면 이름만, 겹치면 -2, -3 을 붙여요.
    기존 작가(jmh·lmg·lhw)는 검색 등록이 끝난 주소라 바꾸지 않아요. */
@@ -304,7 +304,7 @@ function buyLinks(bk,a){if(!bookBuyable(bk,a))return [];
   return BUY_SHOPS.map(([k,name,re,f])=>{const m=(bk.links||[]).find(x=>re.test(x.name+" "+x.url));return {k,name,url:m?m.url:f(q),direct:!!m}})}
 /* 수수료(제휴) 링크인지: 쿠팡 파트너스 등. 제휴 링크가 있으면 대가성 안내 문구를 꼭 함께 보여줘요 (공정위 표시광고 지침) */
 const isAffiliate=u=>/link\.coupang\.com|coupa\.ng|[?&](ttbkey|partner|affiliate)=/i.test(u||"");
-const AFF_NOTE="이 링크로 구매하시면 arttan이 판매처로부터 일정액의 수수료를 받을 수 있어요. (쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.)";
+const AFF_NOTE="이 링크로 구매하시면 artlist가 판매처로부터 일정액의 수수료를 받을 수 있어요. (쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.)";
 /* 구매 버튼과 겹치는 서점 링크는 일반 링크 목록에서 빼요 */
 const otherLinks=bk=>(bk.links||[]).filter(x=>!BUY_SHOPS.some(([,,re])=>re.test(x.name+" "+x.url)));
 const bookPath=b=>`/book/${encodeURIComponent(b.id)}`;
@@ -336,14 +336,14 @@ function videoEmbed(u){if(!u)return null;let m;
   return null}
 /* 세로 영상(인스타그램·쇼츠·릴스)은 세로 틀로 보여줘요 */
 const videoTall=u=>/instagram\.com|youtube\.com\/shorts\/|facebook\.com\/reel/.test(u||"");
-/* arttan 공식 SNS (관리자 → 설정에서 주소를 넣어요. 비어 있으면 버튼이 안 보여요) */
+/* artlist 공식 SNS (관리자 → 설정에서 주소를 넣어요. 비어 있으면 버튼이 안 보여요) */
 const SNS={instagram:"",facebook:"",youtube:""};
 const SNS_META=[["youtube","유튜브","M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15V9l5.2 3z"],
   ["instagram","인스타그램","M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zM16.5 2h-9A5.5 5.5 0 0 0 2 7.5v9A5.5 5.5 0 0 0 7.5 22h9a5.5 5.5 0 0 0 5.5-5.5v-9A5.5 5.5 0 0 0 16.5 2zm3.7 14.5a3.7 3.7 0 0 1-3.7 3.7h-9a3.7 3.7 0 0 1-3.7-3.7v-9a3.7 3.7 0 0 1 3.7-3.7h9a3.7 3.7 0 0 1 3.7 3.7z"],
   ["facebook","페이스북","M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2H7.5v3.4h2.8V22H14v-10.1h2.8l.4-3.4z"]];
 const snsList=()=>SNS_META.filter(([k])=>/^https:\/\//.test(SNS[k]||"")).map(([k,label,d])=>({k,label,d,url:SNS[k]}));
 function snsHtml(cls="sns"){const L=snsList();if(!L.length)return "";
-  return `<nav class="${cls}" aria-label="arttan SNS">${L.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener me" aria-label="arttan ${s.label}" title="arttan ${s.label}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="${s.d}" fill="currentColor"/></svg><span>${s.label}</span></a>`).join("")}</nav>`}
+  return `<nav class="${cls}" aria-label="artlist SNS">${L.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener me" aria-label="artlist ${s.label}" title="artlist ${s.label}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="${s.d}" fill="currentColor"/></svg><span>${s.label}</span></a>`).join("")}</nav>`}
 /* 작가 SNS·홈페이지: links = [{type, url}] — 작가 공간에 버튼으로, 검색엔진에는 같은 사람의 공식 계정(sameAs)으로 알려요 */
 const ARTIST_LINKS=[["instagram","인스타그램",/instagram\.com/],["youtube","유튜브",/youtube\.com|youtu\.be/],["blog","블로그",/blog\.naver\.com|tistory\.com|brunch\.co\.kr|blogspot|wordpress/],["facebook","페이스북",/facebook\.com/],["homepage","홈페이지",/./]];
 const linkType=u=>(ARTIST_LINKS.find(([,,re])=>re.test(u))||ARTIST_LINKS[4])[0];
@@ -370,16 +370,16 @@ const sameDay=(a,b)=>a.getTime()===b.getTime();
 const runningOn=d=>EXHIBITIONS.filter(e=>parse(e.start)<=d&&d<=parse(e.end));
 function weekStart(d){const k=(d.getDay()+6)%7;return new Date(d.getFullYear(),d.getMonth(),d.getDate()-k)}
 const NOTICES=[
-  {date:"2026.10.06",tag:"공지",title:"세 작가의 공간으로 새로 시작해요",body:"작품 이미지 사용을 허락받은 기산 정명희, 이민구, 이홍원 작가의 공간을 먼저 열었어요. 시안에 넣었던 예시 작가와 예시 전시는 모두 지웠어요. 작가 소개는 공개된 기사와 자료를 바탕으로 arttan이 정리했고, 출처를 작가 공간에 함께 적어 두었어요."},
+  {date:"2026.10.06",tag:"공지",title:"세 작가의 공간으로 새로 시작해요",body:"작품 이미지 사용을 허락받은 기산 정명희, 이민구, 이홍원 작가의 공간을 먼저 열었어요. 시안에 넣었던 예시 작가와 예시 전시는 모두 지웠어요. 작가 소개는 공개된 기사와 자료를 바탕으로 artlist가 정리했고, 출처를 작가 공간에 함께 적어 두었어요."},
   {date:"2026.09.29",tag:"안내",title:"작가 등록 신청은 이렇게 해요",body:"위쪽의 '작가 등록' 버튼으로 신청하면 운영팀이 확인한 뒤 승인해요. 작가 공간 개설과 작품 아카이브는 모두 무료예요."},
-  {date:"2026.09.28",tag:"안내",title:"arttan 주소는 www.arttan.co.kr 이에요",body:"art(미술)와 灘(여울 탄)을 합친 이름이에요."},
-  {date:"2026.10.07",tag:"자주하는 질문",title:"작가 등록은 정말 무료인가요?",body:"네. 작가 공간 개설, 작품 아카이브, 전시 이력 정리까지 모두 무료예요. 위쪽의 '작가 등록' 버튼으로 신청하면 arttan이 확인한 뒤 연락드려요."},
+  {date:"2026.09.28",tag:"안내",title:"artlist 주소는 www.arttan.co.kr 이에요",body:"art(미술)와 灘(여울 탄)을 합친 이름이에요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"작가 등록은 정말 무료인가요?",body:"네. 작가 공간 개설, 작품 아카이브, 전시 이력 정리까지 모두 무료예요. 위쪽의 '작가 등록' 버튼으로 신청하면 artlist가 확인한 뒤 연락드려요."},
   {date:"2026.10.07",tag:"자주하는 질문",title:"등록하면 무엇이 만들어지나요?",body:"작가 이름으로 된 개인 공간(www.arttan.co.kr/artist/…)이 생겨요. 작가 소개, 작품, 인터뷰, 도록·저서, 전시 이력, 문의 창이 한 페이지에 정리되고 네이버·구글 검색에도 노출되도록 만들어요."},
   {date:"2026.10.07",tag:"자주하는 질문",title:"작품 사진의 저작권은 어떻게 되나요?",body:"작가님이 직접 주시거나 사용을 허락한 사진만 올려요. 다른 사이트의 이미지는 가져오지 않아요. 원하시면 언제든 내리거나 바꿀 수 있고, 저작권은 작가님께 있어요."},
-  {date:"2026.10.07",tag:"자주하는 질문",title:"정보를 고치거나 작품을 더 올리고 싶어요.",body:"작가 공간 맨 아래의 '문의'에 남겨 주세요. arttan이 확인해서 반영해요. 작품 제목·연도·재료·크기를 함께 보내 주시면 더 빨라요."},
+  {date:"2026.10.07",tag:"자주하는 질문",title:"정보를 고치거나 작품을 더 올리고 싶어요.",body:"작가 공간 맨 아래의 '문의'에 남겨 주세요. artlist가 확인해서 반영해요. 작품 제목·연도·재료·크기를 함께 보내 주시면 더 빨라요."},
   {date:"2026.10.07",tag:"자주하는 질문",title:"전시 소식을 알리고 싶어요.",body:"작가 공간의 '문의'(유형: 전시 제안)로 전시명, 기간, 장소, 포스터를 보내 주세요. 확인한 뒤 전시 일정과 소식에 올려요. 전시가 끝난 뒤에는 현장 사진과 함께 전시리뷰로 남길 수 있어요."},
   {date:"2026.10.07",tag:"자주하는 질문",title:"작품 촬영이나 도록 제작도 맡길 수 있나요?",body:"네. 홈 화면의 '촬영·제작 문의'에서 작품 사진 촬영, 전시회 촬영, 영상 촬영·제작, 도록 제작, 전시 기획을 문의할 수 있어요."},
-  {date:"2026.10.07",tag:"자주하는 질문",title:"작품을 사고 싶어요.",body:"작가 공간의 '문의'에서 유형을 '작품 구매'로 골라 남겨 주세요. arttan이 작가님께 전달해 드려요."}];
+  {date:"2026.10.07",tag:"자주하는 질문",title:"작품을 사고 싶어요.",body:"작가 공간의 '문의'에서 유형을 '작품 구매'로 골라 남겨 주세요. artlist가 작가님께 전달해 드려요."}];
 
 
 /* ---------- 관리자 저장소 (사이트·관리자 공용) ---------- */

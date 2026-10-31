@@ -10,3 +10,6 @@ artists/*/*/*.webp
 galleries/*.webp
 artists/*/reviews/*.webp
 artists/*/interviews/*.webp
+# 윈도에서 만든 한글 폴더 이름(맥 이름과 글자 방식이 달라 따로 적음)
+초기자료_/
+무제 폴더/

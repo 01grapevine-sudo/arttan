@@ -61,6 +61,11 @@
       "source": "/index",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/artist/:id/work/:n",
+      "destination": "/artist/:id",
+      "permanent": false
     }
   ],
   "rewrites": [
@@ -70,11 +75,11 @@
     },
     {
       "source": "/artist/:id",
-      "destination": "/api/page?t=artist&id=:id"
+      "destination": "https://artlist-artists.vercel.app/:id"
     },
     {
-      "source": "/artist/:id/work/:n",
-      "destination": "/api/page?t=work&id=:id&n=:n"
+      "source": "/_next/:path*",
+      "destination": "https://artlist-artists.vercel.app/_next/:path*"
     },
     {
       "source": "/gallery/:id",
@@ -103,6 +108,10 @@
     {
       "source": "/rss.xml",
       "destination": "/api/page?t=rss"
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://artlist-artists.vercel.app/:path*"
     }
   ],
   "headers": [

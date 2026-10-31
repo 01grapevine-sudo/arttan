@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>arttan 관리자</title>
+<title>artlist 관리자</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -164,7 +164,7 @@ html,body{background:var(--t-bg)}
 
 <div id="admin">
   <aside class="ad-side">
-    <a class="ad-logo" href="/">arttan<span>관리자</span></a>
+    <a class="ad-logo" href="/">artlist<span>관리자</span></a>
     <nav id="adNav" aria-label="관리자 메뉴"></nav>
     <a class="ad-back" href="/">사이트로 돌아가기</a>
   </aside>
@@ -200,13 +200,13 @@ function refreshPublic(){}
 const IC={home:"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",user:"M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0",cal:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",inbox:"M4 13l2-8h12l2 8v6H4zM4 13h5l1 2h4l1-2h5",mic:"M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3",book:"M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11",building:"M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18",gear:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",chev:"M9 6l6 6-6 6",plus:"M12 5v14M5 12h14",mega:"M4 10v4h3l6 4V6l-6 4zM17 9a4 4 0 0 1 0 6",mail:"M4 6h16v12H4zM4 7l8 6 8-6",search:"M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"};
 const ic=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 const el=h=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild};
-const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["review","전시리뷰","book"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["updates","수정 요청","inbox"],["inq","작가 문의","mail"],["members","회원","user"],["accounts","작가 계정","user"],["notice","공지·질문","mega"],["iv","인터뷰","mic"],["books","책·도록","book"],["set","설정","gear"]];
+const AD_MENU=[["dash","홈","home"],["artists","작가","user"],["ex","전시","cal"],["review","전시리뷰","book"],["gal","전시장","building"],["crawl","수집한 전시","inbox"],["apps","등록 신청","inbox"],["updates","수정 요청","inbox"],["inq","작가 문의","mail"],["members","회원","user"],["signup","가입 승인","user"],["accounts","작가 계정","user"],["articles","기사 승인","book"],["notice","공지·질문","mega"],["iv","인터뷰","mic"],["books","책·도록","book"],["set","설정","gear"]];
 let adView="dash";
 const pendingApps=()=>AD.apps.filter(a=>!AD.done[a.id]);
 function go(v){adView=v;renderAdmin();window.scrollTo(0,0)}
 function renderAdmin(){
   const nav=$("#adNav");nav.innerHTML="";
-  (STUDIO?STUDIO_MENU:AD_MENU).forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:k==="crawl"?CRAWLED.filter(x=>x.status==="pending").length:k==="inq"?INQ_NEW:k==="updates"?UPD_NEW:k==="accounts"?ACC_NEW:0;
+  (STUDIO?STUDIO_MENU:AD_MENU).forEach(([k,l,i])=>{const n=k==="apps"?pendingApps().length:k==="crawl"?CRAWLED.filter(x=>x.status==="pending").length:k==="inq"?INQ_NEW:k==="updates"?UPD_NEW:k==="accounts"?ACC_NEW:k==="signup"?SIGN_NEW:k==="articles"?ART_NEW:0;
     const b=el(`<button type="button" class="ad-nav${adView===k?" on":""}"${adView===k?' aria-current="page"':""}>${ic(IC[i])}<span>${l}</span>${n?`<em aria-label="대기 ${n}건">${n}</em>`:""}</button>`);
     b.onclick=()=>go(k);nav.append(b)});
   /* 휴대폰: 고른 메뉴가 메뉴 줄 화면 안에 보이게 */
@@ -214,7 +214,7 @@ function renderAdmin(){
     if(on&&side.scrollWidth>side.clientWidth){const r=on.getBoundingClientRect(),sr=side.getBoundingClientRect();if(r.left<sr.left||r.right>sr.right-30)side.scrollLeft+=r.left-sr.left-(sr.width-r.width)/2}
     const more=()=>side.classList.toggle("more",side.scrollLeft+side.clientWidth<side.scrollWidth-4);more();side.onscroll=more});
   const m=$("#adMain");m.innerHTML=STUDIO?`<p class="ad-note">작가 계정으로 로그인했어요. 여기서 저장한 내용은 바로 작가 공간에 반영돼요.</p>`:SBM()?`<p class="ad-note">Supabase에 연결돼 있어요. 여기서 저장한 내용은 바로 실제 사이트에 반영돼요.</p>`:`<p class="ad-note">예시 데이터 모드예요. 바꾼 내용은 이 브라우저에만 저장돼요. Supabase를 연결하면 실제 DB에 저장돼요.</p>`;
-  ({mine:adMine,accounts:adAccounts,updates:adUpdates,members:adMembers,dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,review:adReview,set:adSet})[adView](m);
+  ({mine:adMine,signup:adSignup,articles:adArticles,accounts:adAccounts,updates:adUpdates,members:adMembers,dash:adDash,artists:adArtists,ex:adEx,apps:adApps,notice:adNotice,inq:adInq,iv:adIv,books:adBooks,gal:adGal,crawl:adCrawl,review:adReview,set:adSet})[adView](m);
 }
 function adHead(m,title,sub,action){const h=el(`<div class="ad-head"><div><h1>${esc(title)}</h1>${sub?`<p>${esc(sub)}</p>`:""}</div></div>`);
   if(action){const b=el(`<button type="button" class="t-btn primary sm">${ic(IC.plus,18)}${esc(action[0])}</button>`);b.onclick=action[1];h.append(b)}m.append(h)}
@@ -245,7 +245,7 @@ function vidFiles(id,init,multi){let L=[...init];const box=el(`<div class="t-des
   fi.onchange=()=>{for(const fl of [...fi.files]){if(fl.size>50*1024*1024){toast(`${fl.name}: 영상 파일은 50MB 이하로 올려 주세요. 큰 영상은 유튜브에 올리고 주소를 넣어 주세요`);continue}if(!multi)L=[];L.push({file:fl,name:fl.name,title:""})}fi.value="";draw()};draw();
   return {input:fi,box,list:()=>L,hasNew:()=>L.some(x=>x.file)}}
 async function uploadVids(L,dir){const out=[];for(let i=0;i<L.length;i++){const x=L[i];let path=x.path;
-  if(x.file){path=`${dir}/${Date.now()}-${i}-${x.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTTAN_DB.storage.from("works").upload(path,x.file,{contentType:x.file.type||"video/mp4"});if(up.error)throw up.error}
+  if(x.file){path=`${dir}/${Date.now()}-${i}-${x.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTLIST_DB.storage.from("works").upload(path,x.file,{contentType:x.file.type||"video/mp4"});if(up.error)throw up.error}
   out.push({title:x.title||"",src:path})}return out}
 function fieldD(label,ctrl,hint){const f=el(`<div class="t-field"><span></span></div>`);f.firstChild.textContent=label;f.append(ctrl);if(hint)f.append(el(`<small>${esc(hint)}</small>`));return f}
 function openSheet(title,body,foot){$("#sheetTitle").textContent=title;const b=$("#sheetBody");b.innerHTML="";b.append(body);b.scrollTop=0;
@@ -259,29 +259,29 @@ function shrink(file,max=1200){return new Promise(res=>{const r=new FileReader()
 const soon=()=>toast("초안에서는 목록만 볼 수 있어요");
 
 /* ---------- Supabase 저장 · 로그인 ---------- */
-const SBM=()=>window.ARTTAN_SB;
+const SBM=()=>window.ARTLIST_SB;
 async function loadApps(){
   if(!SBM())return;
-  const {data}=await ARTTAN_DB.from("applications").select("*").eq("status","pending").order("created_at",{ascending:false});
+  const {data}=await ARTLIST_DB.from("applications").select("*").eq("status","pending").order("created_at",{ascending:false});
   AD.apps=(data||[]).map(x=>({id:x.id,name:x.name,born:x.born,genre:x.genre||"",city:x.city||"",email:x.email||"",note:x.note||"",photos:x.photos||[],user_id:x.user_id||null,links:x.links||[],date:(x.created_at||"").slice(0,10).replaceAll("-",".")}));AD.done={}}
 /* 수집한 전시 (DB: crawled_exhibitions / 로컬: AD.crawled) */
 let CRAWLED=[];
 async function loadCrawled(){
   if(!SBM()){CRAWLED=AD.crawled||[];return}
-  const {data,error}=await ARTTAN_DB.from("crawled_exhibitions").select("*").order("start_date",{ascending:false}).limit(500);
+  const {data,error}=await ARTLIST_DB.from("crawled_exhibitions").select("*").order("start_date",{ascending:false}).limit(500);
   if(error){console.warn("수집한 전시를 불러오지 못했어요",error.message);CRAWLED=[];return}
   CRAWLED=(data||[]).map(x=>({id:x.id,gallery_id:x.gallery_id,hash:x.hash,title:x.title,context:x.context||"",start:x.start_date,end:x.end_date,source_url:x.source_url||"",status:x.status,exhibition_id:x.exhibition_id||null}))}
 /* 새 문의 개수 (메뉴 배지 · 홈 카드) */
 let INQ_NEW=0;
-async function loadInqCount(){if(!SBM())return;try{const {count}=await ARTTAN_DB.from("inquiries").select("id",{count:"exact",head:true}).eq("status","new");INQ_NEW=count||0}catch(e){}}
-async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();await loadCrawled();await loadInqCount();await loadUpdCount();await loadAccCount();renderAdmin()}
+async function loadInqCount(){if(!SBM())return;try{const {count}=await ARTLIST_DB.from("inquiries").select("id",{count:"exact",head:true}).eq("status","new");INQ_NEW=count||0}catch(e){}}
+async function reloadAll(){await loadFromSupabase();finishArtists();await loadApps();await loadCrawled();await loadInqCount();await loadUpdCount();await loadAccCount();await loadPressCounts();renderAdmin()}
 async function dbDo(fn,msg,closeAfter){
   const before=seoPages();
   try{const r=await fn();if(r&&r.error)throw r.error;if(closeAfter)closeSheet();await reloadAll();toast(msg);pingSearch(before,seoPages())}
   catch(err){console.error(err);toast("저장하지 못했어요: "+(err.message||err))}}
 /* 관심 작가 알림: 이 전시의 작가를 관심 작가로 담고 '알림 받기'를 켠 사람들에게 보내요 (같은 전시는 한 번만) */
 async function pushNotify(id,{force=false,quiet=false}={}){
-  try{const {data:{session}}=await ARTTAN_DB.auth.getSession();if(!session)return null;
+  try{const {data:{session}}=await ARTLIST_DB.auth.getSession();if(!session)return null;
     const r=await fetch("/api/push-send",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token},body:JSON.stringify({exhibitionId:id,force})});
     const j=await r.json().catch(()=>({}));
     if(!quiet||j.sent)setTimeout(()=>toast(j.sent?`관심 작가 알림을 ${j.sent}명에게 보냈어요`:j.error?`알림: ${j.error}`:j.skipped?`알림: ${j.skipped}`:"알림을 받을 구독자가 아직 없어요"),quiet?1800:0);
@@ -290,7 +290,7 @@ async function pushNotify(id,{force=false,quiet=false}={}){
 async function pingSearch(before,after){
   const urls=[...new Set([...Object.keys(before),...Object.keys(after)])].filter(u=>before[u]!==after[u]);
   if(!urls.length)return;
-  try{const {data:{session}}=await ARTTAN_DB.auth.getSession();if(!session)return;
+  try{const {data:{session}}=await ARTLIST_DB.auth.getSession();if(!session)return;
     const r=await fetch("/api/indexnow",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token},body:JSON.stringify({urls:[...urls,"/"]})});
     if(r.ok)console.info("검색엔진에 알린 주소",urls);else console.warn("검색엔진 알림 실패",r.status)}
   catch(err){console.warn("검색엔진 알림 실패",err)}}
@@ -299,22 +299,22 @@ function renderLogin(msg,signedIn){
   $("#adNav").innerHTML="";const m=$("#adMain");m.innerHTML="";
   const c=el(`<section class="t-card t-login"><div class="t-card-h"><h2>관리자 로그인</h2></div><div class="t-form" style="padding:8px 24px 24px"></div></section>`);
   const f=c.querySelector(".t-form");
-  f.append(el(`<p class="t-desc">${esc(msg||"arttan 관리자 또는 작가 계정으로 로그인해 주세요.")}</p>`));
+  f.append(el(`<p class="t-desc">${esc(msg||"artlist 관리자 또는 작가 계정으로 로그인해 주세요.")}</p>`));
   f.append(el(`<p class="t-desc">카카오·Google로 가입한 작가는 <a href="/">사이트</a>에서 로그인한 뒤 <b>내 정보 → 작가 공간 관리</b>로 들어오세요.</p>`));
-  if(signedIn){f.append(tBtn("다른 계정으로 로그인","ghost",async()=>{await ARTTAN_DB.auth.signOut();location.reload()}))}
+  if(signedIn){f.append(tBtn("다른 계정으로 로그인","ghost",async()=>{await ARTLIST_DB.auth.signOut();location.reload()}))}
   else{const em=inp("lgMail","email","","관리자 이메일");em.autocomplete="username";const pw=inp("lgPw","password","","비밀번호");pw.autocomplete="current-password";
-    const go=tBtn("로그인","primary",async()=>{go.disabled=true;const {error}=await ARTTAN_DB.auth.signInWithPassword({email:em.value.trim(),password:pw.value});go.disabled=false;
+    const go=tBtn("로그인","primary",async()=>{go.disabled=true;const {error}=await ARTLIST_DB.auth.signInWithPassword({email:em.value.trim(),password:pw.value});go.disabled=false;
       if(error){toast("이메일 또는 비밀번호를 확인해 주세요");return}adminGate()});
     pw.onkeydown=e=>{if(e.key==="Enter")go.click()};f.append(fieldL("이메일",em),fieldL("비밀번호",pw),go)}
   m.append(c)}
 async function adminGate(){
   if(!SBM()){renderAdmin();return}
-  const {data:{session}}=await ARTTAN_DB.auth.getSession();
+  const {data:{session}}=await ARTLIST_DB.auth.getSession();
   if(!session){renderLogin();return}
-  const {data}=await ARTTAN_DB.from("admins").select("user_id").eq("user_id",session.user.id).maybeSingle();
+  const {data}=await ARTLIST_DB.from("admins").select("user_id").eq("user_id",session.user.id).maybeSingle();
   if(!data){
     /* 관리자가 아니면: 승인된 작가 계정인지 확인 → 자기 작가 공간만 관리 */
-    const {data:mm}=await ARTTAN_DB.from("artist_members").select("artist_id").eq("user_id",session.user.id).eq("status","approved");
+    const {data:mm}=await ARTLIST_DB.from("artist_members").select("artist_id").eq("user_id",session.user.id).eq("status","approved");
     if(mm&&mm.length){STUDIO={ids:mm.map(x=>x.artist_id)};adView="mine";await reloadAll();return}
     renderLogin(`${session.user.email||"이 계정"}은 관리자나 승인된 작가 계정이 아니에요. 작가라면 사이트의 '내 정보 → 내 작가 공간 연결 신청'으로 먼저 신청해 주세요.`,true);return}
   await reloadAll()}
@@ -348,7 +348,7 @@ function heroBtn(a,redraw){const on=a.hero!==false;
   const b=el(`<button type="button" class="t-hero" aria-pressed="${on}">${on?"히어로 노출":"히어로 숨김"}</button>`);
   b.setAttribute("aria-label",`${a.name} 작가 홈 히어로 노출`);b.title=a.hidden?"비공개 작가는 히어로에도 나오지 않아요":"홈 첫 화면 큰 배너에 보여요";
   b.onclick=e=>{e.stopPropagation();const v=!on,msg=v?`${a.name} 작가를 홈 히어로에 보여줘요`:`${a.name} 작가를 홈 히어로에서 뺐어요`;
-    if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").update({hero:v}).eq("id",a.id),msg);return}
+    if(SBM()){dbDo(()=>ARTLIST_DB.from("artists").update({hero:v}).eq("id",a.id),msg);return}
     a.hero=v;AD.heroOff=AD.heroOff||{};if(v)delete AD.heroOff[a.id];else AD.heroOff[a.id]=true;adSave();refreshPublic();toast(msg);redraw()};
   return b}
 function adArtists(m){
@@ -360,7 +360,7 @@ function adArtists(m){
   const list=()=>{c.innerHTML="";const q=adQ.trim();
     const L=ARTISTS.filter(a=>(adTier==="전체"||a.tier===adTier)&&(!q||[a.name,...genresOf(a),a.city,...(a.tags||[])].join(" ").includes(q)));
     if(!L.length){c.append(el(`<p class="t-empty">찾는 작가가 없어요.</p>`));return}
-    L.forEach(a=>{const sw=switchEl(!a.hidden,on=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").update({hidden:!on}).eq("id",a.id),on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);return}a.hidden=!on;if(on)delete AD.hidden[a.id];else AD.hidden[a.id]=true;adSave();refreshPublic();toast(on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);list()},`${a.name} 작가 공개`);
+    L.forEach(a=>{const sw=switchEl(!a.hidden,on=>{if(SBM()){dbDo(()=>ARTLIST_DB.from("artists").update({hidden:!on}).eq("id",a.id),on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);return}a.hidden=!on;if(on)delete AD.hidden[a.id];else AD.hidden[a.id]=true;adSave();refreshPublic();toast(on?`${a.name} 작가를 공개했어요`:`${a.name} 작가를 비공개로 바꿨어요`);list()},`${a.name} 작가 공개`);
       c.append(row({thumb:thumbOf(a),title:a.name+(a.hidden?" · 비공개":""),sub:`${a.tier.replace("작가","")} · ${genresOf(a).join(", ")}${a.born?` · ${a.born}년생`:""}${a.city?" · "+a.city:""}`,right:[heroBtn(a,list),sw],onClick:()=>artistSheet(a)}))})};
   list();const q=bar.querySelector("input");q.oninput=()=>{adQ=q.value;list()};
 }
@@ -411,10 +411,10 @@ function workSheet(a,i,backQ=""){
     if(isNew&&!file){toast("작품 사진을 골라 주세요");return}
     if(file&&!$("#wOk").checked){toast("작가에게 게시 허락을 받았다면 아래 확인 칸을 체크해 주세요");return}
     if(SBM()){dbDo(async()=>{let path=null;
-        if(file){const blob=await (await fetch(file)).blob();path=`${a.id}/${Date.now()}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
-        if(isNew){const sort=Math.max(-1,...(a.workSorts||[]))+1;return ARTTAN_DB.from("works").insert({artist_id:a.id,sort,...workDbRow(v),image_path:path})}
+        if(file){const blob=await (await fetch(file)).blob();path=`${a.id}/${Date.now()}.jpg`;const up=await ARTLIST_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
+        if(isNew){const sort=Math.max(-1,...(a.workSorts||[]))+1;return ARTLIST_DB.from("works").insert({artist_id:a.id,sort,...workDbRow(v),image_path:path})}
         const id=(a.workIds||[])[i];if(!id)throw new Error("작품 번호를 찾지 못했어요. 새로고침 후 다시 해 주세요");
-        return ARTTAN_DB.from("works").update({...workDbRow(v),...(path?{image_path:path}:{})}).eq("id",id)},isNew?"작품을 추가했어요":"저장했어요",true);return}
+        return ARTLIST_DB.from("works").update({...workDbRow(v),...(path?{image_path:path}:{})}).eq("id",id)},isNew?"작품을 추가했어요":"저장했어요",true);return}
     if(!workLocalSave(a,i,v))return;toast("저장했어요");closeSheet();refreshPublic();worksSheet(a,backQ)});
   const foot=[tBtn("목록으로","ghost",()=>worksSheet(a,backQ))];
   if(!isNew&&SBM()&&!STUDIO)foot.push(tBtn("삭제","ghost",()=>workDelete(a,i)));
@@ -424,11 +424,11 @@ function workSheet(a,i,backQ=""){
 function workDelete(a,i){const w=workRow(a,i);
   confirmSheet(`「${w.title}」 작품을 삭제할까요?`,`되돌릴 수 없어요. 뒤에 있는 작품들의 번호가 하나씩 당겨져서 작품 페이지 주소도 바뀌어요. 도록·전시리뷰에 연결된 작품 번호는 자동으로 맞춰요.`,"삭제하기",()=>dbDo(async()=>{
     const id=(a.workIds||[])[i];if(!id)throw new Error("작품 번호를 찾지 못했어요");
-    const r=await ARTTAN_DB.from("works").delete().eq("id",id);if(r.error)return r;
+    const r=await ARTLIST_DB.from("works").delete().eq("id",id);if(r.error)return r;
     for(const bk of BOOKS.filter(b=>b.artist===a.id&&(b.works||[]).length&&b.dbId)){
-      const refs=bk.works.filter(x=>x!==i).map(x=>x>i?x-1:x);const u=await ARTTAN_DB.from("books").update({work_refs:refs}).eq("id",bk.dbId);if(u.error)return u}
+      const refs=bk.works.filter(x=>x!==i).map(x=>x>i?x-1:x);const u=await ARTLIST_DB.from("books").update({work_refs:refs}).eq("id",bk.dbId);if(u.error)return u}
     for(const rv of REVIEWS.filter(r=>(r.works||[]).some(([aid])=>aid===a.id))){
-      const ws=rv.works.filter(([aid,x])=>!(aid===a.id&&x===i)).map(([aid,x])=>[aid,aid===a.id&&x>i?x-1:x]);const u=await ARTTAN_DB.from("reviews").update({works:ws}).eq("id",rv.id);if(u.error)return u}
+      const ws=rv.works.filter(([aid,x])=>!(aid===a.id&&x===i)).map(([aid,x])=>[aid,aid===a.id&&x>i?x-1:x]);const u=await ARTLIST_DB.from("reviews").update({works:ws}).eq("id",rv.id);if(u.error)return u}
   },"작품을 삭제했어요",true))}
 
 /* 표로 한꺼번에 수정: 바뀐 칸이 있는 작품만 저장해요 (이홍원 작가처럼 작품이 많을 때) */
@@ -446,7 +446,7 @@ function worksBulkSheet(a){
   const save=tBtn("바뀐 작품 저장","primary",()=>{
     const ch=rows.filter(r=>r.changed());if(!ch.length){toast("바뀐 작품이 없어요");return}
     if(SBM()){dbDo(async()=>{for(let k=0;k<ch.length;k+=10){const part=ch.slice(k,k+10);
-          const rs=await Promise.all(part.map(r=>{const id=(a.workIds||[])[r.i];return id?ARTTAN_DB.from("works").update(workDbRow(r.val())).eq("id",id):Promise.resolve({error:new Error(`작품 ${r.i+1} 번호를 찾지 못했어요`)})}));
+          const rs=await Promise.all(part.map(r=>{const id=(a.workIds||[])[r.i];return id?ARTLIST_DB.from("works").update(workDbRow(r.val())).eq("id",id):Promise.resolve({error:new Error(`작품 ${r.i+1} 번호를 찾지 못했어요`)})}));
           const bad=rs.find(x=>x&&x.error);if(bad)return bad}},`작품 ${ch.length}점을 저장했어요`,true);return}
     for(const r of ch)if(!workLocalSave(a,r.i,r.val()))return;
     toast(`작품 ${ch.length}점을 저장했어요`);closeSheet();refreshPublic();worksSheet(a)});
@@ -508,7 +508,7 @@ function artistSheet(a){
   const coll=ta("fColl",a?.collections||"","예: 국립현대미술관, 대전시립미술관 …",2);
   const wTotal=inp("fWTotal","number",a?.worksTotal||"","예: 1396 (비우면 올린 작품 수)");
   sec("이력","사이트의 전시 기록(전시 메뉴)과 따로, 작가가 알려 준 이력을 정리해요.");
-  f.append(fieldL("주요 이력",cv),fieldL("지난 개인전",hist,"arttan 전시 메뉴에 없는 예전 개인전을 적어요. 작가 페이지 '전시' 칸에 함께 나와요."),fieldL("작품 소장처",coll),fieldL("전체 작품 수",wTotal,"아카이브에 올린 것보다 실제 작품이 많을 때 적어요."));
+  f.append(fieldL("주요 이력",cv),fieldL("지난 개인전",hist,"artlist 전시 메뉴에 없는 예전 개인전을 적어요. 작가 페이지 '전시' 칸에 함께 나와요."),fieldL("작품 소장처",coll),fieldL("전체 작품 수",wTotal,"아카이브에 올린 것보다 실제 작품이 많을 때 적어요."));
   /* ── 대표 영상 ── */
   const vd=a?.video||{};
   const vUrl=inp("fVUrl","url",vd.url||"","유튜브 주소 (작가 소개·작업 영상)"),vTitle=inp("fVTitle","text",vd.title||"","영상 제목"),vDate=inp("fVDate","text",vd.date||"","예: 2025.05"),vPlace=inp("fVPlace","text",vd.place||"","예: 작업실");
@@ -528,7 +528,7 @@ function artistSheet(a){
   const sort=inp("fSort","number",a?.sort??"","작을수록 앞 (비우면 맨 뒤)");
   if(!STUDIO){sec("공개 설정");
   f.append(fieldD("사이트에 공개",swPub),fieldD("홈 첫 화면 배너(히어로)",swHero),fieldL("목록 순서",sort))}
-  if(STUDIO){name.disabled=true;born.disabled=true;f.querySelector(".t-sec").insertAdjacentHTML("afterend",`<p class="t-desc">이름·출생연도·분류는 arttan이 관리해요. 바꾸려면 작가 공간의 '정보 수정 요청'으로 알려 주세요.</p>`)}
+  if(STUDIO){name.disabled=true;born.disabled=true;f.querySelector(".t-sec").insertAdjacentHTML("afterend",`<p class="t-desc">이름·출생연도·분류는 artlist가 관리해요. 바꾸려면 작가 공간의 '정보 수정 요청'으로 알려 주세요.</p>`)}
   /* ── 새 작가: 작품 사진 ── */
   let photos=[];
   if(isNew){const file=inp("fImg","file");file.accept="image/*";file.multiple=true;const prev=el(`<div class="t-prev"></div>`);
@@ -559,16 +559,16 @@ function artistSheet(a){
       dbDo(async()=>{const id=isNew?artistSlug(v):a.id;
         /* 인물 사진: 새로 고른 사진만 올리고, 남긴 사진 순서대로 저장 */
         const pp=[];for(let i=0;i<ports.length;i++){const p=ports[i];if(p.data){const blob=await (await fetch(p.data)).blob();const path=`${id}/portrait-${Date.now()}-${i}.jpg`;
-            const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up;pp.push(path)}else pp.push(p.path)}
+            const up=await ARTLIST_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up;pp.push(path)}else pp.push(p.path)}
         row.portraits=pp;
-        if(isNew){const k=hash(id);const r=await ARTTAN_DB.from("artists").insert({id,...row,style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],is_real:true,sort:v.sort??1000});if(r.error)return r;
+        if(isNew){const k=hash(id);const r=await ARTLIST_DB.from("artists").insert({id,...row,style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],is_real:true,sort:v.sort??1000});if(r.error)return r;
           for(let i=0;i<photos.length;i++){const blob=await (await fetch(photos[i])).blob();const path=`${id}/${Date.now()}-${i}.jpg`;
-            const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up;
-            const w=await ARTTAN_DB.from("works").insert({artist_id:id,sort:i,title:`작품 ${i+1}`,year:String(today.getFullYear()),image_path:path});if(w.error)return w}}
-        else{const r=await ARTTAN_DB.from("artists").update(row).eq("id",id);if(r.error)return r}
+            const up=await ARTLIST_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up;
+            const w=await ARTLIST_DB.from("works").insert({artist_id:id,sort:i,title:`작품 ${i+1}`,year:String(today.getFullYear()),image_path:path});if(w.error)return w}}
+        else{const r=await ARTLIST_DB.from("artists").update(row).eq("id",id);if(r.error)return r}
         /* 대표 영상: 주소가 있으면 저장, 비우면 지워요 */
-        if(vu){const r=await ARTTAN_DB.from("videos").upsert({artist_id:id,url:vu,title:vTitle.value.trim()||null,date:vDate.value.trim()||null,place:vPlace.value.trim()||null});if(r.error)return r}
-        else if(!isNew&&a.video){const r=await ARTTAN_DB.from("videos").delete().eq("artist_id",id);if(r.error)return r}
+        if(vu){const r=await ARTLIST_DB.from("videos").upsert({artist_id:id,url:vu,title:vTitle.value.trim()||null,date:vDate.value.trim()||null,place:vPlace.value.trim()||null});if(r.error)return r}
+        else if(!isNew&&a.video){const r=await ARTLIST_DB.from("videos").delete().eq("artist_id",id);if(r.error)return r}
       },isNew?`${v.name} 작가를 추가했어요`:"저장했어요",true);return}
     /* Supabase 없이(이 브라우저): 글 항목만 저장돼요 */
     const vv={...v,video:vu?{url:vu,title:vTitle.value.trim(),date:vDate.value.trim(),place:vPlace.value.trim()}:null};
@@ -581,7 +581,7 @@ function artistSheet(a){
   const foot=[];
   if(a&&!STUDIO&&(SBM()||a.added))foot.push(tBtn("삭제","ghost",()=>{
     if(EXHIBITIONS.some(e=>e.artists.includes(a.id))){toast("이 작가가 참여한 전시를 먼저 삭제해 주세요");return}
-    confirmSheet(`${a.name} 작가를 삭제할까요?`,"작품·인터뷰·도록 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("artists").delete().eq("id",a.id),"삭제했어요");return}AD.artists=AD.artists.filter(x=>x.id!==a.id);delete AD.hidden[a.id];adSave();ARTISTS.splice(ARTISTS.indexOf(a),1);delete byId[a.id];refreshPublic();renderAdmin();toast("삭제했어요")})}));
+    confirmSheet(`${a.name} 작가를 삭제할까요?`,"작품·인터뷰·도록 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTLIST_DB.from("artists").delete().eq("id",a.id),"삭제했어요");return}AD.artists=AD.artists.filter(x=>x.id!==a.id);delete AD.hidden[a.id];adSave();ARTISTS.splice(ARTISTS.indexOf(a),1);delete byId[a.id];refreshPublic();renderAdmin();toast("삭제했어요")})}));
   if(!isNew)foot.unshift(tBtn(a.works.length?`작품 관리 ${a.works.length}점`:"작품 올리기","ghost",()=>a.works.length?worksSheet(a):(SBM()?workSheet(a,null):worksSheet(a))));
   foot.push(save);openSheet(isNew?"작가 추가":"작가 정보 수정",f,foot);
 }
@@ -622,7 +622,7 @@ function exSheet(e){
     if(SBM()){const row={title:v.title,kind:v.kind,artists:v.artists,gallery_id:v.g,start_date:v.start,end_date:v.end,description:v.desc};
       if(isNew)adExSt=status({start:v.start,end:v.end}).k;
       const eid=isNew?newId("e"):e.id;
-      dbDo(async()=>{const r=isNew?await ARTTAN_DB.from("exhibitions").insert({id:eid,...row}):await ARTTAN_DB.from("exhibitions").update(row).eq("id",e.id);
+      dbDo(async()=>{const r=isNew?await ARTLIST_DB.from("exhibitions").insert({id:eid,...row}):await ARTLIST_DB.from("exhibitions").update(row).eq("id",e.id);
         if(!r.error&&isNew)pushNotify(eid,{quiet:true});return r},isNew?"전시를 추가했어요":"저장했어요",true);return}
     const ext={venue:galById[v.g].name,region:galById[v.g].area};
     if(isNew){const o={...v,id:"e"+Date.now().toString(36)};AD.exhibitions.push(o);if(!adSave()){AD.exhibitions.pop();return}EXHIBITIONS.push({...o,...ext,added:true});toast("전시를 추가했어요")}
@@ -631,7 +631,7 @@ function exSheet(e){
     closeSheet();refreshPublic();renderAdmin()});
   const foot=[];
   if(!isNew&&SBM()&&status(e).k!=="end")foot.push(tBtn("관심 작가 알림","ghost",()=>confirmSheet(`「${e.title}」 알림을 보낼까요?`,"이 전시의 작가를 관심 작가로 담고 알림을 켠 사람들에게 지금 알림을 보내요. 이미 보낸 적이 있어도 다시 보내요.","알림 보내기",()=>pushNotify(e.id,{force:true}))));
-  if(!isNew)foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${e.title}」 전시를 삭제할까요?`,"삭제하면 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("exhibitions").delete().eq("id",e.id),"삭제했어요");return}AD.exhibitions=AD.exhibitions.filter(x=>x.id!==e.id);adSave();EXHIBITIONS.splice(EXHIBITIONS.indexOf(e),1);refreshPublic();renderAdmin();toast("삭제했어요")})));
+  if(!isNew)foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${e.title}」 전시를 삭제할까요?`,"삭제하면 되돌릴 수 없어요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTLIST_DB.from("exhibitions").delete().eq("id",e.id),"삭제했어요");return}AD.exhibitions=AD.exhibitions.filter(x=>x.id!==e.id);adSave();EXHIBITIONS.splice(EXHIBITIONS.indexOf(e),1);refreshPublic();renderAdmin();toast("삭제했어요")})));
   foot.push(save);openSheet(isNew?"전시 추가":"전시 수정",f,foot);
 }
 
@@ -642,34 +642,34 @@ function adApps(m){
   if(!P.length)c.append(el(`<p class="t-empty">대기 중인 신청이 없어요.</p>`));
   P.forEach(ap=>{
     const ok=tBtn("승인","primary sm",()=>{if(SBM()){dbDo(async()=>{const id=artistSlug({name:ap.name,born:ap.born}),k=hash(id);
-        const r=await ARTTAN_DB.from("artists").insert({id,name:ap.name,born:ap.born,tier:tierOf(ap.born),genre:GENRES.includes(ap.genre)?ap.genre:"서양화",city:ap.city,bio:ap.note,links:cleanLinks(ap.links),style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],is_real:true,sort:1000});if(r.error)return r;
+        const r=await ARTLIST_DB.from("artists").insert({id,name:ap.name,born:ap.born,tier:tierOf(ap.born),genre:GENRES.includes(ap.genre)?ap.genre:"서양화",city:ap.city,bio:ap.note,links:cleanLinks(ap.links),style:STYLES[k%STYLES.length],pal:PALS[k%PALS.length],is_real:true,sort:1000});if(r.error)return r;
         /* 신청 때 올린 작품 사진을 작가 작품으로 옮기고, 비공개 신청 사진은 지워요 */
-        for(let i=0;i<(ap.photos||[]).length;i++){const dl=await ARTTAN_DB.storage.from("applications").download(ap.photos[i]);if(dl.error)return dl;
-          const path=`${id}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,dl.data,{contentType:"image/jpeg"});if(up.error)return up;
-          const w=await ARTTAN_DB.from("works").insert({artist_id:id,sort:i,title:`작품 ${i+1}`,year:null,image_path:path});if(w.error)return w}
-        if((ap.photos||[]).length)await ARTTAN_DB.storage.from("applications").remove(ap.photos);
+        for(let i=0;i<(ap.photos||[]).length;i++){const dl=await ARTLIST_DB.storage.from("applications").download(ap.photos[i]);if(dl.error)return dl;
+          const path=`${id}/${Date.now()}-${i}.jpg`;const up=await ARTLIST_DB.storage.from("works").upload(path,dl.data,{contentType:"image/jpeg"});if(up.error)return up;
+          const w=await ARTLIST_DB.from("works").insert({artist_id:id,sort:i,title:`작품 ${i+1}`,year:null,image_path:path});if(w.error)return w}
+        if((ap.photos||[]).length)await ARTLIST_DB.storage.from("applications").remove(ap.photos);
         /* 로그인한 회원이 신청했으면 작가 계정도 바로 연결 */
-        if(ap.user_id){const lk=await ARTTAN_DB.from("artist_members").upsert({user_id:ap.user_id,artist_id:id,status:"approved",approved_at:new Date().toISOString(),note:"작가 등록 신청으로 연결"});if(lk.error)return lk}
-        return ARTTAN_DB.from("applications").update({status:"approved"}).eq("id",ap.id)},`${ap.name} 작가를 승인했어요${(ap.photos||[]).length?` · 작품 사진 ${ap.photos.length}장을 옮겼어요`:""}`);return}const o={id:"u"+ap.id,name:ap.name,born:ap.born,genre:ap.genre,city:ap.city,tier:tierOf(ap.born),bio:"",photos:[],works:[]};
+        if(ap.user_id){const lk=await ARTLIST_DB.from("artist_members").upsert({user_id:ap.user_id,artist_id:id,status:"approved",approved_at:new Date().toISOString(),note:"작가 등록 신청으로 연결"});if(lk.error)return lk}
+        return ARTLIST_DB.from("applications").update({status:"approved"}).eq("id",ap.id)},`${ap.name} 작가를 승인했어요${(ap.photos||[]).length?` · 작품 사진 ${ap.photos.length}장을 옮겼어요`:""}`);return}const o={id:"u"+ap.id,name:ap.name,born:ap.born,genre:ap.genre,city:ap.city,tier:tierOf(ap.born),bio:"",photos:[],works:[]};
       AD.artists.push(o);AD.done[ap.id]="ok";if(!adSave())return;const na=makeArtist(o);ARTISTS.push(na);byId[na.id]=na;refreshPublic();renderAdmin();toast(`${ap.name} 작가를 승인했어요`)});
-    const no=tBtn("반려","gray sm",()=>confirmSheet(`${ap.name} 님의 신청을 반려할까요?`,"반려하면 신청 목록에서 사라져요.","반려하기",()=>{if(SBM()){dbDo(async()=>{if((ap.photos||[]).length)await ARTTAN_DB.storage.from("applications").remove(ap.photos);return ARTTAN_DB.from("applications").update({status:"rejected"}).eq("id",ap.id)},"반려했어요. 신청 사진도 지웠어요");return}AD.done[ap.id]="no";adSave();renderAdmin();toast("반려했어요")}));
+    const no=tBtn("반려","gray sm",()=>confirmSheet(`${ap.name} 님의 신청을 반려할까요?`,"반려하면 신청 목록에서 사라져요.","반려하기",()=>{if(SBM()){dbDo(async()=>{if((ap.photos||[]).length)await ARTLIST_DB.storage.from("applications").remove(ap.photos);return ARTLIST_DB.from("applications").update({status:"rejected"}).eq("id",ap.id)},"반려했어요. 신청 사진도 지웠어요");return}AD.done[ap.id]="no";adSave();renderAdmin();toast("반려했어요")}));
     c.append(row({title:ap.name,sub:`${tierOf(ap.born).replace("작가","")} · ${ap.genre} · ${ap.born}년생${ap.city?" · "+ap.city:""}${ap.email?" · "+ap.email:""}${ap.note?" · "+ap.note:""}${(ap.photos||[]).length?` · 작품 사진 ${ap.photos.length}장`:""}${(ap.links||[]).length?` · SNS ${ap.links.map(l=>l.url).join(", ")}`:""} · ${ap.date} 신청`,right:[no,ok]}));
     /* 신청 사진 미리보기 (비공개 저장소라 1시간짜리 임시 주소로 보여요) */
     if(SBM()&&(ap.photos||[]).length){const pv=el(`<div class="t-prev" style="padding:0 16px 14px"></div>`);c.append(pv);
-      ARTTAN_DB.storage.from("applications").createSignedUrls(ap.photos,3600).then(({data})=>{(data||[]).forEach((x,i)=>{if(!x.signedUrl)return;const a=el(`<a href="${esc(x.signedUrl)}" target="_blank" rel="noopener"><img src="${esc(x.signedUrl)}" alt="${esc(ap.name)} 작품 ${i+1}" style="width:88px;height:88px;object-fit:cover;border-radius:10px"></a>`);pv.append(a)})})}});
+      ARTLIST_DB.storage.from("applications").createSignedUrls(ap.photos,3600).then(({data})=>{(data||[]).forEach((x,i)=>{if(!x.signedUrl)return;const a=el(`<a href="${esc(x.signedUrl)}" target="_blank" rel="noopener"><img src="${esc(x.signedUrl)}" alt="${esc(ap.name)} 작품 ${i+1}" style="width:88px;height:88px;object-fit:cover;border-radius:10px"></a>`);pv.append(a)})})}});
   c.append(el(`<p class="t-info">${SBM()?"사이트의 '작가 등록' 버튼으로 들어온 무료 등록 신청이에요. 승인하면 작가 공간이 바로 만들어지고, 신청 때 올린 작품 사진이 작품으로 옮겨져요(제목은 '작품 관리'에서 고쳐요). 반려하면 신청 사진은 지워져요.":"신청 내용은 예시예요. Supabase를 연결하면 사이트의 '작가 등록' 신청이 여기에 쌓여요."}</p>`));
 }
 
 
 /* ================= 수정 요청: 작가가 보낸 정보 수정·작품 추가 요청 (사진·영상은 비공개 저장소) ================= */
 let UPD_NEW=0,updSt="new";
-async function loadUpdCount(){if(!SBM())return;try{const {count}=await ARTTAN_DB.from("artist_requests").select("id",{count:"exact",head:true}).eq("status","new");UPD_NEW=count||0}catch(e){}}
+async function loadUpdCount(){if(!SBM())return;try{const {count}=await ARTLIST_DB.from("artist_requests").select("id",{count:"exact",head:true}).eq("status","new");UPD_NEW=count||0}catch(e){}}
 const UPD_ST={new:["새 요청","blue"],done:["반영 완료","green"],rejected:["반려","gray"]};
 function adUpdates(m){
   adHead(m,"수정 요청","작가가 작가 공간의 '정보 수정·작품 추가 요청'으로 보낸 내용");const c=card(m);
   if(!SBM()){c.append(el(`<p class="t-info">Supabase를 연결하면 작가가 보낸 수정 요청과 사진·영상이 여기에 쌓여요.</p>`));return}
   c.append(el(`<p class="t-empty">불러오는 중…</p>`));
-  ARTTAN_DB.from("artist_requests").select("*").order("created_at",{ascending:false}).limit(200).then(({data,error})=>{c.innerHTML="";
+  ARTLIST_DB.from("artist_requests").select("*").order("created_at",{ascending:false}).limit(200).then(({data,error})=>{c.innerHTML="";
     if(error){c.append(el(`<p class="t-empty">요청을 불러오지 못했어요: ${esc(error.message)}</p>`));return}
     const cnt={new:0,done:0,rejected:0,all:data.length};data.forEach(x=>cnt[x.status]++);UPD_NEW=cnt.new;
     const bar=el(`<div class="t-toolbar" style="padding:12px 16px 4px"></div>`);
@@ -686,7 +686,7 @@ async function updSheet(x){
   const who=document.createElement("select");who.innerHTML=`<option value="">작가 고르기</option>`+ARTISTS.map(a=>`<option value="${a.id}">${esc(aName(a))}</option>`).join("");who.value=x.artist_id||"";
   f.append(fieldL("반영할 작가",who),el(`<div class="t-desc"><b>${esc(x.name)}</b> · ${esc(x.email)} · ${esc((x.created_at||"").slice(0,16).replace("T"," "))}</div>`));
   if(x.message)f.append(el(`<p class="t-desc" style="white-space:pre-wrap;background:var(--t-bg);border-radius:12px;padding:12px 14px;color:var(--t-text)">${esc(x.message)}</p>`));
-  const urls={};if(files.length){const {data}=await ARTTAN_DB.storage.from("applications").createSignedUrls(files,3600);(data||[]).forEach(d=>{if(d.signedUrl)urls[d.path]=d.signedUrl})}
+  const urls={};if(files.length){const {data}=await ARTLIST_DB.storage.from("applications").createSignedUrls(files,3600);(data||[]).forEach(d=>{if(d.signedUrl)urls[d.path]=d.signedUrl})}
   /* 사진: 골라서 작품 또는 인물 사진으로 */
   const pick=new Set(x.photos||[]);
   if((x.photos||[]).length){const g=el(`<div class="t-prev"></div>`);
@@ -707,33 +707,33 @@ async function updSheet(x){
   if((x.links||[]).length){const lb=el(`<div class="t-desc">${x.links.map(l=>`<div><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url)}</a></div>`).join("")}</div>`);
     f.append(fieldD("보낸 SNS·홈페이지",lb),tBtn("작가 SNS로 반영","primary sm",()=>{const a=byId[who.value];if(!a){toast("반영할 작가를 먼저 골라 주세요");return}
       const merged=cleanLinks([...(a.links||[]),...x.links].filter((l,i,arr)=>arr.findIndex(y=>y.url===l.url)===i));
-      dbDo(()=>ARTTAN_DB.from("artists").update({links:merged}).eq("id",a.id),`${a.name} 작가 SNS를 반영했어요`,true)}))}
+      dbDo(()=>ARTLIST_DB.from("artists").update({links:merged}).eq("id",a.id),`${a.name} 작가 SNS를 반영했어요`,true)}))}
   const memo=inp("udMemo","textarea",x.memo||"","처리 메모 (반영한 내용, 연락한 날짜 등)");memo.rows=3;f.append(fieldL("메모",memo));
   f.append(el(`<p class="t-desc">글로 요청한 수정(약력·소개 등)은 '작가' 메뉴에서 직접 고쳐 주세요. '반영 완료'나 '반려'를 누르면 보낸 사진·영상 원본은 비공개 저장소에서 지워져요(이미 반영한 것은 남아요).</p>`));
-  const close=async st=>{const r=await ARTTAN_DB.from("artist_requests").update({status:st,memo:memo.value.trim()||null,handled_at:new Date().toISOString()}).eq("id",x.id);
-    if(r.error){toast("저장하지 못했어요: "+r.error.message);return}if(files.length)await ARTTAN_DB.storage.from("applications").remove(files);
+  const close=async st=>{const r=await ARTLIST_DB.from("artist_requests").update({status:st,memo:memo.value.trim()||null,handled_at:new Date().toISOString()}).eq("id",x.id);
+    if(r.error){toast("저장하지 못했어요: "+r.error.message);return}if(files.length)await ARTLIST_DB.storage.from("applications").remove(files);
     await loadUpdCount();closeSheet();toast(st==="done"?"반영 완료로 바꿨어요":"반려했어요");renderAdmin()};
   const foot=[tBtn("닫기","ghost",closeSheet)];
   if(x.status==="new")foot.push(tBtn("반려","ghost",()=>confirmSheet("이 요청을 반려할까요?","보낸 사진·영상 원본도 지워져요.","반려하기",()=>close("rejected"))),tBtn("반영 완료","primary",()=>close("done")));
-  else foot.push(tBtn("메모 저장","primary",async()=>{await ARTTAN_DB.from("artist_requests").update({memo:memo.value.trim()||null}).eq("id",x.id);toast("저장했어요")}));
+  else foot.push(tBtn("메모 저장","primary",async()=>{await ARTLIST_DB.from("artist_requests").update({memo:memo.value.trim()||null}).eq("id",x.id);toast("저장했어요")}));
   openSheet(`${byId[x.artist_id]?.name||"작가"} 수정 요청`,f,foot)}
 /* 사진 → 작품(맨 뒤에 추가) 또는 인물 사진 */
 function updPhotos(x,aid,paths,kind){const a=byId[aid];if(!a){toast("반영할 작가를 먼저 골라 주세요");return}if(!paths.length){toast("반영할 사진을 체크해 주세요");return}
   dbDo(async()=>{let sort=Math.max(-1,...(a.workSorts||[]))+1;const newP=[];
-    for(let i=0;i<paths.length;i++){const dl=await ARTTAN_DB.storage.from("applications").download(paths[i]);if(dl.error)return dl;
-      const path=`${a.id}/${kind==="portrait"?"portrait-":""}${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,dl.data,{contentType:"image/jpeg"});if(up.error)return up;
-      if(kind==="work"){const w=await ARTTAN_DB.from("works").insert({artist_id:a.id,sort:sort++,title:`새 작품 ${i+1}`,year:null,image_path:path});if(w.error)return w}else newP.push(path)}
-    if(newP.length){const r=await ARTTAN_DB.from("artists").update({portraits:[...(a.portraitPaths||[]),...newP]}).eq("id",a.id);if(r.error)return r}
-    await ARTTAN_DB.from("artist_requests").update({artist_id:a.id}).eq("id",x.id)},
+    for(let i=0;i<paths.length;i++){const dl=await ARTLIST_DB.storage.from("applications").download(paths[i]);if(dl.error)return dl;
+      const path=`${a.id}/${kind==="portrait"?"portrait-":""}${Date.now()}-${i}.jpg`;const up=await ARTLIST_DB.storage.from("works").upload(path,dl.data,{contentType:"image/jpeg"});if(up.error)return up;
+      if(kind==="work"){const w=await ARTLIST_DB.from("works").insert({artist_id:a.id,sort:sort++,title:`새 작품 ${i+1}`,year:null,image_path:path});if(w.error)return w}else newP.push(path)}
+    if(newP.length){const r=await ARTLIST_DB.from("artists").update({portraits:[...(a.portraitPaths||[]),...newP]}).eq("id",a.id);if(r.error)return r}
+    await ARTLIST_DB.from("artist_requests").update({artist_id:a.id}).eq("id",x.id)},
     kind==="work"?`${a.name} 작가 작품으로 ${paths.length}점 추가했어요. 제목은 '작품 관리'에서 고쳐 주세요`:`${a.name} 작가 인물 사진으로 ${paths.length}장 추가했어요`,true)}
 /* 영상 → 작가 대표 영상 (주소는 그대로, 파일은 공개 저장소로 옮겨서) */
 function updVideo(x,aid,kind){const a=byId[aid];if(!a){toast("반영할 작가를 먼저 골라 주세요");return}
   dbDo(async()=>{let url=x.video_url;
-    if(kind==="file"){const dl=await ARTTAN_DB.storage.from("applications").download(x.video_path);if(dl.error)return dl;const ext=x.video_path.split(".").pop();
-      const path=`${a.id}/video-${Date.now()}.${ext}`;const up=await ARTTAN_DB.storage.from("works").upload(path,dl.data,{contentType:dl.data.type||"video/mp4"});if(up.error)return up;
-      url=ARTTAN_DB.storage.from("works").getPublicUrl(path).data.publicUrl}
-    const r=await ARTTAN_DB.from("videos").upsert({artist_id:a.id,url,title:`${a.name} 작가 영상`});if(r.error)return r;
-    await ARTTAN_DB.from("artist_requests").update({artist_id:a.id}).eq("id",x.id)},`${a.name} 작가 대표 영상으로 정했어요`,true)}
+    if(kind==="file"){const dl=await ARTLIST_DB.storage.from("applications").download(x.video_path);if(dl.error)return dl;const ext=x.video_path.split(".").pop();
+      const path=`${a.id}/video-${Date.now()}.${ext}`;const up=await ARTLIST_DB.storage.from("works").upload(path,dl.data,{contentType:dl.data.type||"video/mp4"});if(up.error)return up;
+      url=ARTLIST_DB.storage.from("works").getPublicUrl(path).data.publicUrl}
+    const r=await ARTLIST_DB.from("videos").upsert({artist_id:a.id,url,title:`${a.name} 작가 영상`});if(r.error)return r;
+    await ARTLIST_DB.from("artist_requests").update({artist_id:a.id}).eq("id",x.id)},`${a.name} 작가 대표 영상으로 정했어요`,true)}
 
 /* ================= 작가 계정 (STUDIO): 관리자가 승인한 작가 회원은 자기 작가 공간만 관리해요 ================= */
 let STUDIO=null; /* null = 관리자, {ids:[작가 id]} = 작가 계정 */
@@ -746,28 +746,74 @@ function adMine(m){
     c.append(row({thumb:thumbOf(a),title:"작가 정보 수정",sub:"한 줄 소개, 작가의 말, 소개, 이력, 지난 개인전, 소장처, 키워드, 인물 사진, 대표 영상, 출처",onClick:()=>artistSheet(a)}));
     c.append(row({title:a.works.length?`작품 관리 · ${a.works.length}점`:"작품 올리기",sub:"작품 사진과 제목·연도·재료·크기",onClick:()=>a.works.length?worksSheet(a):workSheet(a,null)}));
     c.append(row({title:"작가 공간 보기",sub:`www.arttan.co.kr${artistPath(a.id)}`,onClick:()=>window.open(artistPath(a.id),"_blank")}));
-    c.append(el(`<p class="t-info">이름·출생연도·공개 여부를 바꾸거나, 인터뷰·전시·도록을 올리고 싶으면 작가 공간의 '정보 수정·작품 추가 요청'으로 보내 주세요. 작품 삭제도 요청해 주시면 arttan이 처리해요.</p>`))})}
+    c.append(el(`<p class="t-info">이름·출생연도·공개 여부를 바꾸거나, 인터뷰·전시·도록을 올리고 싶으면 작가 공간의 '정보 수정·작품 추가 요청'으로 보내 주세요. 작품 삭제도 요청해 주시면 artlist가 처리해요.</p>`))})}
+
+/* 관리자: 가입 승인 — 작가·기자로 가입한 회원 (일반 회원은 바로 이용해요) */
+const ATYPE={general:"일반",artist:"작가",press:"기자"},ASTAT={active:"이용 중",pending:"승인 대기",rejected:"반려",suspended:"정지"};
+let SIGN_NEW=0,ART_NEW=0;
+async function loadPressCounts(){if(!SBM()||STUDIO)return;try{
+  const [a,b]=await Promise.all([ARTLIST_DB.from("profiles").select("id",{count:"exact",head:true}).eq("account_status","pending"),ARTLIST_DB.from("articles").select("id",{count:"exact",head:true}).eq("status","pending")]);
+  SIGN_NEW=a.count||0;ART_NEW=b.count||0}catch(e){}}
+function adSignup(m){
+  adHead(m,"가입 승인","작가·기자로 가입한 회원을 확인하고 승인해요. 일반 회원은 승인 없이 바로 이용해요");
+  if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 여기에 쌓여요.</p>`));return}
+  const cp=card(m,"승인 대기"),cd=card(m,"처리한 작가·기자 회원");[cp,cd].forEach(c=>c.append(el(`<p class="t-empty">불러오는 중…</p>`)));
+  ARTLIST_DB.from("profiles").select("id,nickname,email,phone,provider,account_type,account_status,press_org,request_note,created_at,reviewed_at").neq("account_type","general").order("created_at",{ascending:false}).then(({data,error})=>{
+    [cp,cd].forEach(c=>c.querySelector(".t-empty")?.remove());
+    if(error){cp.append(el(`<p class="t-empty">불러오지 못했어요: ${esc(error.message)}</p>`));return}
+    const L=data||[],pend=L.filter(x=>x.account_status==="pending"),done=L.filter(x=>x.account_status!=="pending");SIGN_NEW=pend.length;
+    const set=(x,st,msg)=>dbDo(()=>ARTLIST_DB.from("profiles").update({account_status:st,reviewed_at:new Date().toISOString()}).eq("id",x.id),msg);
+    const info=x=>`${ATYPE[x.account_type]} · ${x.email||"이메일 없음"}${x.phone?` · ${x.phone}`:""}${x.press_org?` · ${x.press_org}`:""}${x.request_note?` · ${x.request_note}`:""} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 가입`;
+    if(!pend.length)cp.append(el(`<p class="t-empty">승인을 기다리는 회원이 없어요.</p>`));
+    pend.forEach(x=>cp.append(row({title:x.nickname,sub:info(x),right:[tBtn("반려","gray sm",()=>confirmSheet("이 가입을 반려할까요?","회원은 일반 회원처럼만 이용할 수 있어요.","반려하기",()=>set(x,"rejected","반려했어요"))),tBtn("승인","primary sm",()=>set(x,"active",`${x.nickname}님을 승인했어요`))]})));
+    cp.append(el(`<p class="t-info">기자는 소속 매체·기사 링크로, 작가는 휴대폰 번호나 SNS로 본인인지 확인한 뒤 승인해 주세요. 작가 회원이 자기 홈페이지를 고치려면 '작가 계정'에서 작가 공간 연결도 승인해야 해요.</p>`));
+    if(!done.length)cd.append(el(`<p class="t-empty">아직 없어요.</p>`));
+    done.forEach(x=>cd.append(row({title:`${x.nickname} · ${ASTAT[x.account_status]||x.account_status}`,sub:info(x),right:x.account_status==="active"?tBtn("이용 정지","gray sm",()=>confirmSheet("이 회원의 작가·기자 권한을 멈출까요?","기사 쓰기 등 권한만 멈추고 계정은 남아요.","정지하기",()=>set(x,"suspended","정지했어요"))):tBtn("다시 승인","gray sm",()=>set(x,"active","승인했어요"))})))})}
+/* 관리자: 기사 승인 — 기자가 쓴 글은 승인해야 사이트 '소식'과 관련 작가 홈페이지에 올라가요 */
+function adArticles(m){
+  adHead(m,"기사 승인","기자·에디터가 쓴 기사를 읽고 게재하거나 반려해요");
+  if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 여기에 쌓여요.</p>`));return}
+  const cp=card(m,"승인 대기"),cd=card(m,"게재된 기사");[cp,cd].forEach(c=>c.append(el(`<p class="t-empty">불러오는 중…</p>`)));
+  Promise.all([ARTLIST_DB.from("articles").select("*").in("status",["pending","published"]).order("updated_at",{ascending:false}),ARTLIST_DB.from("profiles").select("id,nickname,press_org")]).then(([ar,pp])=>{
+    [cp,cd].forEach(c=>c.querySelector(".t-empty")?.remove());
+    const P={};(pp.data||[]).forEach(p=>P[p.id]=p);const by=x=>P[x.author_id]?`${P[x.author_id].nickname}${P[x.author_id].press_org?" · "+P[x.author_id].press_org:""}`:"관리자";
+    const L=ar.data||[],pend=L.filter(x=>x.status==="pending"),pub=L.filter(x=>x.status==="published");ART_NEW=pend.length;
+    const arts=x=>(x.artist_ids||[]).map(id=>byId[id]?aName(byId[id]):id).join(", ");
+    if(!pend.length)cp.append(el(`<p class="t-empty">승인을 기다리는 기사가 없어요.</p>`));
+    pend.forEach(x=>cp.append(row({title:`[${x.kind||"기사"}] ${x.title}`,sub:`${by(x)} · ${String(x.updated_at).slice(0,10).replaceAll("-",".")}${arts(x)?` · 관련 작가 ${arts(x)}`:""}`,onClick:()=>articleSheet(x,by(x))})));
+    if(!pub.length)cd.append(el(`<p class="t-empty">게재된 기사가 없어요.</p>`));
+    pub.forEach(x=>cd.append(row({title:`[${x.kind||"기사"}] ${x.title}`,sub:`${by(x)} · ${String(x.published_at||"").slice(0,10).replaceAll("-",".")} 게재`,onClick:()=>articleSheet(x,by(x))})))})}
+function articleSheet(x,author){const f=el(`<div class="t-form"></div>`);
+  const img=x.cover_path?`<img src="${esc(workImageUrl(x.cover_path))}" alt="" style="width:100%;border-radius:12px;margin-bottom:12px">`:"";
+  f.append(el(`<div>${img}<p class="t-info">${esc(author)}</p>${x.lead?`<p><b>${esc(x.lead)}</b></p>`:""}<div style="white-space:pre-wrap;line-height:1.8;max-height:50vh;overflow:auto">${esc(x.body||"")}</div></div>`));
+  const note=inp("arNote","textarea","","반려할 때 기자에게 보여 줄 사유 (예: 사진 출처를 적어 주세요)");f.append(fieldL("반려 사유",note));
+  const foot=[];
+  if(x.status==="pending"){
+    foot.push(tBtn("반려","ghost",()=>{const n=note.value.trim();if(!n){toast("반려 사유를 적어 주세요");note.focus();return}dbDo(()=>ARTLIST_DB.from("articles").update({status:"rejected",review_note:n}).eq("id",x.id),"반려했어요",true)}));
+    foot.push(tBtn("게재하기","primary",()=>dbDo(()=>ARTLIST_DB.from("articles").update({status:"published",review_note:null}).eq("id",x.id),"게재했어요. 사이트 '소식'에 올라가요",true)))}
+  else foot.push(tBtn("게재 내리기","ghost",()=>confirmSheet("이 기사를 내릴까요?","사이트에서 사라지고 기자는 고쳐서 다시 요청할 수 있어요.","내리기",()=>dbDo(()=>ARTLIST_DB.from("articles").update({status:"rejected",review_note:note.value.trim()||"관리자가 게재를 내렸어요"}).eq("id",x.id),"게재를 내렸어요",true))));
+  openSheet(x.title,f,foot)}
 
 /* 관리자: 작가 계정 연결 승인 · 해제, 작가가 고친 기록 */
 let ACC_NEW=0;
-async function loadAccCount(){if(!SBM()||STUDIO)return;try{const {count}=await ARTTAN_DB.from("artist_members").select("user_id",{count:"exact",head:true}).eq("status","pending");ACC_NEW=count||0}catch(e){}}
+async function loadAccCount(){if(!SBM()||STUDIO)return;try{const {count}=await ARTLIST_DB.from("artist_members").select("user_id",{count:"exact",head:true}).eq("status","pending");ACC_NEW=count||0}catch(e){}}
 function adAccounts(m){
   adHead(m,"작가 계정","작가가 회원으로 가입해 자기 작가 공간을 직접 관리하도록 연결해요");
   if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 작가 계정 연결 신청이 여기에 쌓여요.</p>`));return}
   const cp=card(m,"연결 신청"),ca=card(m,"연결된 작가 계정"),cl=card(m,"작가가 고친 기록 (최근 30건)");
   [cp,ca,cl].forEach(c=>c.append(el(`<p class="t-empty">불러오는 중…</p>`)));
-  Promise.all([ARTTAN_DB.from("artist_members").select("*").order("created_at",{ascending:false}),ARTTAN_DB.from("profiles").select("id,nickname,email,phone,provider"),
-    ARTTAN_DB.from("artist_edit_log").select("*").order("created_at",{ascending:false}).limit(30)]).then(([mm,pp,lg])=>{
+  Promise.all([ARTLIST_DB.from("artist_members").select("*").order("created_at",{ascending:false}),ARTLIST_DB.from("profiles").select("id,nickname,email,phone,provider"),
+    ARTLIST_DB.from("artist_edit_log").select("*").order("created_at",{ascending:false}).limit(30)]).then(([mm,pp,lg])=>{
     const P={};(pp.data||[]).forEach(p=>P[p.id]=p);const who=u=>P[u]?`${P[u].nickname}${P[u].email?" · "+P[u].email:""}${P[u].phone?" · "+P[u].phone:""}`:"회원 정보 없음";
     const L=mm.data||[],pend=L.filter(x=>x.status==="pending"),appr=L.filter(x=>x.status==="approved");ACC_NEW=pend.length;
     const keep=c=>{c.querySelector(".t-empty")?.remove()};[cp,ca,cl].forEach(keep);
     if(!pend.length)cp.append(el(`<p class="t-empty">새 연결 신청이 없어요.</p>`));
-    pend.forEach(x=>{const a=byId[x.artist_id];const ok=tBtn("승인","primary sm",()=>dbDo(()=>ARTTAN_DB.from("artist_members").update({status:"approved",approved_at:new Date().toISOString()}).eq("user_id",x.user_id).eq("artist_id",x.artist_id),`${a?a.name:""} 작가 계정을 연결했어요`));
-      const no=tBtn("반려","gray sm",()=>confirmSheet("이 연결 신청을 반려할까요?","회원 계정은 그대로 남아요.","반려하기",()=>dbDo(()=>ARTTAN_DB.from("artist_members").update({status:"rejected"}).eq("user_id",x.user_id).eq("artist_id",x.artist_id),"반려했어요")));
+    pend.forEach(x=>{const a=byId[x.artist_id];const ok=tBtn("승인","primary sm",()=>dbDo(()=>ARTLIST_DB.from("artist_members").update({status:"approved",approved_at:new Date().toISOString()}).eq("user_id",x.user_id).eq("artist_id",x.artist_id),`${a?a.name:""} 작가 계정을 연결했어요`));
+      const no=tBtn("반려","gray sm",()=>confirmSheet("이 연결 신청을 반려할까요?","회원 계정은 그대로 남아요.","반려하기",()=>dbDo(()=>ARTLIST_DB.from("artist_members").update({status:"rejected"}).eq("user_id",x.user_id).eq("artist_id",x.artist_id),"반려했어요")));
       cp.append(row({thumb:a?thumbOf(a):null,title:`${a?aName(a):x.artist_id} ← ${who(x.user_id)}`,sub:`${x.note||"메모 없음"} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 신청`,right:[no,ok]}))});
     cp.append(el(`<p class="t-info">회원 휴대폰 번호나 메모의 작가 SNS 계정으로 작가 본인(또는 작가가 정한 관리인)인지 꼭 확인한 뒤 승인해 주세요. 승인하면 그 회원이 소개·이력·작품·영상을 직접 고칠 수 있어요. 이름·출생연도·공개 여부는 관리자만 바꿀 수 있어요.</p>`));
     if(!appr.length)ca.append(el(`<p class="t-empty">연결된 작가 계정이 없어요.</p>`));
-    appr.forEach(x=>{const a=byId[x.artist_id];const off=tBtn("연결 해제","gray sm",()=>confirmSheet("작가 계정 연결을 해제할까요?","그 회원은 더 이상 작가 공간을 고칠 수 없어요.","해제하기",()=>dbDo(()=>ARTTAN_DB.from("artist_members").delete().eq("user_id",x.user_id).eq("artist_id",x.artist_id),"연결을 해제했어요")));
+    appr.forEach(x=>{const a=byId[x.artist_id];const off=tBtn("연결 해제","gray sm",()=>confirmSheet("작가 계정 연결을 해제할까요?","그 회원은 더 이상 작가 공간을 고칠 수 없어요.","해제하기",()=>dbDo(()=>ARTLIST_DB.from("artist_members").delete().eq("user_id",x.user_id).eq("artist_id",x.artist_id),"연결을 해제했어요")));
       ca.append(row({thumb:a?thumbOf(a):null,title:a?aName(a):x.artist_id,sub:`${who(x.user_id)} · ${String(x.approved_at||"").slice(0,10).replaceAll("-",".")} 승인`,right:off}))});
     const T={artists:"작가 정보",works:"작품",videos:"대표 영상"},AC={insert:"추가",update:"수정",delete:"삭제"};
     if(!(lg.data||[]).length)cl.append(el(`<p class="t-empty">아직 작가가 직접 고친 기록이 없어요.</p>`));
@@ -790,11 +836,11 @@ function noticeSheet(i){
     const v={tag:tag.dataset.value,title:title.value.trim(),body:body.value.trim()};
     if(!v.title){toast("제목을 입력해 주세요");title.focus();return}
     if(!v.body){toast("내용을 입력해 주세요");body.focus();return}
-    if(SBM()){dbDo(()=>n&&n.id?ARTTAN_DB.from("notices").update(v).eq("id",n.id):ARTTAN_DB.from("notices").insert({...v,date:stamp}),n?"저장했어요":"공지를 올렸어요",true);return}
+    if(SBM()){dbDo(()=>n&&n.id?ARTLIST_DB.from("notices").update(v).eq("id",n.id):ARTLIST_DB.from("notices").insert({...v,date:stamp}),n?"저장했어요":"공지를 올렸어요",true);return}
     if(n)Object.assign(L[i],v);else L.unshift({...v,date:stamp});
     AD.notices=L;if(!adSave())return;closeSheet();renderAdmin();toast(n?"저장했어요":"공지를 올렸어요")});
   const foot=[];
-  if(n)foot.push(tBtn("삭제","ghost",()=>confirmSheet("이 공지를 삭제할까요?","삭제하면 사이트에서도 사라져요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTTAN_DB.from("notices").delete().eq("id",n.id),"삭제했어요");return}L.splice(i,1);AD.notices=L;adSave();renderAdmin();toast("삭제했어요")})));
+  if(n)foot.push(tBtn("삭제","ghost",()=>confirmSheet("이 공지를 삭제할까요?","삭제하면 사이트에서도 사라져요.","삭제하기",()=>{if(SBM()){dbDo(()=>ARTLIST_DB.from("notices").delete().eq("id",n.id),"삭제했어요");return}L.splice(i,1);AD.notices=L;adSave();renderAdmin();toast("삭제했어요")})));
   foot.push(save);openSheet(n?"공지 수정":"공지 쓰기",f,foot);
 }
 
@@ -808,7 +854,7 @@ function adInq(m){
   adHead(m,"작가 문의","작가 공간 문의와 홈의 촬영·제작 서비스 문의");const c=card(m);
   if(!SBM()){c.append(el(`<p class="t-info">Supabase를 연결하면 작가 공간의 문의(작품 구매, 전시 제안, 취재)와 홈의 촬영·제작 서비스 문의가 여기에 쌓여요.</p>`));return}
   c.append(el(`<p class="t-empty">불러오는 중…</p>`));
-  ARTTAN_DB.from("inquiries").select("*").order("created_at",{ascending:false}).limit(300).then(({data,error})=>{c.innerHTML="";
+  ARTLIST_DB.from("inquiries").select("*").order("created_at",{ascending:false}).limit(300).then(({data,error})=>{c.innerHTML="";
     if(error){c.append(el(`<p class="t-empty">문의를 불러오지 못했어요.</p>`));return}
     const cnt={new:0,contacted:0,done:0,all:data.length};data.forEach(x=>cnt[x.status||"new"]++);INQ_NEW=cnt.new;
     const bar=el(`<div class="t-toolbar" style="padding:12px 16px 4px"></div>`);
@@ -816,7 +862,7 @@ function adInq(m){
     const L=data.filter(x=>inqSt==="all"||(x.status||"new")===inqSt);
     if(!L.length){c.append(el(`<p class="t-empty">${inqSt==="new"?"새 문의가 없어요.":"해당하는 문의가 없어요."}</p>`));return}
     L.forEach(x=>{const a=byId[x.artist_id],st=INQ_ST[x.status||"new"];
-      const who=a?`${aName(a)} 작가`:(x.type||"").startsWith("서비스")?"arttan 서비스 문의":"문의";
+      const who=a?`${aName(a)} 작가`:(x.type||"").startsWith("서비스")?"artlist 서비스 문의":"문의";
       c.append(row({thumb:a?thumbOf(a):null,title:`[${x.type||"문의"}] ${x.name}`,
         sub:`${who} · ${x.email} · ${(x.created_at||"").slice(0,16).replace("T"," ")}${x.memo?" · 메모 있음":""}`,
         right:el(`<span class="t-pill ${st[1]}">${st[0]}</span>`),onClick:()=>inqSheet(x,who)}))})})}
@@ -826,7 +872,7 @@ function inqSheet(x,who){
   f.append(el(`<p class="t-desc" style="white-space:pre-wrap;background:var(--t-bg);border-radius:12px;padding:12px 14px;color:var(--t-text)">${esc(x.message||"")}</p>`));
   /* 바로 연락 */
   const acts=el(`<div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px"></div>`);
-  if(inqIsMail(x.email)){const sub=encodeURIComponent(`[arttan] ${x.type||"문의"} 답변드려요`),bd=encodeURIComponent(`${x.name}님, 안녕하세요. arttan입니다.\n\n남겨 주신 문의에 답변드려요.\n\n\n---\n보내신 내용:\n${x.message||""}\n\narttan 아트탄 · 02-532-5558 · www.arttan.co.kr`);
+  if(inqIsMail(x.email)){const sub=encodeURIComponent(`[artlist] ${x.type||"문의"} 답변드려요`),bd=encodeURIComponent(`${x.name}님, 안녕하세요. artlist입니다.\n\n남겨 주신 문의에 답변드려요.\n\n\n---\n보내신 내용:\n${x.message||""}\n\nartlist · 02-532-5558 · www.arttan.co.kr`);
     const b=el(`<a class="t-btn ghost sm" href="mailto:${esc(x.email.trim())}?subject=${sub}&body=${bd}">메일 쓰기</a>`);b.onclick=()=>{if((x.status||"new")==="new")inqSave(x,{status:"contacted"},true)};acts.append(b)}
   if(tel){const b=el(`<a class="t-btn ghost sm" href="tel:${esc(tel)}">전화 걸기</a>`);b.onclick=()=>{if((x.status||"new")==="new")inqSave(x,{status:"contacted"},true)};acts.append(b)}
   const cp=tBtn("연락처 복사","ghost sm",()=>{navigator.clipboard?.writeText(x.email).then(()=>toast("연락처를 복사했어요"),()=>toast(x.email))});acts.append(cp);
@@ -837,7 +883,7 @@ function inqSheet(x,who){
   if(x.handled_at)f.append(el(`<p class="t-desc">마지막 처리: ${esc(String(x.handled_at).slice(0,16).replace("T"," "))}</p>`));
   openSheet(`${x.name} 님 문의`,f,[tBtn("닫기","ghost",closeSheet),tBtn("저장하기","primary",()=>inqSave(x,{status:st.dataset.value,memo:memo.value.trim()||null}))])}
 async function inqSave(x,patch,quiet){const p={...patch,handled_at:new Date().toISOString()};
-  const {error}=await ARTTAN_DB.from("inquiries").update(p).eq("id",x.id);
+  const {error}=await ARTLIST_DB.from("inquiries").update(p).eq("id",x.id);
   if(error){toast("저장하지 못했어요: "+error.message);return}
   Object.assign(x,p);await loadInqCount();if(!quiet){closeSheet();toast("저장했어요")}renderAdmin()}
 
@@ -899,21 +945,21 @@ function ivSheet(v){
     if(SBM()){const slug=isNew?newId("i"):v.id;
       dbDo(async()=>{const ph=[];
         for(let i=0;i<photos.length;i++){const p=photos[i];let path=p.path;
-          if(p.data){const blob=await (await fetch(p.data)).blob();path=`interviews/${slug}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
+          if(p.data){const blob=await (await fetch(p.data)).blob();path=`interviews/${slug}/${Date.now()}-${i}.jpg`;const up=await ARTLIST_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
           ph.push({src:path,caption:p.caption||""})}
         let video=null;
         if(url)video={url,title:vTitle.value.trim()};
-        else if(vFile){let path=vFile.path;if(vFile.file){path=`interviews/${slug}/${Date.now()}-${vFile.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTTAN_DB.storage.from("works").upload(path,vFile.file,{contentType:vFile.file.type||"video/mp4"});if(up.error)return up}
+        else if(vFile){let path=vFile.path;if(vFile.file){path=`interviews/${slug}/${Date.now()}-${vFile.file.name.replace(/[^\w.-]/g,"_")}`;const up=await ARTLIST_DB.storage.from("works").upload(path,vFile.file,{contentType:vFile.file.type||"video/mp4"});if(up.error)return up}
           video={src:path,title:vTitle.value.trim(),...(vFile.poster?{poster:vFile.poster}:{})}}
         const row={artist_id:val.artist,slug,kind:val.kind||null,title:val.title,date:val.date||null,lead:val.lead||null,body:val.body||null,qa:val.qa,photos:ph,video,exhibition_id:val.exhibition||null};
-        return isNew?ARTTAN_DB.from("interviews").insert(row):ARTTAN_DB.from("interviews").update(row).eq("id",v.dbId)},isNew?"인터뷰를 올렸어요":"저장했어요",true);return}
+        return isNew?ARTLIST_DB.from("interviews").insert(row):ARTLIST_DB.from("interviews").update(row).eq("id",v.dbId)},isNew?"인터뷰를 올렸어요":"저장했어요",true);return}
     /* Supabase 없이(이 브라우저): 영상은 주소만 저장돼요 */
     if(vFile&&vFile.file&&!url){toast("Supabase 연결 전에는 영상 파일 대신 유튜브 주소를 넣어 주세요");return}
     const rec={...val,id:isNew?"i"+Date.now().toString(36):v.id,photos:photos.map(p=>({src:p.data||p.show,caption:p.caption||""})),video:url?{url,title:vTitle.value.trim()}:(vFile?{src:vFile.show,poster:vFile.poster,title:vTitle.value.trim()}:null)};
     if(isNew)INTERVIEWS.push(rec);else Object.assign(v,rec);toast("이 브라우저에서만 바뀌었어요 (Supabase 연결 시 저장돼요)");closeSheet();renderAdmin()});
   const foot=[];
   if(!isNew){foot.push(tBtn("사이트에서 보기","ghost",()=>window.open(interviewPath(v),"_blank")));
-    if(SBM())foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${v.title}」 인터뷰를 삭제할까요?`,"되돌릴 수 없어요.","삭제하기",()=>dbDo(()=>ARTTAN_DB.from("interviews").delete().eq("id",v.dbId),"삭제했어요"))))}
+    if(SBM())foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${v.title}」 인터뷰를 삭제할까요?`,"되돌릴 수 없어요.","삭제하기",()=>dbDo(()=>ARTLIST_DB.from("interviews").delete().eq("id",v.dbId),"삭제했어요"))))}
   foot.push(save);openSheet(isNew?"인터뷰 쓰기":"인터뷰 수정",f,foot)}
 function adBooks(m){adHead(m,"책·도록",`${BOOKS.length}권`,["책·도록 추가",()=>bookSheet()]);const c=card(m);
   if(!BOOKS.length)c.append(el(`<p class="t-empty">등록된 책이 없어요. 오른쪽 위 '도록 추가'로 넣어 주세요.</p>`));
@@ -977,12 +1023,12 @@ function bookSheet(bk){
       const slug=isNew?newId("b"):bk.id;
       dbDo(async()=>{
         const up=async(data,name)=>{const blob=await (await fetch(data)).blob();const path=`books/${slug}/${Date.now()}-${name}.jpg`;
-          const r=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(r.error)throw r.error;return path};
+          const r=await ARTLIST_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(r.error)throw r.error;return path};
         const cp=cover?(cover.data?await up(cover.data,"cover"):cover.path):null;
         const sp=[];for(let i=0;i<spreads.length;i++)sp.push(spreads[i].data?await up(spreads[i].data,"p"+(i+1)):spreads[i].path);
         const row={artist_id:v.artist,slug,kind:v.kind,title:v.title,year:v.year,pages:v.pages,size:v.size||null,publisher:v.publisher||null,isbn:v.isbn||null,writer:v.writer||null,
           description:v.desc||null,cover_path:cp,spreads:sp,full_view:v.full,work_refs:v.works,exhibition_id:v.exhibition||null,toc:v.toc,links:v.links,buy:v.buy===undefined?null:v.buy};
-        return isNew?ARTTAN_DB.from("books").insert(row):ARTTAN_DB.from("books").update(row).eq("id",bk.dbId)},isNew?"책을 추가했어요":"저장했어요",true);return}
+        return isNew?ARTLIST_DB.from("books").insert(row):ARTLIST_DB.from("books").update(row).eq("id",bk.dbId)},isNew?"책을 추가했어요":"저장했어요",true);return}
     /* Supabase 없이: 이 브라우저에만 저장 */
     const imgs={cover:cover?(cover.data||cover.show):undefined,spreads:spreads.map(x=>x.data||x.show)};
     if(isNew){const o={...v,...imgs,id:"b"+Date.now().toString(36)};AD.books=AD.books||[];AD.books.push(o);if(!adSave()){AD.books.pop();return}BOOKS.push({...o,added:true});toast("책을 추가했어요")}
@@ -992,7 +1038,7 @@ function bookSheet(bk){
   const foot=[];
   if(!isNew){foot.push(tBtn("사이트에서 보기","ghost",()=>window.open(bookPath(bk),"_blank")));
     foot.push(tBtn("삭제","ghost",()=>confirmSheet(`『${bk.title}』을 삭제할까요?`,"책 정보와 연결이 사라지고 되돌릴 수 없어요.","삭제하기",()=>{
-      if(SBM()){dbDo(()=>ARTTAN_DB.from("books").delete().eq("id",bk.dbId),"삭제했어요");return}
+      if(SBM()){dbDo(()=>ARTLIST_DB.from("books").delete().eq("id",bk.dbId),"삭제했어요");return}
       if(bk.added)AD.books=AD.books.filter(x=>x.id!==bk.id);else{AD.bookDel=AD.bookDel||{};AD.bookDel[bk.id]=true}
       adSave();BOOKS.splice(BOOKS.indexOf(bk),1);refreshPublic();renderAdmin();toast("삭제했어요")})))}
   foot.push(save);openSheet(isNew?"책·도록 추가":"책·도록 수정",f,foot);
@@ -1004,7 +1050,7 @@ function bookSheet(bk){
 const ago=t=>{if(!t)return"아직 수집 안 함";const d=new Date(t),m=Math.round((Date.now()-d)/6e4);return m<1?"방금 수집":m<60?`${m}분 전 수집`:m<1440?`${Math.round(m/60)}시간 전 수집`:`${d.getMonth()+1}월 ${d.getDate()}일 수집`};
 async function crawlApi(body){
   const h={"Content-Type":"application/json"};
-  if(SBM()){const {data:{session}}=await ARTTAN_DB.auth.getSession();if(session)h.Authorization="Bearer "+session.access_token}
+  if(SBM()){const {data:{session}}=await ARTLIST_DB.auth.getSession();if(session)h.Authorization="Bearer "+session.access_token}
   const r=await fetch("/api/crawl",{method:"POST",headers:h,body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||`수집하지 못했어요 (${r.status})`);return j}
 const crawlHash=(gid,it)=>`${gid}|${it.title.replace(/\s+/g,"").toLowerCase()}|${it.start}`;
@@ -1080,9 +1126,9 @@ function venueSheet(g){
     if(SBM()){const gid=isNew?newId("g"):g.id;
       dbDo(async()=>{let pp=photo?photo.path||null:null;
         if(!v.video&&gvf.list().length)v.video=(await uploadVids(gvf.list(),`galleries/${gid}`))[0].src;
-        if(photo&&photo.data){const blob=await (await fetch(photo.data)).blob();pp=`galleries/${gid}/${Date.now()}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(pp,blob,{contentType:"image/jpeg"});if(up.error)return up}
+        if(photo&&photo.data){const blob=await (await fetch(photo.data)).blob();pp=`galleries/${gid}/${Date.now()}.jpg`;const up=await ARTLIST_DB.storage.from("works").upload(pp,blob,{contentType:"image/jpeg"});if(up.error)return up}
         const row={name:v.name,area:v.area||null,addr:v.addr||null,hours:v.hours||null,tel:v.tel||null,site:v.site||null,intro:v.intro||null,crawl_url:v.crawlUrl||null,crawl_on:v.crawlOn,video_url:v.video||null,photo_path:pp};
-        return isNew?ARTTAN_DB.from("galleries").insert({id:gid,...row,sort:1000}):ARTTAN_DB.from("galleries").update(row).eq("id",g.id)},isNew?"전시장을 추가했어요":"저장했어요",true);return}
+        return isNew?ARTLIST_DB.from("galleries").insert({id:gid,...row,sort:1000}):ARTLIST_DB.from("galleries").update(row).eq("id",g.id)},isNew?"전시장을 추가했어요":"저장했어요",true);return}
     v.photo=photo?(photo.data||photo.show):undefined;
     if(isNew){const o={...v,id:"g"+Date.now().toString(36)};AD.galleries=AD.galleries||[];AD.galleries.push(o);if(!adSave()){AD.galleries.pop();return}const go2={...o,added:true};GALLERIES.push(go2);galById[o.id]=go2;toast("전시장을 추가했어요")}
     else{if(g.added)Object.assign(AD.galleries.find(x=>x.id===g.id),v);else{AD.galEdits=AD.galEdits||{};AD.galEdits[g.id]={...(AD.galEdits[g.id]||{}),...v}}if(!adSave())return;Object.assign(g,v);toast("저장했어요")}
@@ -1091,7 +1137,7 @@ function venueSheet(g){
   if(!isNew){foot.push(tBtn("삭제","ghost",()=>{
     if(EXHIBITIONS.some(e=>e.g===g.id)){toast("이 전시장에 등록된 전시를 먼저 지우거나 옮겨 주세요");return}
     confirmSheet(`${g.name}을(를) 삭제할까요?`,"수집한 전시 기록도 함께 지워지고 되돌릴 수 없어요.","삭제하기",()=>{
-      if(SBM()){dbDo(()=>ARTTAN_DB.from("galleries").delete().eq("id",g.id),"삭제했어요");return}
+      if(SBM()){dbDo(()=>ARTLIST_DB.from("galleries").delete().eq("id",g.id),"삭제했어요");return}
       if(g.added)AD.galleries=AD.galleries.filter(x=>x.id!==g.id);else{AD.galDel=AD.galDel||{};AD.galDel[g.id]=true}
       AD.crawled=(AD.crawled||[]).filter(x=>x.gallery_id!==g.id);adSave();GALLERIES.splice(GALLERIES.indexOf(g),1);delete galById[g.id];CRAWLED=AD.crawled;renderAdmin();toast("삭제했어요")})}))}
   foot.push(save);openSheet(isNew?"전시장 추가":"전시장 수정",f,foot)}
@@ -1111,7 +1157,7 @@ function reviewSheet(r){
   exSel.innerHTML=EXHIBITIONS.slice().sort((a,b)=>b.start.localeCompare(a.start)).map(e=>`<option value="${e.id}">「${esc(e.title)}」 ${e.start.slice(0,7).replace("-",".")} · ${esc(e.venue)}${exPeople(e).length?` · ${esc(exPeople(e).slice(0,2).join(", "))}`:""}</option>`).join("");
   exSel.value=r?.exhibition||EXHIBITIONS.filter(e=>status(e).k==="end").sort((a,b)=>b.end.localeCompare(a.end))[0]?.id||exSel.options[0].value;
   const title=inp("rTitle","text",r?.title||"","예: 오후의 빛이 머무는 방 — 전시 스케치");
-  const date=inp("rDate","date",r?.date||""),author=inp("rAuthor","text",r?.author||"arttan 편집부","글쓴이");
+  const date=inp("rDate","date",r?.date||""),author=inp("rAuthor","text",r?.author||"artlist 편집부","글쓴이");
   const two=el(`<div class="t-two"></div>`);two.append(fieldL("방문한 날",date),fieldL("글쓴이",author));
   const body=inp("rBody","textarea",r?.body||"","전시장 분위기, 인상 깊은 작품, 오프닝 이야기 등을 적어 주세요. 문단은 빈 줄로 나눠요.");body.rows=10;
   /* 현장 사진: {show, path, data, caption} */
@@ -1127,7 +1173,7 @@ function reviewSheet(r){
   const wkWrap=el(`<div></div>`);let wk=null;
   const drawWorks=keep=>{const e=EXHIBITIONS.find(x=>x.id===exSel.value);wkWrap.innerHTML="";
     const opts=(e?e.artists:[]).filter(id=>byId[id]).flatMap(id=>byId[id].works.map((w,i)=>`${id}|${i}`));
-    if(!opts.length){wkWrap.append(el(`<p class="t-desc">이 전시의 참여 작가 중 arttan에 등록된 작품이 없어요.</p>`));wk=null;return}
+    if(!opts.length){wkWrap.append(el(`<p class="t-desc">이 전시의 참여 작가 중 artlist에 등록된 작품이 없어요.</p>`));wk=null;return}
     const sel=keep?(r?.works||[]).map(([a,i])=>`${a}|${i}`).filter(k=>opts.includes(k)):[];
     wk=chipsField(opts,sel,opts.length,k=>{const [a,i]=k.split("|");return `${byId[a].name} · ${String(+i+1).padStart(2,"0")} ${byId[a].works[i][0]}`});wkWrap.append(wk)};
   exSel.onchange=()=>drawWorks(false);drawWorks(true);
@@ -1152,10 +1198,10 @@ function reviewSheet(r){
     if(SBM()){const rid=isNew?newId("r"):r.id;
       dbDo(async()=>{const ph=[];v.videos=[...v.videos,...await uploadVids(rvf.list(),`reviews/${rid}`)];
         for(let i=0;i<photos.length;i++){const p=photos[i];let path=p.path;
-          if(p.data){const blob=await (await fetch(p.data)).blob();path=`reviews/${rid}/${Date.now()}-${i}.jpg`;const up=await ARTTAN_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
+          if(p.data){const blob=await (await fetch(p.data)).blob();path=`reviews/${rid}/${Date.now()}-${i}.jpg`;const up=await ARTLIST_DB.storage.from("works").upload(path,blob,{contentType:"image/jpeg"});if(up.error)return up}
           ph.push({src:path,caption:p.caption||""})}
         const row={exhibition_id:v.exhibition,title:v.title,visit_date:v.date||null,author:v.author||null,body:v.body||null,photos:ph,works:v.works,videos:v.videos,interview:v.interview,hidden:v.hidden};
-        return isNew?ARTTAN_DB.from("reviews").insert({id:rid,...row}):ARTTAN_DB.from("reviews").update(row).eq("id",r.id)},isNew?"전시리뷰를 올렸어요":"저장했어요",true);return}
+        return isNew?ARTLIST_DB.from("reviews").insert({id:rid,...row}):ARTLIST_DB.from("reviews").update(row).eq("id",r.id)},isNew?"전시리뷰를 올렸어요":"저장했어요",true);return}
     if(rvf.hasNew()){toast("Supabase 연결 전에는 영상 파일 대신 유튜브 주소를 넣어 주세요");return}
     v.videos=[...v.videos,...rvf.list().map(x=>({title:x.title||"",src:x.path}))];
     const ph=photos.map(p=>({src:p.data||p.show,caption:p.caption||""}));
@@ -1165,7 +1211,7 @@ function reviewSheet(r){
   const foot=[];
   if(!isNew){foot.push(tBtn("사이트에서 보기","ghost",()=>window.open(reviewPath(r),"_blank")));
     foot.push(tBtn("삭제","ghost",()=>confirmSheet(`「${r.title}」 리뷰를 삭제할까요?`,"리뷰 글과 사진 연결이 사라지고 되돌릴 수 없어요.","삭제하기",()=>{
-      if(SBM()){dbDo(()=>ARTTAN_DB.from("reviews").delete().eq("id",r.id),"삭제했어요");return}
+      if(SBM()){dbDo(()=>ARTLIST_DB.from("reviews").delete().eq("id",r.id),"삭제했어요");return}
       if(r.added)AD.reviews=AD.reviews.filter(x=>x.id!==r.id);else{AD.reviewDel=AD.reviewDel||{};AD.reviewDel[r.id]=true}
       adSave();REVIEWS.splice(REVIEWS.indexOf(r),1);renderAdmin();toast("삭제했어요")})))}
   foot.push(save);openSheet(isNew?"전시리뷰 쓰기":"전시리뷰 수정",f,foot)}
@@ -1192,7 +1238,7 @@ function adCrawl(m){
   m.append(el(`<p class="t-info">수집한 건 전시명·기간·원문 주소뿐이에요. 게시할 때 소개 글은 직접 써 주세요(원문을 그대로 옮기지 않아요). 게시한 전시에는 '출처: 전시장 홈페이지' 링크가 붙어요.</p>`))}
 async function setCrawl(x,patch,msg){
   if(SBM()){const row={reviewed_at:new Date().toISOString()};if("status" in patch)row.status=patch.status;if("exhibition_id" in patch)row.exhibition_id=patch.exhibition_id;
-    dbDo(()=>ARTTAN_DB.from("crawled_exhibitions").update(row).eq("id",x.id),msg);return}
+    dbDo(()=>ARTLIST_DB.from("crawled_exhibitions").update(row).eq("id",x.id),msg);return}
   Object.assign(AD.crawled.find(y=>y.id===x.id),patch);adSave();CRAWLED=AD.crawled;renderAdmin();toast(msg)}
 function guessKind(t){return /2인전|3인전|단체|그룹|group/i.test(t)?"그룹전":/기획/.test(t)?"기획전":/초대/.test(t)?"초대전":"개인전"}
 function publishSheet(x){
@@ -1203,12 +1249,12 @@ function publishSheet(x){
   const ids=pub().map(a=>a.id),hit=ids.filter(id=>text.includes(byId[id].name));
   const who=chipsField(ids,hit,8,id=>aName(byId[id]));
   const solo=/^(.+?)\s*(개인전|초대전)/.exec(x.title);
-  const other=inp("pOther","text",solo&&!hit.some(id=>solo[1].includes(byId[id].name))?solo[1].trim():"","arttan 에 없는 작가 이름 (쉼표로 구분)");
+  const other=inp("pOther","text",solo&&!hit.some(id=>solo[1].includes(byId[id].name))?solo[1].trim():"","artlist 에 없는 작가 이름 (쉼표로 구분)");
   const st=inp("pStart","date",x.start||""),en=inp("pEnd","date",x.end||"");
   const two=el(`<div class="t-two"></div>`);two.append(fieldL("시작일",st),fieldL("종료일",en));
   const desc=inp("pDesc","textarea","","전시를 한두 문장으로 직접 소개해 주세요 (원문을 그대로 옮기지 않아요)");
   f.append(el(`<p class="t-desc">${esc(g.name)} · <a href="${esc(x.source_url||"#")}" target="_blank" rel="noopener">원문 보기 ↗</a>${x.context?` · 함께 적힌 글: ${esc(x.context)}`:""}</p>`),
-    fieldL("전시명",title),fieldD("전시 형태",kind),fieldD("참여 작가 (arttan 등록 작가)",who,"등록된 작가를 고르면 작가 공간과 연결돼요."),fieldL("그 외 참여 작가",other),two,fieldL("전시 소개",desc));
+    fieldL("전시명",title),fieldD("전시 형태",kind),fieldD("참여 작가 (artlist 등록 작가)",who,"등록된 작가를 고르면 작가 공간과 연결돼요."),fieldL("그 외 참여 작가",other),two,fieldL("전시 소개",desc));
   const save=tBtn("사이트에 게시","primary",()=>{
     const v={title:title.value.trim(),kind:kind.dataset.value,artists:who.value(),artistsText:other.value.trim(),g:g.id,start:st.value,end:en.value,desc:desc.value.trim(),sourceUrl:x.source_url||""};
     if(!v.title){toast("전시명을 입력해 주세요");return}
@@ -1216,15 +1262,15 @@ function publishSheet(x){
     if(!v.artists.length&&!v.artistsText){toast("참여 작가를 고르거나 이름을 적어 주세요");return}
     const eid=newId("e");
     if(SBM()){dbDo(async()=>{
-        const r=await ARTTAN_DB.from("exhibitions").insert({id:eid,gallery_id:v.g,title:v.title,kind:v.kind,artists:v.artists,artists_text:v.artistsText||null,start_date:v.start,end_date:v.end,description:v.desc||null,source_url:v.sourceUrl||null});if(r.error)return r;
+        const r=await ARTLIST_DB.from("exhibitions").insert({id:eid,gallery_id:v.g,title:v.title,kind:v.kind,artists:v.artists,artists_text:v.artistsText||null,start_date:v.start,end_date:v.end,description:v.desc||null,source_url:v.sourceUrl||null});if(r.error)return r;
         if(v.artists.length)pushNotify(eid,{quiet:true});
-        return ARTTAN_DB.from("crawled_exhibitions").update({status:"approved",exhibition_id:eid,reviewed_at:new Date().toISOString()}).eq("id",x.id)},"사이트에 게시했어요",true);return}
+        return ARTLIST_DB.from("crawled_exhibitions").update({status:"approved",exhibition_id:eid,reviewed_at:new Date().toISOString()}).eq("id",x.id)},"사이트에 게시했어요",true);return}
     const o={...v,id:eid};AD.exhibitions.push(o);EXHIBITIONS.push({...o,venue:g.name,region:g.area,added:true});
     Object.assign(AD.crawled.find(y=>y.id===x.id),{status:"approved",exhibition_id:eid});if(!adSave())return;CRAWLED=AD.crawled;closeSheet();renderAdmin();toast("사이트에 게시했어요")});
   openSheet("수집한 전시 게시",f,[tBtn("반려","ghost",()=>{closeSheet();setCrawl(x,{status:"rejected"},"반려했어요")}),save])}
 function unpublish(x){
-  if(SBM()){dbDo(async()=>{if(x.exhibition_id){const r=await ARTTAN_DB.from("exhibitions").delete().eq("id",x.exhibition_id);if(r.error)return r}
-      return ARTTAN_DB.from("crawled_exhibitions").update({status:"pending",exhibition_id:null}).eq("id",x.id)},"게시를 내렸어요");return}
+  if(SBM()){dbDo(async()=>{if(x.exhibition_id){const r=await ARTLIST_DB.from("exhibitions").delete().eq("id",x.exhibition_id);if(r.error)return r}
+      return ARTLIST_DB.from("crawled_exhibitions").update({status:"pending",exhibition_id:null}).eq("id",x.id)},"게시를 내렸어요");return}
   AD.exhibitions=AD.exhibitions.filter(e=>e.id!==x.exhibition_id);const i=EXHIBITIONS.findIndex(e=>e.id===x.exhibition_id);if(i>=0)EXHIBITIONS.splice(i,1);
   Object.assign(AD.crawled.find(y=>y.id===x.id),{status:"pending",exhibition_id:null});adSave();CRAWLED=AD.crawled;renderAdmin();toast("게시를 내렸어요")}
 
@@ -1232,7 +1278,7 @@ function unpublish(x){
 async function adMembers(m){adHead(m,"회원","");
   if(!SBM()){card(m).append(el(`<p class="t-info">Supabase를 연결하면 이메일·카카오·Google로 가입한 회원이 여기에 보여요.</p>`));return}
   const top=card(m,"관심 작가 순위"),c=card(m,"회원 목록");top.append(el(`<p class="t-empty">불러오는 중…</p>`));c.append(el(`<p class="t-empty">불러오는 중…</p>`));
-  const [pr,fv]=await Promise.all([ARTTAN_DB.from("profiles").select("id,nickname,email,phone,provider,marketing_ok,created_at").order("created_at",{ascending:false}).limit(500),ARTTAN_DB.from("member_favs").select("artist_id")]);
+  const [pr,fv]=await Promise.all([ARTLIST_DB.from("profiles").select("id,nickname,email,phone,provider,marketing_ok,created_at,account_type,account_status").order("created_at",{ascending:false}).limit(500),ARTLIST_DB.from("member_favs").select("artist_id")]);
   if(pr.error){c.innerHTML="";c.append(el(`<p class="t-empty">회원 목록을 불러오지 못했어요: ${esc(pr.error.message)}</p>`));return}
   const L=pr.data||[],F=fv.data||[];
   m.querySelector(".ad-head p")?.remove();m.querySelector(".ad-head div").append(el(`<p>회원 ${L.length}명 · 소식 메일 동의 ${L.filter(x=>x.marketing_ok).length}명</p>`));
@@ -1243,20 +1289,20 @@ async function adMembers(m){adHead(m,"회원","");
   c.innerHTML='<div class="t-card-h"><h2>회원 목록</h2></div>';
   if(!L.length)c.append(el(`<p class="t-empty">아직 가입한 회원이 없어요.</p>`));
   const PV={kakao:"카카오",google:"Google",email:"이메일"};
-  L.forEach(x=>c.append(row({title:x.nickname,sub:`${PV[x.provider]||x.provider||"이메일"} · ${x.email||"이메일 없음"}${x.phone?` · ${x.phone}`:""} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 가입${x.marketing_ok?" · 소식 메일 동의":""}`})))}
+  L.forEach(x=>c.append(row({title:x.nickname,sub:`${PV[x.provider]||x.provider||"이메일"} · ${x.email||"이메일 없음"}${x.phone?` · ${x.phone}`:""} · ${String(x.created_at).slice(0,10).replaceAll("-",".")} 가입${x.marketing_ok?" · 소식 메일 동의":""}`,right:x.account_type&&x.account_type!=="general"?el(`<span class="t-pill ${x.account_status==="active"?"blue":"gray"}">${ATYPE[x.account_type]} · ${ASTAT[x.account_status]||""}</span>`):null})))}
 /* 설정 */
 function adSet(m){adHead(m,"설정");
-  /* arttan 공식 SNS: 주소를 넣은 것만 사이트 아래쪽·인터뷰 페이지에 버튼으로 보여요 */
-  {const c=card(m,"arttan SNS 채널");const f=el(`<div class="t-form" style="padding:8px 16px 16px"></div>`);
+  /* artlist 공식 SNS: 주소를 넣은 것만 사이트 아래쪽·인터뷰 페이지에 버튼으로 보여요 */
+  {const c=card(m,"artlist SNS 채널");const f=el(`<div class="t-form" style="padding:8px 16px 16px"></div>`);
     const ins=SNS_META.map(([k,label])=>[k,inp("sns_"+k,"url",SNS[k]||"",`https:// (${label} 채널 주소)`),label]);
     ins.forEach(([k,i,label])=>f.append(fieldL(label,i)));
     f.append(el(`<p class="t-desc">주소를 넣은 채널만 사이트 아래쪽과 인터뷰 페이지에 버튼으로 보여요. 비우면 버튼이 사라져요.</p>`));
     f.append(tBtn("SNS 저장하기","primary",()=>{const val={};for(const [k,i,label] of ins){const u=i.value.trim();if(u&&!/^https:\/\//.test(u)){toast(`${label} 주소는 https:// 로 시작해야 해요`);i.focus();return}val[k]=u}
-      if(SBM()){dbDo(()=>ARTTAN_DB.from("site_settings").upsert({key:"sns",value:val,updated_at:new Date().toISOString()}),"SNS 주소를 저장했어요");return}
+      if(SBM()){dbDo(()=>ARTLIST_DB.from("site_settings").upsert({key:"sns",value:val,updated_at:new Date().toISOString()}),"SNS 주소를 저장했어요");return}
       AD.sns=val;Object.assign(SNS,val);adSave();refreshPublic();toast("SNS 주소를 저장했어요")}));
     c.append(f)}
   if(SBM()){const c=card(m,"계정");c.append(el(`<p class="t-info">Supabase에 연결돼 있어요. 저장한 내용은 모두 실제 DB에 기록돼요.</p>`));
-    c.append(row({title:"로그아웃",sub:"이 브라우저에서 관리자 로그인을 끝내요",onClick:async()=>{await ARTTAN_DB.auth.signOut();location.reload()}}));return}
+    c.append(row({title:"로그아웃",sub:"이 브라우저에서 관리자 로그인을 끝내요",onClick:async()=>{await ARTLIST_DB.auth.signOut();location.reload()}}));return}
   const c=card(m,"초안 데이터");
   c.append(el(`<p class="t-info">관리자 화면에서 추가하거나 바꾼 내용은 이 브라우저에만 저장돼요. 실제 서비스에서는 로그인과 서버 저장이 필요해요.</p>`));
   c.append(row({title:"초안 데이터 초기화",sub:"추가한 작가·전시, 공개 설정, 신청 처리 내역을 모두 지워요",onClick:()=>confirmSheet("초안 데이터를 초기화할까요?","추가하거나 바꾼 내용이 모두 사라지고 처음 상태로 돌아가요.","초기화하기",()=>{try{localStorage.removeItem(AD_KEY)}catch(e){}location.reload()})}))}
@@ -1266,5 +1312,5 @@ adminGate();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(!document.querySelector(".t-login"))renderAdmin()});
 
 }
-arttanBoot(startApp);
+artlistBoot(startApp);
 </script>

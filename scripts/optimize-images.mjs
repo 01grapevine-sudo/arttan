@@ -2,9 +2,10 @@
 // 사이트는 목록에 480px, 크게 볼 때 1200px WebP를 써서 모바일에서도 빨리 떠요. 원본 jpg는 그대로 둬요(공유 미리보기용).
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dir = path.join(root, "artists");
 let made = 0, kept = 0;
 for (const id of fs.readdirSync(dir)) {

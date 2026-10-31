@@ -45,7 +45,7 @@ async function main() {
       <text x="80" y="1170" ${FONT} font-size="40" fill="#7C3AED" font-weight="700">엘로이 개인전 · 일러스트</text>
       <text x="80" y="1285" ${FONT} font-size="104" fill="#1E1B2E" font-weight="800">${esc(title)}</text>
       <text x="80" y="1390" ${FONT} font-size="46" fill="#3B3650">${esc(date)}</text>
-      <text x="80" y="1460" ${FONT} font-size="38" fill="#6B6585">arttan 테스트 갤러리 · 인사동</text>
+      <text x="80" y="1460" ${FONT} font-size="38" fill="#6B6585">artlist 테스트 갤러리 · 인사동</text>
       <text x="1120" y="1540" ${FONT} font-size="26" fill="#A39DB5" text-anchor="end">테스트용 샘플 · AI 생성 이미지</text></svg>`;
     await sharp(Buffer.from(txt)).composite([{ input: art, top: 0, left: 0 }]).jpeg({ quality: 86 }).toFile(out(file));
   };
@@ -57,7 +57,7 @@ async function main() {
   const cover = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600"><rect width="1200" height="1600" fill="#F3EEE4"/>
     <text x="150" y="1300" ${FONT} font-size="92" fill="#2E2A5A" font-weight="800">빛이 머무는 자리</text>
     <text x="150" y="1385" ${FONT} font-size="46" fill="#5B3E96">엘로이 Eloi</text>
-    <text x="150" y="1480" ${FONT} font-size="32" fill="#8A7FB0">2026 · arttan 테스트 도록</text></svg>`;
+    <text x="150" y="1480" ${FONT} font-size="32" fill="#8A7FB0">2026 · artlist 테스트 도록</text></svg>`;
   await sharp(Buffer.from(cover)).composite([{ input: cart, top: 150, left: 150 }]).jpeg({ quality: 86 }).toFile(out("books/light-cover.jpg"));
 
   /* 펼침면 4장 (2400×1600): 왼쪽 작품, 오른쪽 캡션 */

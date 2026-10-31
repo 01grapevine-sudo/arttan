@@ -1,26 +1,26 @@
-/* arttan 데이터 연결
+/* artlist 데이터 연결
    - config.js 에 Supabase 주소·키가 있으면: Supabase에서 데이터를 읽고, 관리자 화면은 DB에 저장해요.
    - 없으면: artists/*.js 의 예시 데이터로 떠요 (관리자 변경은 이 브라우저에만 저장). */
-window.ARTTAN_DB = null;   // Supabase 클라이언트
-window.ARTTAN_SB = false;  // Supabase에서 데이터를 읽었는지
+window.ARTLIST_DB = null;   // Supabase 클라이언트
+window.ARTLIST_SB = false;  // Supabase에서 데이터를 읽었는지
 
 function sbConfigured() {
-  const c = window.ARTTAN_CONFIG || {};
+  const c = window.ARTLIST_CONFIG || {};
   return !!(c.supabaseUrl && c.supabaseAnonKey && window.supabase && window.supabase.createClient);
 }
 function sbClient() {
-  if (!window.ARTTAN_DB && sbConfigured()) {
-    const c = window.ARTTAN_CONFIG;
+  if (!window.ARTLIST_DB && sbConfigured()) {
+    const c = window.ARTLIST_CONFIG;
     /* 로그인 유지 + 구글·카카오 로그인은 PKCE 방식으로 받아요 (돌아온 주소의 ?code= 를 자동으로 처리) */
-    window.ARTTAN_DB = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey, { auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    window.ARTLIST_DB = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey, { auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
   }
-  return window.ARTTAN_DB;
+  return window.ARTLIST_DB;
 }
 /* Storage 경로 → 이미지 주소 (사이트에 함께 올린 파일은 그대로) */
 function workImageUrl(p) {
   if (!p) return null;
   if (/^(https?:)?\/\//.test(p) || p.startsWith("artists/") || p.startsWith("galleries/") || p.startsWith("data:")) return p;
-  return `${window.ARTTAN_CONFIG.supabaseUrl}/storage/v1/object/public/works/${p}`;
+  return `${window.ARTLIST_CONFIG.supabaseUrl}/storage/v1/object/public/works/${p}`;
 }
 const FALLBACK_PAL = ["#EEEAF6", "#3B2A6B", "#8B7BB8", "#D9CFEF", "#1E1636"];
 
@@ -83,10 +83,10 @@ async function loadFromSupabase() {
 }
 
 /* 페이지 시작: 데이터를 준비한 뒤 화면을 그려요 */
-async function arttanBoot(start) {
+async function artlistBoot(start) {
   let ok = false;
   try { ok = await loadFromSupabase(); } catch (e) { console.warn("Supabase 연결 실패 — 예시 데이터로 보여요:", e); }
-  window.ARTTAN_SB = ok;
+  window.ARTLIST_SB = ok;
   if (ok) { AD = AD_DEF(); AD.apps = []; }   // DB 모드에서는 브라우저 임시 저장을 쓰지 않아요
   finishArtists();
   start();
@@ -109,7 +109,7 @@ async function postSubmit(kind, data, hp, table) {
     return { ok: true, local: !(j.stored || j.notified) };
   }
   const sb = sbClient();
-  if (!window.ARTTAN_SB || !sb) return { local: true };
+  if (!window.ARTLIST_SB || !sb) return { local: true };
   const { error } = await sb.from(table).insert(data);
   if (error) throw error; return { ok: true };
 }

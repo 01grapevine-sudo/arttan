@@ -1,9 +1,9 @@
 {
-  "name": "arttan",
+  "name": "artlist",
   "private": true,
   "version": "1.1.0",
   "type": "module",
-  "description": "arttan 아트탄 — 원로·중견·청년 작가 아카이브",
+  "description": "artlist — 원로·중견·청년 작가 아카이브",
   "scripts": {
     "build": "node scripts/optimize-images.mjs && node scripts/build-config.mjs",
     "images": "node scripts/optimize-images.mjs",

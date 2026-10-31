@@ -1,4 +1,4 @@
--- arttan · Supabase 스키마
+-- artlist · Supabase 스키마
 -- Supabase 대시보드 > SQL Editor 에 통째로 붙여넣고 실행하세요. (여러 번 실행해도 안전해요)
 
 -- ─────────────────────────────────────────────
@@ -255,7 +255,7 @@ alter table public.galleries add column if not exists crawl_url text;
 alter table public.galleries add column if not exists crawl_on boolean not null default true;
 alter table public.galleries add column if not exists last_crawled_at timestamptz;
 alter table public.galleries add column if not exists last_crawl_note text;
-alter table public.exhibitions add column if not exists artists_text text;   -- arttan 에 등록되지 않은 참여 작가 이름
+alter table public.exhibitions add column if not exists artists_text text;   -- artlist 에 등록되지 않은 참여 작가 이름
 alter table public.exhibitions add column if not exists source_url text;     -- 수집한 전시의 원문 주소 (출처 표시)
 create table if not exists public.crawled_exhibitions (
   id           bigint generated always as identity primary key,
@@ -309,7 +309,7 @@ alter table public.interviews add column if not exists exhibition_id text;
 -- 홈 히어로(첫 화면 큰 배너) 노출 여부: 관리자 작가 목록의 '히어로' 버튼으로 바꿔요
 alter table public.artists add column if not exists hero boolean not null default true;
 
--- 사이트 설정 (arttan SNS 채널 주소 등): 누구나 읽고 관리자만 바꿔요
+-- 사이트 설정 (artlist SNS 채널 주소 등): 누구나 읽고 관리자만 바꿔요
 create table if not exists public.site_settings (key text primary key, value jsonb not null default '{}'::jsonb, updated_at timestamptz not null default now());
 alter table public.site_settings enable row level security;
 drop policy if exists "site_settings: public read" on public.site_settings;

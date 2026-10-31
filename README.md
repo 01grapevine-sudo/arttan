@@ -1,4 +1,4 @@
-# arttan 아트탄 — 작가 아카이브
+# artlist — 작가 아카이브
 
 원로·중견·청년 작가의 작품과 기록을 모으는 사이트예요.
 정적 사이트(HTML·JS)를 **Vercel**로 배포하고, 데이터·로그인·이미지는 **Supabase**를 써요.
@@ -41,9 +41,9 @@ robots.txt        검색 로봇 안내 (관리자·api 제외, 사이트맵 위�
 ## 2. Vercel 배포
 
 ```bash
-cd /Volumes/arttan/arttan
+cd D:\DM\office\projects\artlist\artlist-site
 vercel login
-vercel link          # 새 프로젝트 이름: arttan
+vercel link          # Vercel 프로젝트 이름: arttan (외부 이름이라 그대로)
 vercel env add SUPABASE_URL production
 vercel env add SUPABASE_ANON_KEY production
 vercel --prod
@@ -94,7 +94,7 @@ vercel --prod
 | `INDEXNOW_KEY` | IndexNow 키를 바꿀 때. 바꾸면 루트의 `<키>.txt` 파일도 같은 이름·내용으로 바꿔요 |
 
 ### 운영하면서 검색 순위를 올리는 법
-- **작가 소개는 arttan에서 직접 쓴 글로.** 다른 사이트(예: DA-Arts) 문장을 그대로 쓰면 원래 사이트가 먼저 나와요.
+- **작가 소개는 artlist에서 직접 쓴 글로.** 다른 사이트(예: DA-Arts) 문장을 그대로 쓰면 원래 사이트가 먼저 나와요.
 - 인터뷰는 영상만 올리지 말고 **질문·답을 글로도** 올려요.
 - 작품에 **제목·연도·재료·크기·설명**을 빠짐없이 넣어요 (작품마다 페이지와 이미지 검색 노출이 생겨요).
 - 작가에게 **네이버 인물정보 홈페이지 칸, 인스타그램·유튜브·블로그 프로필**에 작가 공간 주소를 걸어 달라고 요청해요
@@ -112,7 +112,7 @@ vercel --prod
    ```bash
    TELEGRAM_BOT_TOKEN=봇토큰 node scripts/telegram-chatid.mjs
    ```
-4. Vercel → arttan → **Settings → Environment Variables** 에 넣고 **Redeploy**:
+4. Vercel → arttan 프로젝트 → **Settings → Environment Variables** 에 넣고 **Redeploy**:
    - `TELEGRAM_BOT_TOKEN` = 봇 토큰
    - `TELEGRAM_CHAT_ID` = chat id (여러 명이면 쉼표로: `111,222`)
 - 토큰은 서버에만 있어요. `config.js`나 브라우저에는 들어가지 않아요.
@@ -154,7 +154,7 @@ Supabase 를 연결하기 전에는 로컬(`npm run dev`)에서만 수집할 수
   node scripts/import-photos.mjs "초기자료 /미술/<작가 폴더>" <작가id> works    # → artists/<작가id>/works/01.jpg …
   ```
   원본 파일 이름과의 대응은 `artists/<id>/works/_원본파일.txt` 에 있어요.
-- 작가 소개 글은 공개된 기사·자료의 **사실만** 골라 arttan이 새로 썼고, 참고 자료 주소를 작가 공간 아래에 적어 두었어요.
+- 작가 소개 글은 공개된 기사·자료의 **사실만** 골라 artlist가 새로 썼고, 참고 자료 주소를 작가 공간 아래에 적어 두었어요.
   다른 사이트 문장을 그대로 옮기지 않아요 (저작권, 검색 중복 문제).
 - 작품 제목·연도·재료·크기를 모르는 작품은 "작품 01 · 제목 확인 중"으로 두었어요. 작가에게 받아서 채워 주세요.
 

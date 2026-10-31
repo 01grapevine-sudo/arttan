@@ -2,9 +2,10 @@
 // 실행: node scripts/make-seed.mjs  → supabase/seed.sql
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "app.html"), "utf8");
 const artistFiles = [...html.matchAll(/<script src="(artists\/[^"?]+\.js)(?:\?[^"]*)?"><\/script>/g)].map(m => m[1]);
 
@@ -24,7 +25,7 @@ const arr = a => a && a.length ? `array[${a.map(q).join(",")}]::text[]` : "'{}':
 const js = v => v === null || v === undefined ? "null" : `${q(JSON.stringify(v))}::jsonb`;
 const b = v => v ? "true" : "false";
 
-const out = ["-- arttan 초기 데이터 (scripts/make-seed.mjs 로 생성). schema.sql 다음에 실행하세요.", "begin;",
+const out = ["-- artlist 초기 데이터 (scripts/make-seed.mjs 로 생성). schema.sql 다음에 실행하세요.", "begin;",
   "delete from public.works; delete from public.interviews; delete from public.videos; delete from public.books;",
   "delete from public.reviews; delete from public.exhibitions; delete from public.artists; delete from public.galleries; delete from public.notices;"];
 

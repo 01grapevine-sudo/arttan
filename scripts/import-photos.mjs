@@ -4,11 +4,12 @@
 // 메타데이터(촬영 정보·위치)는 지우고, 방향(회전)만 반영해요.
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const [src, id, kind = "works"] = process.argv.slice(2);
 if (!src || !id) { console.error("사용: node scripts/import-photos.mjs <원본폴더> <작가id> [works|photos]"); process.exit(1); }
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const out = path.join(root, "artists", id, kind);
 fs.mkdirSync(out, { recursive: true });
 const files = fs.readdirSync(src).filter(f => !f.startsWith(".") && /\.jpe?g$/i.test(f)).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));

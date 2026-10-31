@@ -1,7 +1,7 @@
-/* arttan 작가 아카이브 — 기산 정명희 (jmh)
+/* artlist 작가 아카이브 — 기산 정명희 (jmh)
    이 파일에는 이 작가의 정보·작품·인터뷰·도록만 들어가요. 다른 작가의 자료는 넣지 마세요.
    사진: artists/jmh/photos/ (2025년 촬영 인물 사진, 사용 허락). 작품 이미지는 아직 없어 작품 목록은 글로만 보여요.
-   소개 글은 아래 출처의 사실을 바탕으로 arttan이 새로 썼어요. */
+   소개 글은 아래 출처의 사실을 바탕으로 artlist가 새로 썼어요. */
 registerArtist({
    id:"jmh", real:true, tier:"원로작가", name:"정명희", en:"Jeong Myeong-hee", genre:"한국화", more:[], tags:["기산(箕山)","수묵담채","금강 연작","족보 시리즈","기행 사생"], born:1945, from:"충남 홍성", city:"대전", style:"ink", pal:["#ECE8DF","#1C1C1C","#6B6A64","#8A3B2E","#C9C2B3"],
    portraits:["artists/jmh/photos/01.jpg","artists/jmh/photos/02.jpg"],

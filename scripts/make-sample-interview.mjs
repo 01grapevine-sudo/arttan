@@ -1,16 +1,17 @@
 // 테스트용 가상 작가 '엘로이' 인터뷰 샘플: 작업실 사진 3장 + 짧은 인터뷰 영상(약 15초, mp4) + 영상 첫 화면.
 // 외부 자료 없이 직접 그려요.  실행: node scripts/make-sample-interview.mjs  (ffmpeg 필요)
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 import sharp from "sharp";
 import { artwork, FONT } from "./make-sample-eloi.mjs";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dir = path.join(root, "artists/eloi/interviews"); fs.mkdirSync(dir, { recursive: true });
 const tmp = fs.mkdtempSync(path.join(root, ".build", "iv-"));
 const person = (x, y, s = 1, c = "#2E2A3A") => `<g transform="translate(${x} ${y}) scale(${s})" fill="${c}"><circle cx="0" cy="-262" r="30"/><path d="M -46 -226 Q 0 -244 46 -226 L 58 -60 L 34 -60 L 30 0 L 6 0 L 0 -90 L -6 0 L -30 0 L -34 -60 L -58 -60 Z"/></g>`;
-const tag = (W, H) => `<text x="${W - 26}" y="${H - 22}" ${FONT} font-size="22" fill="#6E6150" text-anchor="end">테스트용 샘플 · arttan</text>`;
+const tag = (W, H) => `<text x="${W - 26}" y="${H - 22}" ${FONT} font-size="22" fill="#6E6150" text-anchor="end">테스트용 샘플 · artlist</text>`;
 
 async function scene(file, W, H, svg, arts) {
   const comps = [];
@@ -38,7 +39,7 @@ async function main() {
   const W = 1280, H = 720;
   const card = (t1, t2, t3) => `<rect width="${W}" height="${H}" fill="#14112B"/><text x="90" y="300" ${FONT} font-size="34" fill="#C4B5FD" font-weight="700">${t1}</text><text x="90" y="390" ${FONT} font-size="72" fill="#FFFFFF" font-weight="800">${t2}</text><text x="90" y="460" ${FONT} font-size="30" fill="#D9D0F5">${t3}</text>${tag(W, H)}`;
   const slides = [];
-  slides.push(path.join(tmp, "s1.png")); await scene(slides[0], W, H, { base: card("arttan 작가 인터뷰 · 테스트 영상", "엘로이의 작업실에서", "「정원의 오후」를 그리기까지") }, []);
+  slides.push(path.join(tmp, "s1.png")); await scene(slides[0], W, H, { base: card("artlist 작가 인터뷰 · 테스트 영상", "엘로이의 작업실에서", "「정원의 오후」를 그리기까지") }, []);
   slides.push(path.join(tmp, "s2.png")); await scene(slides[1], W, H, { base: `${studio(W, H, 560)}${easel(430, 170, 360)}<rect x="355" y="145" width="250" height="320" fill="#2B2620"/>`, after: person(780, 690, .95) }, [[1, 360, 150, 240, 310]]);
   slides.push(path.join(tmp, "s3.png")); await scene(slides[2], W, H, { base: `<rect width="${W}" height="${H}" fill="#2B2620"/>` }, [[1, 20, 20, W - 40, H - 40]]);
   slides.push(path.join(tmp, "s4.png")); await scene(slides[3], W, H, { base: card("테스트용 샘플 영상", "빛이 머문 자리를 그려요", "실제 인터뷰 영상은 유튜브 주소나 영상 파일로 넣어요") }, []);
