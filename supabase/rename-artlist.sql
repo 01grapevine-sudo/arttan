@@ -16,6 +16,7 @@ create or replace function pg_temp.rn2(t text) returns text language sql immutab
 $$;
 begin;
 create table if not exists rename_backup_20261031 (tbl text, id text, col text, val text, saved_at timestamptz default now());
+alter table rename_backup_20261031 enable row level security; -- 공개 API로 읽히지 않게
 insert into rename_backup_20261031 (tbl, id, col, val)
   select 'artists', id::text, 'bio', bio from artists where bio ~ 'arttan|artpool|아트탄|아트풀'
   union all select 'artists', id::text, 'history', history::text from artists where history::text ~ 'arttan|artpool|아트탄|아트풀'
