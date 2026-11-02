@@ -2292,12 +2292,14 @@ function renderBookPage(id){
 }
 
 /* ---------- galleries ---------- */
-const AREAS=["전체",...new Set(GALLERIES.map(g=>g.area))];let curArea="전체";
+/* 테스트 갤러리(test)는 방문자 화면에서 빼요. 관리자 화면에는 그대로 보여요 */
+const pubGals=()=>GALLERIES.filter(g=>!g.test);
+const AREAS=["전체",...new Set(pubGals().map(g=>g.area))];let curArea="전체";
 function renderGalleries(){
   const fb=$("#areaFilter");fb.innerHTML="";
-  AREAS.forEach(ar=>fb.append(chip(ar,ar==="전체"?GALLERIES.length:GALLERIES.filter(g=>g.area===ar).length,curArea===ar,()=>{curArea=ar;renderGalleries()})));
+  AREAS.forEach(ar=>fb.append(chip(ar,ar==="전체"?pubGals().length:pubGals().filter(g=>g.area===ar).length,curArea===ar,()=>{curArea=ar;renderGalleries()})));
   const box=$("#galleries");box.innerHTML="";
-  GALLERIES.filter(g=>curArea==="전체"||g.area===curArea).forEach(g=>{
+  pubGals().filter(g=>curArea==="전체"||g.area===curArea).forEach(g=>{
     const ex=exOfGal(g.id), live=ex.filter(e=>e.st.k==="live"), soon=ex.filter(e=>e.st.k==="soon").sort((x,y)=>parse(x.start)-parse(y.start));
     const show=live[0]||soon[0]||ex.sort((x,y)=>parse(y.start)-parse(x.start))[0];
     const b=document.createElement("button");b.type="button";b.className="gcard";
@@ -2508,7 +2510,7 @@ function doSearch(){
   const q=$("#q").value.trim(),box=$("#sres");if(!q){box.hidden=true;return}
   const A=pub().filter(a=>[a.name,...genresOf(a),a.city,...(a.tags||[])].join(" ").includes(q)).slice(0,5);
   const E=EXHIBITIONS.filter(e=>[e.title,e.venue,e.region,...exPeople(e)].join(" ").includes(q)).slice(0,5);
-  const G=GALLERIES.filter(g=>(g.name+" "+g.area).includes(q)).slice(0,4);
+  const G=pubGals().filter(g=>(g.name+" "+g.area).includes(q)).slice(0,4);
   box.innerHTML="";
   const add=(lab,list,f)=>{if(!list.length)return;box.insertAdjacentHTML("beforeend",`<div class="sr-g">${lab}</div>`);
     list.forEach(x=>{const[t,sub,fn]=f(x);const b=document.createElement("button");b.type="button";b.className="sr";b.innerHTML=`<b></b><span></span>`;b.querySelector("b").textContent=t;b.querySelector("span").textContent=sub;b.onclick=()=>{box.hidden=true;$("#q").value="";fn()};box.append(b)})};
@@ -2687,7 +2689,7 @@ function renderHome(){
   renderTierRail();
   /* 갤러리 (전체) */
   const hg=$("#homeGal");hg.innerHTML="";
-  GALLERIES.forEach(g=>hg.append(galCard(g)));
+  pubGals().forEach(g=>hg.append(galCard(g)));
   /* 캘린더 · 공지 */
   renderHomeCal();
   const u=$("#notices");u.innerHTML="";
@@ -3055,7 +3057,7 @@ function route(){
       showSite(()=>renderArtistSite(P.id),"#artists");
       if(P.t==="work"&&a.works[P.n-1]){document.getElementById("as-works").scrollIntoView();openLightbox(P.n-1)}
       return}
-    if(P.t==="gallery"&&galById[P.id]){showSite(()=>renderGallerySite(P.id),"#galleries");return}
+    if(P.t==="gallery"&&galById[P.id]&&!galById[P.id].test){showSite(()=>renderGallerySite(P.id),"#galleries");return}
     const bk=P.t==="book"&&BOOKS.find(b=>b.id===P.id);
     if(bk&&byId[bk.artist]&&!byId[bk.artist].hidden){showSite(()=>renderBookPage(P.id),"#catalogue");return}
     const iv=P.t==="interview"&&INTERVIEWS.find(x=>x.id===P.id);
